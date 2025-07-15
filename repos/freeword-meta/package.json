@@ -6,14 +6,14 @@
   "types": "./src/index.d.ts",
   "type": "module",
   "scripts": {
-    "test": "yarn node $(yarn bin mocha) ./tests/**/*.test.js"
+    "test": "yarn node $(yarn bin mocha) --require ts-node/register ./tests/**/*.test.{js,ts}"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.0",
     "@types/node": "^20.0.0",
     "chai": "^4.3.0",
     "mocha": "^10.0.0",
-    "ts-node": "^10.9.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
   "keywords": [
