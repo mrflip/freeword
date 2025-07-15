@@ -1,10 +1,21 @@
 {
   "name": "@freeword/all-byword",
   "version": "1.0.0",
-  "description": "Open dictionary from the freeword project. This package contains wordforms indexed by specific term.",
-  "main": "./index.js",
-  "types": "./index.d.ts",
-  "type": "module",
+  "description": "A Practical Dictionary, containing all(*) words in our collection, exported as a lookup table by word. Has useful metadata assembled from freely licensed sources of varying quality. (*) About 1000 highly offensive words are omitted, but available from @freeword/offensive; see the README for details.",
+  "scripts": {
+    "test": "mocha",
+    "twitch": "mocha --watch",
+    "dev": "yarn twitch"
+  },
+  "devDependencies": {
+    "@types/chai": "^5.2.2",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^24.0.14",
+    "chai": "^5.2.1",
+    "mocha": "^11.7.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
   "keywords": [
     "dictionary",
     "wordforms",
@@ -13,11 +24,24 @@
     "morphology",
     "linguistics"
   ],
-  "author": "",
+  "author": "flip kromer and the freeword team",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/mrflip/freeword"
   },
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
   "packageManager": "yarn@4.9.2"
 }

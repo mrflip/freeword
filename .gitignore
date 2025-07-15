@@ -102,13 +102,14 @@ temp/
 ehthumbs.db
 Thumbs.db
 
-
-# Yarn 2 gitignore patterns
-
-.yarn/*
-!.yarn/cache
+# Yarn 2+ (Berry) with nodeLinker: node-modules
+.yarn/
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+!.yarnrc.yml
+node_modules/
+.pnp.*
+

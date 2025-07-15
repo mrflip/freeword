@@ -1,10 +1,6 @@
 {
   "$schema": "https://mochajs.org/schema.json",
-  "comments": [
-    "// \"require\": \"ts-node/register\",",
-    "// Specify 'loader' for native ESM",
-    "// Specify 'require' for CommonJS"
-  ],
+  "parallel": true,
   "loader": "ts-node/esm",
   "extensions": ["ts", "tsx"],
   "spec": [

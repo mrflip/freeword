@@ -2,17 +2,17 @@
   "name": "@freeword/meta",
   "version": "1.0.0",
   "description": "Meta package for Freeword: exports all core types, constants, and utilities from the src/ directory.",
-  "main": "./src/index.js",
-  "types": "./src/index.d.ts",
-  "type": "module",
   "scripts": {
-    "test": "yarn node $(yarn bin mocha) --require ts-node/register ./tests/**/*.test.{js,ts}"
+    "test": "mocha",
+    "twitch": "mocha --watch",
+    "dev": "yarn twitch"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.0",
-    "@types/node": "^20.0.0",
-    "chai": "^4.3.0",
-    "mocha": "^10.0.0",
+    "@types/chai": "^5.2.2",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^24.0.14",
+    "chai": "^5.2.1",
+    "mocha": "^11.7.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
@@ -24,14 +24,24 @@
     "morphology",
     "linguistics"
   ],
-  "author": "",
+  "author": "flip kromer and the freeword team",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/mrflip/freeword"
   },
-  "packageManager": "yarn@4.9.2",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    }
+  },
   "files": [
-    "src/"
-  ]
+    "index.js",
+    "index.d.ts"
+  ],
+  "packageManager": "yarn@4.9.2"
 }

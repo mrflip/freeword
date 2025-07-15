@@ -1,29 +1,30 @@
 {
-  "name": "freeword",
+  "name": "internals",
   "version": "1.0.0",
-  "description": "Open dictionary based on sources of varying quality",
-  "main": "./index.js",
-  "type": "module",
-  "exports": {
-    ".": {
-      "types": "./index.d.ts",
-      "import": "./index.js"
-    },
-    "./db": {
-      "types": "./db/index.d.ts",
-      "import": "./db/index.js"
-    },
-    "./src": {
-      "types": "./src/index.d.ts",
-      "import": "./src/index.js"
-    }
-  },
-  "files": [
-    "index.js",
-    "index.d.ts",
-    "db/",
-    "src/"
+  "description": "Host metarepo for Freeword. You don't want this package unless you're working on the Freeword project: see @freeword/freeword, probably, or the variants in the README.",
+  "private": true,
+  "workspaces": [
+    "repos/*"
   ],
+  "scripts": {
+    "test:x": "yarn workspace @freeword/meta test",
+    "test": "mocha",
+    "twitch": "mocha --watch",
+    "dev": "yarn twitch",
+    "git:yarnicles": "git ci -m 'chore: pkgs + yarnicles' .yarn yarn.lock .yarnrc.yml package.json",
+    "zzlast": "echo commaless"
+  },
+  "devDependencies": {
+    "@freeword/all-byword": "workspace:*",
+    "@freeword/meta": "workspace:*",
+    "@types/chai": "^5.2.2",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^24.0.14",
+    "chai": "^5.2.1",
+    "mocha": "^11.7.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
   "keywords": [
     "dictionary",
     "wordforms",
@@ -32,14 +33,24 @@
     "morphology",
     "linguistics"
   ],
-  "author": "",
+  "author": "flip kromer and the freeword team",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/mrflip/freeword"
   },
-  "packageManager": "yarn@4.9.2",
-  "devDependencies": {
-    "typescript": "^5.8.3"
-  }
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
+  "packageManager": "yarn@4.9.2"
 }
