@@ -5,9 +5,9 @@ __metadata:
   version: 8
   cacheKey: 10c0
 
-"opendict@workspace:.":
+"freeword@workspace:.":
   version: 0.0.0-use.local
-  resolution: "opendict@workspace:."
+  resolution: "freeword@workspace:."
   dependencies:
     typescript: "npm:^5.8.3"
   languageName: unknown

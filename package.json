@@ -1,5 +1,5 @@
 {
-  "name": "opendict",
+  "name": "freeword",
   "version": "1.0.0",
   "description": "Open dictionary based on sources of varying quality",
   "main": "./index.js",

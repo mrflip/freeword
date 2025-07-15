@@ -1,6 +1,6 @@
 {
-  "exclude": ["db/OpendictList.js", "db/OpendictByWord.js", "db/OpendictFlatList.js"],
-  "include": ["src/**/*.ts", "db/**/*.ts", "src/**/*.js", "db/**/*.js"],
+  // "exclude": ["db/FreewordList.js", "db/FreewordByWord.js", "db/FreewordListFlat.js"],
+  "include": ["src/**/*.ts", "db/**/*.ts", "src/**/*.js"],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
 

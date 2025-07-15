@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+  "settings": {
+    "javascript.referencesCodeLens.showOnAllFunctions": false,
+    "javascript.referencesCodeLens.enabled": false,
+    "files.watcherExclude": {
+      "**/db/**/*.js": true
+    },
+    "search.exclude": {
+      "**/db/**/*.js": true
+    },
+    "foldOnOpen.disableFiles": [
+      "**/db/**/*.js"
+    ],
+    "typescript.tsserver.web.typeAcquisition.enabled": true,
+    "typescript.tsserver.web.projectWideIntellisense.enabled": false
+  }
+}

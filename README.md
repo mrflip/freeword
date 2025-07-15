@@ -1,11 +1,11 @@
-# opendict
+# Freeword
 
 Open dictionary with word forms list.
 
 ## Installation
 
 ```bash
-npm install opendict
+npm install @freeword/freeword-all-byword
 ```
 
 ## Usage
@@ -13,27 +13,31 @@ npm install opendict
 ### JavaScript
 
 ```javascript
-import { WordformsList } from 'opendict';
+import { Wordforms } from '@freeword/freeword-all-byword';
 
 // Use WordformsList as needed
-console.log(WordformsList[0]); // First word form entry
+console.log(Wordforms.monkeyshines);
+```
+Name it what you like, or use the namespaced version:
+```
+import { Wordforms as Dictionary } from '@freeword/freeword-all-byword';
 ```
 
 ### TypeScript
 
 ```typescript
-import { WordformsList, WordformT, Poskind, Stemkind } from 'opendict';
+import { Wordforms, type WordformT, type Poskind, type Stemkind } from '@freeword/freeword-all-byword';
 
 // TypeScript provides full type safety
-const entry: WordformT = WordformsList.find(w => w.word === 'aardvark')!;
-console.log(entry.gloss); // "an African mammal"
+const entry: WordformT = Wordforms.aardvark;
+console.log(entry?.gloss); // "an African mammal"
 
 // You can also use specific stemkind types for better type safety
-import { VerbStemkind, NounStemkind } from 'opendict';
-const verbEntry: WordformT & { stemkind: VerbStemkind } = WordformsList.find(w => w.pos === 'verb')!;
+import type { VerbStemkind, NounStemkind } from '@freeword/freeword-all-byword';
+const verbEntry: WordformT & { stemkind: VerbStemkind } = Object.values(Words).filter((word) => (word.pos === 'verb')));
 
 // Import constants and types directly from src
-import { Poskinds, StemkindsForPos, AdjStemkind } from 'opendict/src';
+import { Poskinds, StemkindsForPos, AdjStemkind } from '@freeword/freeword-all-byword';
 ```
 
 ## API
@@ -76,7 +80,7 @@ The package also exports specific types for better type safety:
 The package also exports constants that can be imported from the `/src` subpath:
 
 ```typescript
-import { Poskinds, StemkindsForPos } from 'opendict/src';
+import { Poskinds, StemkindsForPos } from 'freeword/src';
 
 // Poskinds: Array of all part of speech types
 // StemkindsForPos: Mapping of part of speech to available stemkinds
