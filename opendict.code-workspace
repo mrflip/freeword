@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+  "settings": {
+    "javascript.referencesCodeLens.showOnAllFunctions": false,
+    "javascript.referencesCodeLens.enabled": false
+  }
+}

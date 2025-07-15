@@ -1,0 +1,45 @@
+{
+  "name": "opendict",
+  "version": "1.0.0",
+  "description": "Open dictionary based on sources of varying quality",
+  "main": "./index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    },
+    "./db": {
+      "types": "./db/index.d.ts",
+      "import": "./db/index.js"
+    },
+    "./src": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "db/",
+    "src/"
+  ],
+  "keywords": [
+    "dictionary",
+    "wordforms",
+    "language",
+    "typescript",
+    "morphology",
+    "linguistics"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "packageManager": "yarn@4.9.2",
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
