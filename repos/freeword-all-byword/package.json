@@ -1,0 +1,23 @@
+{
+  "name": "@freeword/all-byword",
+  "version": "1.0.0",
+  "description": "Open dictionary from the freeword project. This package contains wordforms indexed by specific term.",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "type": "module",
+  "keywords": [
+    "dictionary",
+    "wordforms",
+    "language",
+    "typescript",
+    "morphology",
+    "linguistics"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "packageManager": "yarn@4.9.2"
+}

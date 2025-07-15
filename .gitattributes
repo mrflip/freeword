@@ -1,2 +1,5 @@
 db/* filter=lfs diff=lfs merge=lfs -text
 db/WordformsList.js filter=lfs diff=lfs merge=lfs -text
+repos/freeword-all-byword/db/freeword-all-byword.js filter=lfs diff=lfs merge=lfs -text
+repos/freeword-all-byword/db/index.js filter=lfs diff=lfs merge=lfs -text
+repos/*/db/*.js filter=lfs diff=lfs merge=lfs -text

@@ -1,0 +1,37 @@
+{
+  "name": "@freeword/meta",
+  "version": "1.0.0",
+  "description": "Meta package for Freeword: exports all core types, constants, and utilities from the src/ directory.",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "test": "yarn node $(yarn bin mocha) ./tests/**/*.test.js"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^20.0.0",
+    "chai": "^4.3.0",
+    "mocha": "^10.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.8.3"
+  },
+  "keywords": [
+    "dictionary",
+    "wordforms",
+    "language",
+    "typescript",
+    "morphology",
+    "linguistics"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "packageManager": "yarn@4.9.2",
+  "files": [
+    "src/"
+  ]
+}
