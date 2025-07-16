@@ -1,7 +1,7 @@
 import      _                                /**/ from 'lodash'
 import NodeFSP                                    from 'node:fs/promises'
 import PathUtils                                  from 'node:path'
-// import   * as UF                               from '../lib/UF.ts'
+// import   * as UF                               from './UF.ts'
 import type * as TY                               from '../types.ts'
 import type * as FT                               from './FilerTypes.ts'
 
@@ -121,7 +121,6 @@ export async function* starlines(anypath: FT.Anypath): AsyncGenerator<string, FT
   } catch (err) {
     return badOutcome(err as Error, 'readErr', 'Issue opening file', { args: anypath }, pathinfo)
   }
-
   try {
     const buffer = Buffer.alloc(4096)
     let leftover = ''
@@ -130,19 +129,17 @@ export async function* starlines(anypath: FT.Anypath): AsyncGenerator<string, FT
       if (bytesRead === 0) { break }
       const chunk = leftover + buffer.toString('utf8', 0, bytesRead)
       const lines = chunk.split('\n')
+      leftover = lines.pop()!
       // Yield all complete lines except the last one (which might be incomplete)
-      for (let i = 0; i < lines.length - 1; i++) {
+      for (const line of lines) {
         try {
-          yield lines[i]
+          yield line
         } catch (err) {
           const outcome = badOutcome(err as Error, 'callerErr', 'Error processing line', { filepath: pathinfo.abspath, args: anypath })
           throw outcome.err
         }
       }
-      // Keep the last line as leftover (might be incomplete)
-      leftover = lines[lines.length - 1]
     }
-
     // Yield the final line if there's anything left
     if (leftover) {
       try {

@@ -8,6 +8,8 @@ export type AnyBag = Bag<any>
 export type StrBag = Bag<string>
 /** String or we'll figure it out for you */
 export type StringMaybe = string | null | undefined
+/** A string that starts with [a-zA-Z] and has only [a-zA-Z0-9_] */
+export type Fieldname = string // & { _: 'Fieldname' }
 
 export interface ExtError extends Error {
   extensions: AnyBag,

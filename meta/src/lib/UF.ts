@@ -1,8 +1,11 @@
 import      _                                /**/ from 'lodash'
 import      * as NodeUtil                         from 'node:util'
-import type * as TY                               from '../lib/types.ts'
+import type * as TY                               from '../types.ts'
 export      { sprintf, vsprintf }                 from 'sprintf-js'
 import      { nextTick }                          from 'node:process'
+import      { A2Zlos }                      from '../lexicon/LexiconConsts.ts'
+//
+export      *                                      from './Rot13.ts'
 
 export type ObjKey        = string          | symbol
 export type ClxnKey       = string | number | symbol
@@ -11,16 +14,15 @@ export type ObjKVFunc<RT,  VT = any, KT extends ClxnKey = string> = (value: VT, 
 export type ArrKVFunc<RT,  VT = any>                              = (value: VT, keyOrIndex: number,      index: number, ...args: any) => RT
 export type KVFunc<RT,     VT = any, KT = string | number>        = (value: VT, keyOrIndex: KT, index: number, ...args: any) => RT
 
-export const AlphabetList: readonly TY.A2Z[] = 'abcdefghijklmnopqrstuvwxyz'.split('') as readonly TY.A2Z[]
-export function alphabetLookupBag<VT>(seed: VT | ((ltr: TY.A2Z) => VT)): TY.A2ZBag<VT> {
+/** @returns a bag with keys a, b, ... z and values of type VT */
+export function alphabetLookupBag<VT>(seed: VT | ((ltr: TY.A2Zlo) => VT)): Record<TY.A2Zlo, VT> {
   if (_.isFunction(seed)) {
-    return objectify(AlphabetList, (ltr) => seed(ltr))
+    return objectify(A2Zlos, (ltr) => seed(ltr))
   }
-  return objectify(AlphabetList, () => (seed))
+  return objectify(A2Zlos, () => (seed))
 }
 
-/**
- * Assign a **non-enumerable**, writable, configurable property to an object
+/** Assign a **non-enumerable**, writable, configurable property to an object
  * See also {@link setNormalProp} and {@link decorate}
  * @param   obj     - The object to decorate
  * @param   key     - The key to decorate the object with
@@ -31,8 +33,7 @@ export function adorn<VT>(obj: object, key: string, value: VT): VT {
   Object.defineProperty(obj, key, { value, enumerable: false, writable: false, configurable: true })
   return value
 }
-/**
- * Assign an enumerable, writable, configurable property to an object
+/** Assign an enumerable, writable, configurable property to an object
  * See also {@link adorn} and {@link decorate}
  * @param   obj     - The object to decorate
  * @param   key     - The key to decorate the object with
@@ -57,8 +58,7 @@ export function setHiddenProps<OT extends Record<string, any>, VT extends Record
   })
   return obj as OT & VT
 }
-/**
- * Assign non-enumerable, writable, configurable properties to an object
+/** Assign non-enumerable, writable, configurable properties to an object
  * See also {@link adorn} and {@link decorate}
  * @param   obj - The object to decorate
  * @param   vals - The values to decorate the object with
@@ -71,8 +71,7 @@ export function decorate<OT extends Record<string, any>, VT extends Record<strin
   return obj as OT & VT
 }
 
-/**
- * Get the own properties of an object
+/** Get the own properties of an object
  *
  * @param   obj - The object to get the own properties of
  * @returns       The own properties of the object; empty object if nil
@@ -82,8 +81,7 @@ export function ownProps(obj: object): TY.Bag<TypedPropertyDescriptor<any>> {
   return Object.getOwnPropertyDescriptors(obj)
 }
 
-/**
- * Get the own property names of an object
+/** Get the own property names of an object
  *
  * @param   obj - The object to get the own property names of
  * @returns       The own property names of the object; empty array if nil
@@ -93,8 +91,7 @@ export function ownPropnames(obj: object): string[] {
   return Object.getOwnPropertyNames(obj)
 }
 
-/**
- * Get the property names of the **first parent prototype** of an object
+/** Get the property names of the **first parent prototype** of an object
  *
  * @param   obj - The object to get the prototype property names of
  * @returns       The prototype property names of the object; empty array if nil
@@ -105,8 +102,7 @@ export function protoPropnames(obj: object): string[] {
   return ownPropnames(proto)
 }
 
-/**
- * Get the property descriptor of a property of the **first parent prototype** of an object
+/** Get the property descriptor of a property of the **first parent prototype** of an object
  *
  * @param   obj       - The object to get the property descriptor of
  * @param   propname  - The name of the property to get the descriptor of
@@ -116,8 +112,7 @@ export function protoProp<VT>(obj: object, propname: TY.Fieldname): TypedPropert
   return Object.getOwnPropertyDescriptor(Object.getPrototypeOf(obj), propname)
 }
 
-/**
- * Get the property descriptor of a property of an object
+/** Get the property descriptor of a property of an object
  *
  * @param   obj       - The object to get the property descriptor of
  * @param   propname  - The name of the property to get the descriptor of
@@ -127,8 +122,7 @@ export function ownProp<VT>(obj: object, propname: TY.Fieldname): TypedPropertyD
   return Object.getOwnPropertyDescriptor(obj, propname)
 }
 
-/**
- * Get the first property descriptor found ascending the prototype chain
+/** Get the first property descriptor found ascending the prototype chain
  * for a given property name
  *
  * @param   obj       - The object to get the property descriptor of

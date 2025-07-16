@@ -13,7 +13,7 @@ const jestConfig: JestConfigWithTsJest = {
   testPathIgnorePatterns: ['<rootDir>/tmp/', '<rootDir>/node_modules/'],
   // extensionsToTreatAsEsm: ['.ts'],
 
-  roots:                ['src', 'db', 'tests'],            // Directories Jest should search for files and tests
+  roots:                ['meta/src', 'db', 'tests'],            // Directories Jest should search for files and tests
   moduleFileExtensions: ['js', 'ts', 'json', 'node', 'eta'],      // reload on eta files too
   setupFilesAfterEnv:   ['./tests/setupFilesAfterEnv.ts'],        // A list of paths to modules that run some code to configure or set up the testing framework before each test
   snapshotResolver:      '<rootDir>/tests/snapshotResolver.cjs',  // don't pollute the code dirs with snapshot artifacts
@@ -26,8 +26,13 @@ const jestConfig: JestConfigWithTsJest = {
   //   '!**/*.d.ts',
   // ],
   moduleNameMapper: {
-    '^@/db/(.*)$': '<rootDir>/db/$1',
-    '^@/(.*)$': '<rootDir>/src/$1',
+    '^@freeword/meta$': '<rootDir>/meta/src',
+    '^@freeword/meta/(.*)$': '<rootDir>/meta/src/$1',
+    '^@freeword/all-byword$': '<rootDir>/repos/freeword-all-byword',
+    '^@freeword/all-byword/(.*)$': '<rootDir>/repos/freeword-all-byword/$1',
+    // Remove or comment out the old '@/...' mappings to src
+    // '^@/db/(.*)$': '<rootDir>/db/$1',
+    // '^@/(.*)$': '<rootDir>/src/$1',
   },
   // tsconfig: 'tsconfig.test.json',
 }

@@ -4,6 +4,7 @@
   "description": "Host metarepo for Freeword. You don't want this package unless you're working on the Freeword project: see @freeword/freeword, probably, or the variants in the README.",
   "private": true,
   "workspaces": [
+    "meta",
     "repos/*"
   ],
   "scripts": {

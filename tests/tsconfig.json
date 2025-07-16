@@ -18,8 +18,15 @@
     // "noImplicitOverride":                 false,
     // "noUnusedLocals":                     false,
     //
-    // "paths": { "@": ["../src"], "@/*": ["../src/*"] },
-    //
+    "paths": {
+      "@freeword/meta": ["../meta/src/index.ts"],
+      "@freeword/meta/*": ["../meta/src/*"],
+      "@freeword/all-byword": ["../repos/freeword-all-byword/index.ts"],
+      "@freeword/all-byword/*": ["../repos/freeword-all-byword/*"]
+      // Remove or comment out the old '@/...' mappings
+      // "@": ["../src"],
+      // "@/*": ["../src/*"]
+    },
     "types":                              ["./testGlobals.d.ts", "jest", "chai", "node", "sinon", "snowball-stemmers"],
     "noErrorTruncation":                  false  // true to see super-long error messages
   }

@@ -1,42 +1,41 @@
 import      _                                /**/ from 'lodash'
 import      { expect }                            from 'chai'
-import type * as TY                               from '@/lib/types.ts'
-import      * as UF                               from '@/lib/UF.js'
-import      * as Bitflicker                       from '@/lib/Bitflicker.js'
-import { ExampleGamekeys, ExampleWords, NotGameWords, type ExampleGamename } from './Fixtures.ts'
-import { prettyGamebits, prettyWordbits, digestGameword, wayDigestGameword, ltrsForGamebits } from '@/lib/Bitflicker.js'
+import type * as TY                               from '@freeword/meta'
+import      * as UF                               from '@freeword/meta'
+import      { Wordbits }                          from '@freeword/meta'
+import      { ExampleGamekeys, ExampleWords, NotGameWords, type ExampleGamename } from './Fixtures.ts'
 
-describe('Bitflicker', () => {
+describe('Wordbits', () => {
   const AllGameWords: TY.Word[] = _.uniq(_.flatMap(ExampleWords, _.values).sort())
 
   describe('wordbitsForWord', () => {
     it('should convert a word to a bitfield', () => {
       //                                                    zy_xwvu_tsrq_ponm_lkji_hgfe_dcba
-      expect(Bitflicker.wordbitsForWord('abc'   )).to.equal(0b00_0000_0000_0000_0000_0000_0111)
-      expect(Bitflicker.wordbitsForWord('zij'   )).to.equal(0b10_0000_0000_0000_0011_0000_0000)
-      expect(Bitflicker.wordbitsForWord('abczij')).to.equal(0b10_0000_0000_0000_0011_0000_0111)
+      expect(Wordbits.wordbitsForWord('abc'   )).to.equal(0b00_0000_0000_0000_0000_0000_0111)
+      expect(Wordbits.wordbitsForWord('zij'   )).to.equal(0b10_0000_0000_0000_0011_0000_0000)
+      expect(Wordbits.wordbitsForWord('abczij')).to.equal(0b10_0000_0000_0000_0011_0000_0111)
     })
     it('gives same results with dupes', () => {
       //                                                    zy_xwvu_tsrq_ponm_lkji_hgfe_dcba
-      expect(Bitflicker.wordbitsForWord('abcabcaaaa')).to.equal(0b00_0000_0000_0000_0000_0000_0111)
-      expect(Bitflicker.wordbitsForWord('zijjijizzz')).to.equal(0b10_0000_0000_0000_0011_0000_0000)
+      expect(Wordbits.wordbitsForWord('abcabcaaaa')).to.equal(0b00_0000_0000_0000_0000_0000_0111)
+      expect(Wordbits.wordbitsForWord('zijjijizzz')).to.equal(0b10_0000_0000_0000_0011_0000_0000)
     })
   })
 
   describe('hitForLexmask', () => {
     it.each(_.entries(ExampleGamekeys))('should return true for all words in the %s game', (gamename, gamekey) => {
-      const { lexmask } = Bitflicker.digestGamekey(gamekey)
+      const { lexmask } = Wordbits.digestGamekey(gamekey)
       _.each(ExampleWords[gamename], (word) => {
-        const result = Bitflicker.hitForLexmask(lexmask, Bitflicker.wordbitsForWord(word))
+        const result = Wordbits.hitForLexmask(lexmask, Wordbits.wordbitsForWord(word))
         expect(result).to.be.true
       })
     })
     it.each(_.entries(ExampleGamekeys))('should return false for all words not accepted by the %s game', (gamename, gamekey) => {
-      const { lexmask } = Bitflicker.digestGamekey(gamekey)
-      // const notwords = _.reject(AllGameWords, (word) => (Bitflicker.hitForLexmask(lexmask, Bitflicker.wordbitsForWord(word)) || (word.length > 14)))
+      const { lexmask } = Wordbits.digestGamekey(gamekey)
+      // const notwords = _.reject(AllGameWords, (word) => (Wordbits.hitForLexmask(lexmask, Wordbits.wordbitsForWord(word)) || (word.length > 14)))
       // console.log(UF.prettifyInChunks(notwords, { colwd: 16, chunkSize: 6, key: gamename }))
       _.each(NotGameWords[gamename], (word) => {
-        const result = Bitflicker.hitForLexmask(lexmask, Bitflicker.wordbitsForWord(word))
+        const result = Wordbits.hitForLexmask(lexmask, Wordbits.wordbitsForWord(word))
         expect(result).to.be.false
       })
     })
@@ -46,7 +45,7 @@ describe('Bitflicker', () => {
     // const gamebags = _.entries(ExampleGamekeys)
     const gamebags = _.entries(_.pick(ExampleGamekeys, 'monkeyshines'))
     it.each(gamebags)('should convert %s gameltrs to a uniqarr', (gamename, gamekey) => {
-      const { gameltrs, gamebitsTable } = Bitflicker.digestGamekey(gamekey)
+      const { gameltrs, gamebitsTable } = Wordbits.digestGamekey(gamekey)
       const words = ExampleWords[gamename]
       _.each(words, (word) => {
         const digested = digestGameword(word, gamebitsTable)
@@ -66,7 +65,7 @@ describe('Bitflicker', () => {
 
     describe('DigestedExamples', () => {
       // align with (uniqarr|dupearr|\w+bits):
-      const DigestedExamples: Record<TY.Word, Bitflicker.WayDigestedWord> = {
+      const DigestedExamples: Record<TY.Word, Wordbits.WayDigestedWord> = {
         monkeyshines: { word: 'monkeyshines', uniqarr: 'ehikmnosy'.split(''), beg: 'm', end: 's', uniqstr: 'ehikmnosy', dupestr: 'ens',  missstr: 'afr',        headstr: 'ehikmnoy', midstr: 'ehiknoy', tailstr: 'ehiknosy', dupearr: 'ens'.split(''),  gamebits: 0b1101_1111_1010, missbits: 0b0010_0000_0101, midbits: 0b1001_1011_1010, headbits: 0b1001_1111_1010, tailbits: 0b1101_1011_1010, begbits: 0b0000_0100_0000, endbits: 0b0100_0000_0000 },
         mom:          { word: 'mom',          uniqarr: 'mo'.split(''),        beg: 'm', end: 'm', uniqstr: 'mo',        dupestr: 'm',    missstr: 'aefhiknrsy', headstr: 'o',        midstr: 'o',       tailstr: 'o',        dupearr: 'm'.split(''),    gamebits: 0b0001_0100_0000, missbits: 0b1110_1011_1111, midbits: 0b0001_0000_0000, headbits: 0b0001_0000_0000, tailbits: 0b0001_0000_0000, begbits: 0b0000_0100_0000, endbits: 0b0000_0100_0000 },
         mon:          { word: 'mon',          uniqarr: 'mno'.split(''),       beg: 'm', end: 'n', uniqstr: 'mno',       dupestr: '',     missstr: 'aefhikrsy',  headstr: 'mo',       midstr: 'o',       tailstr: 'no',       dupearr: ''.split(''),     gamebits: 0b0001_1100_0000, missbits: 0b1110_0011_1111, midbits: 0b0001_0000_0000, headbits: 0b0001_0100_0000, tailbits: 0b0001_1000_0000, begbits: 0b0000_0100_0000, endbits: 0b0000_1000_0000 },
@@ -76,7 +75,7 @@ describe('Bitflicker', () => {
         sermonisers:  { word: 'sermonisers',  uniqarr: 'eimnors'.split(''),   beg: 's', end: 's', uniqstr: 'eimnors',   dupestr: 'erss', missstr: 'afhky',      headstr: 'eimnor',   midstr: 'eimnor',  tailstr: 'eimnor',   dupearr: 'erss'.split(''), gamebits: 0b0111_1101_0010, missbits: 0b1000_0010_1101, midbits: 0b0011_1101_0010, headbits: 0b0011_1101_0010, tailbits: 0b0011_1101_0010, begbits: 0b0100_0000_0000, endbits: 0b0100_0000_0000 },
         sermonises:   { word: 'sermonises',   uniqarr: 'eimnors'.split(''),   beg: 's', end: 's', uniqstr: 'eimnors',   dupestr: 'ess',  missstr: 'afhky',      headstr: 'eimnor',   midstr: 'eimnor',  tailstr: 'eimnor',   dupearr: 'ess'.split(''),  gamebits: 0b0111_1101_0010, missbits: 0b1000_0010_1101, midbits: 0b0011_1101_0010, headbits: 0b0011_1101_0010, tailbits: 0b0011_1101_0010, begbits: 0b0100_0000_0000, endbits: 0b0100_0000_0000 },
       }
-      const { gamebitsTable } = Bitflicker.digestGamekey(ExampleGamekeys.monkeyshines)
+      const { gamebitsTable } = Wordbits.digestGamekey(ExampleGamekeys.monkeyshines)
       // console.log(UF.prettify(_.mapValues(DigestedExamples, (_x, word) => {
       //   const { word:_w, uniqarr, dupearr, gamebits, missbits, midbits, headbits, tailbits, begbits, endbits, ...rest } = wayDigestGameword(word, gamebitsTable)
       //   return { word, ...rest, uniqarr: uniqarr.join(''), dupearr: dupearr.join(''), gamebits: prettyGamebits(gamebits), missbits: prettyGamebits(missbits), midbits: prettyGamebits(midbits), headbits: prettyGamebits(headbits), tailbits: prettyGamebits(tailbits), begbits: prettyGamebits(begbits), endbits: prettyGamebits(endbits) }
@@ -101,10 +100,10 @@ describe('Bitflicker', () => {
   describe('wordbitsForGameltrs', () => {
     it.each(_.entries(ExampleGamekeys))('should convert %s gameltrs to a wordbits and lexmask', (gamename, gamekey) => {
       // console.log(UF.prettify(_.mapValues(ExampleGamekeys, (gamekey) => {
-      //   const  { gameltrs, wordbits, lexmask } = Bitflicker.digestGamekey(gamekey);
+      //   const  { gameltrs, wordbits, lexmask } = Wordbits.digestGamekey(gamekey);
       //   return { gamekey, gameltrs: gameltrs.join(''), wordbits: prettyWordbits(wordbits), lexmask: prettyWordbits(lexmask) }
       // })))
-      const result = Bitflicker.digestGamekey(gamekey)
+      const result = Wordbits.digestGamekey(gamekey)
       const wanted = ExpectedWordbits[gamename]
       expect(result).property('gameltrs').to.eql(wanted.ltrstr.split(''))
       expect(result).property('gamekey').to.equal(gamekey)
@@ -124,7 +123,7 @@ describe('Bitflicker', () => {
     })
     it('should produce a 26-bit number as a string with separators', () => {
       _.each(AllGameWords, (word) => {
-        const wordbits = Bitflicker.wordbitsForWord(word)
+        const wordbits = Wordbits.wordbitsForWord(word)
         const result = prettyWordbits(wordbits)
         const plain  = result.replaceAll(/[_]/g, '')
         expect(result).to.match(/^0b[01]{2}_[01]{4}_[01]{4}_[01]{4}_[01]{4}_[01]{4}_[01]{4}$/)
@@ -137,10 +136,10 @@ describe('Bitflicker', () => {
     const numbers = _.range(0, 2**12)
     it('should count bits in a 12-bit number', () => {
       const naive1     = _.map(numbers, countBits14Naive)
-      const magic1     = _.map(numbers, Bitflicker.countBits14Magic)
+      const magic1     = _.map(numbers, Wordbits.countBits14Magic)
       const noop1      = _.map(numbers, _.noop)
       const naive2     = _.map(numbers, countBits14Naive)
-      const magic2     = _.map(numbers, Bitflicker.countBits14Magic)
+      const magic2     = _.map(numbers, Wordbits.countBits14Magic)
       const noop2      = _.map(numbers, _.noop)
       const naiveStart = performance.now()
       const naive3a    = _.map(numbers, countBits14Naive)
@@ -149,10 +148,10 @@ describe('Bitflicker', () => {
       const naive3d    = _.map(numbers, countBits14Naive)
       const naiveTime  = performance.now() - naiveStart
       const magicStart = performance.now()
-      const magic3a    = _.map(numbers, Bitflicker.countBits14Magic)
-      const magic3b    = _.map(numbers, Bitflicker.countBits14Magic)
-      const magic3c    = _.map(numbers, Bitflicker.countBits14Magic)
-      const magic3d    = _.map(numbers, Bitflicker.countBits14Magic)
+      const magic3a    = _.map(numbers, Wordbits.countBits14Magic)
+      const magic3b    = _.map(numbers, Wordbits.countBits14Magic)
+      const magic3c    = _.map(numbers, Wordbits.countBits14Magic)
+      const magic3d    = _.map(numbers, Wordbits.countBits14Magic)
       const magicTime  = performance.now() - magicStart
       const noopStart  = performance.now()
       const noop3a     = _.map(numbers, _.noop)
@@ -171,7 +170,7 @@ describe('Bitflicker', () => {
       const pow2fromto12   = _.range(0, 2**12)
       const naive     = [
         ..._.map(numbers, countBits28Naive),
-      const magic     = _.map(numbers, Bitflicker.countBits28)
+      const magic     = _.map(numbers, Wordbits.countBits28)
       expect(magic).to.eql(naive)
     })
   })

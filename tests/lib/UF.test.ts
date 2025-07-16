@@ -1,6 +1,6 @@
 import      _                                /**/ from 'lodash'
 import      { expect }                            from 'chai'
-import      * as UF                              from '../../src/lib/UF.ts'
+import      * as UF                              from '../../meta/src/lib/UF.ts'
 
 describe('UF', () => {
   describe('AlphabetList', () => {
