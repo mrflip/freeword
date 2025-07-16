@@ -3,17 +3,30 @@
   "version": "1.0.0",
   "description": "A Practical Dictionary, containing all(*) words in our collection, exported as a lookup table by word. Has useful metadata assembled from freely licensed sources of varying quality. (*) About 1000 highly offensive words are omitted, but available from @freeword/offensive; see the README for details.",
   "scripts": {
-    "test": "mocha",
-    "twitch": "mocha --watch",
-    "dev": "yarn twitch"
+    "test": "           yarn node --experimental-vm-modules                      $(yarn bin jest)",
+    "test:plain": "     yarn node --experimental-vm-modules --enable-source-maps $(yarn bin jest)",
+    "test:coverage": "  yarn node --experimental-vm-modules --enable-source-maps $(yarn bin jest) --coverage",
+    "test:watch": "     yarn node --experimental-vm-modules --enable-source-maps $(yarn bin jest) --watch",
+    "twitch": "         yarn node --experimental-vm-modules --enable-source-maps $(yarn bin jest) --watch"
+  },
+  "dependencies": {
+    "@freeword/meta": "workspace:*"
   },
   "devDependencies": {
+    "@jest/globals": "^30.0.4",
+    "@jest/types": "^30.0.1",
     "@types/chai": "^5.2.2",
-    "@types/mocha": "^10.0.10",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.0.14",
+    "@types/sinon": "^17.0.4",
+    "@types/sinon-chai": "^4.0.0",
     "chai": "^5.2.1",
-    "mocha": "^11.7.1",
-    "ts-node": "^10.9.2",
+    "jest": "^30.0.2",
+    "jest-util": "^30.0.2",
+    "sinon": "^21.0.0",
+    "sinon-chai": "^4.0.0",
+    "ts-jest": "^29.4.0",
+    "ts-jest-resolver": "^2.0.1",
     "typescript": "^5.8.3"
   },
   "keywords": [
@@ -28,7 +41,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mrflip/freeword"
+    "url": "git+https://github.com/mrflip/freeword.git"
   },
   "type": "module",
   "main": "./index.js",

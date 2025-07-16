@@ -1,5 +1,5 @@
-import type { WordformT } from "../src/WordformTypes"
+import type { WordformT } from "@freeword/meta"
 
 /** Lookup table of word forms by word */
-export declare const FreewordAllByWord: readonly { [key: string]: WordformT }
-export declare const Wordforms: typeof FreewordAllByWord
+export declare const WordformsAllByWord: readonly { [key: string]: WordformT }
+export default       WordformsAllByWord

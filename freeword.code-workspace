@@ -17,6 +17,39 @@
       "**/db/**/*.js"
     ],
     "typescript.tsserver.web.typeAcquisition.enabled": true,
-    "typescript.tsserver.web.projectWideIntellisense.enabled": false
+    "typescript.tsserver.web.projectWideIntellisense.enabled": false,
+
+    "maptz.regionfolder": {
+      "collapseDefaultRegionsOnOpen": true,
+      "[typescript]": {
+        "foldEnd":               "// --",
+        "foldEndRegex":          "^[\\s]*/[/\\*] --.*",
+        "foldStart":             "/* == [NAME] */",
+        "foldStartRegex":        "^[\\s]*/[/\\*][\\s]*==+ .*$",
+        "defaultFoldStartRegex": "^([\\s]*/[/\\*][\\s]*==+ \\[[\\w]+|^ +describe\\().*$"
+      },
+      "[javascript]": {
+        "foldEnd":               "// --",
+        "foldEndRegex":          "^[\\s]*/[/\\*] --.*",
+        "foldStart":             "/* == [NAME] */",
+        "foldStartRegex":        "^[\\s]*/[/\\*][\\s]*==+ .*$",
+        "defaultFoldStartRegex": "^([\\s]*/[/\\*][\\s]*==+ \\[[\\w]+|^ +describe\\().*$"
+      },
+      "[eta]": {
+        "foldEnd":               "// --",
+        "foldEndRegex":          "^[\\s]*/[/\\*] --.*",
+        "foldStart":             "/* == [NAME] */",
+        "foldStartRegex":        "^[\\s]*/[/\\*][\\s]*==+ .*$",
+        "defaultFoldStartRegex": "^([\\s]*/[/\\*][\\s]*==+ \\[[\\w]+|^ +describe\\().*$"
+      },
+      "[graphql]": {
+        "foldEnd":               "# --",
+        "foldEndRegex":          "^[\\s]*#+ --.*",
+        "foldStart":             "# == [NAME]",
+        "foldStartRegex":        "^[\\s]*#+ .*$",
+        "defaultFoldStartRegex": "^([\\s]*#+[\\s]*==+ \\[[\\w]+)"
+      }
+    },
+
   }
 }

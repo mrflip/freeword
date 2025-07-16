@@ -16,16 +16,16 @@ describe('@freeword/meta package', () => {
       expect(FreewordMeta.Poskinds).to.include('art')
     })
 
-    it('should export StemkindsForPos object', () => {
-      expect(FreewordMeta.StemkindsForPos).to.be.an('object')
-      expect(FreewordMeta.StemkindsForPos).to.have.property('adj')
-      expect(FreewordMeta.StemkindsForPos).to.have.property('noun')
-      expect(FreewordMeta.StemkindsForPos).to.have.property('verb')
-      expect(FreewordMeta.StemkindsForPos).to.have.property('adv')
+    it('should export PosStemkinds object', () => {
+      expect(FreewordMeta.PosStemkinds).to.be.an('object')
+      expect(FreewordMeta.PosStemkinds).to.have.property('adj')
+      expect(FreewordMeta.PosStemkinds).to.have.property('noun')
+      expect(FreewordMeta.PosStemkinds).to.have.property('verb')
+      expect(FreewordMeta.PosStemkinds).to.have.property('adv')
     })
 
     it('should have valid stemkinds for adjectives', () => {
-      const adjStemkinds = FreewordMeta.StemkindsForPos.adj
+      const adjStemkinds = FreewordMeta.PosStemkinds.adj
       expect(adjStemkinds).to.be.an('array')
       expect(adjStemkinds).to.include('adj_core')
       expect(adjStemkinds).to.include('adj_ier')
@@ -35,7 +35,7 @@ describe('@freeword/meta package', () => {
     })
 
     it('should have valid stemkinds for nouns', () => {
-      const nounStemkinds = FreewordMeta.StemkindsForPos.noun
+      const nounStemkinds = FreewordMeta.PosStemkinds.noun
       expect(nounStemkinds).to.be.an('array')
       expect(nounStemkinds).to.include('n_core')
       expect(nounStemkinds).to.include('n_sing')
@@ -44,7 +44,7 @@ describe('@freeword/meta package', () => {
     })
 
     it('should have valid stemkinds for verbs', () => {
-      const verbStemkinds = FreewordMeta.StemkindsForPos.verb
+      const verbStemkinds = FreewordMeta.PosStemkinds.verb
       expect(verbStemkinds).to.be.an('array')
       expect(verbStemkinds).to.include('v_core')
       expect(verbStemkinds).to.include('v_ing')
@@ -53,7 +53,7 @@ describe('@freeword/meta package', () => {
     })
 
     it('should have valid stemkinds for adverbs', () => {
-      const advStemkinds = FreewordMeta.StemkindsForPos.adv
+      const advStemkinds = FreewordMeta.PosStemkinds.adv
       expect(advStemkinds).to.be.an('array')
       expect(advStemkinds).to.include('adv_core')
       expect(advStemkinds).to.include('adv_ly')
@@ -62,9 +62,9 @@ describe('@freeword/meta package', () => {
   })
 
   describe('Structure validation', () => {
-    it('should have all poskinds in StemkindsForPos', () => {
+    it('should have all poskinds in PosStemkinds', () => {
       const poskinds = FreewordMeta.Poskinds
-      const stemkindsForPos = FreewordMeta.StemkindsForPos
+      const stemkindsForPos = FreewordMeta.PosStemkinds
 
       poskinds.forEach(poskind => {
         expect(stemkindsForPos).to.have.property(poskind)
@@ -73,7 +73,7 @@ describe('@freeword/meta package', () => {
     })
 
     it('should have consistent stemkind prefixes', () => {
-      const stemkindsForPos = FreewordMeta.StemkindsForPos
+      const stemkindsForPos = FreewordMeta.PosStemkinds
 
       // Check that adj stemkinds start with 'adj_'
       stemkindsForPos.adj.forEach(stemkind => {

@@ -11,7 +11,7 @@ describe('@freeword/meta package structure', () => {
   it('should have expected top-level exports', () => {
     const expectedExports = [
       'Poskinds',
-      'StemkindsForPos'
+      'PosStemkinds'
     ]
 
     expectedExports.forEach(exportName => {
@@ -22,7 +22,7 @@ describe('@freeword/meta package structure', () => {
   it('should not have unexpected properties', () => {
     const allowedProps = [
       'Poskinds',
-      'StemkindsForPos',
+      'PosStemkinds',
       'default' // ESM default export
     ]
 
@@ -34,16 +34,16 @@ describe('@freeword/meta package structure', () => {
   it('should have immutable constants', () => {
     // Test that constants are not accidentally mutable
     const originalPoskinds = [...FreewordMeta.Poskinds]
-    const originalStemkindsForPos = JSON.parse(JSON.stringify(FreewordMeta.StemkindsForPos))
+    const originalStemkindsForPos = JSON.parse(JSON.stringify(FreewordMeta.PosStemkinds))
 
     expect(FreewordMeta.Poskinds).to.deep.equal(originalPoskinds)
-    expect(FreewordMeta.StemkindsForPos).to.deep.equal(originalStemkindsForPos)
+    expect(FreewordMeta.PosStemkinds).to.deep.equal(originalStemkindsForPos)
   })
 
   it('should support destructuring imports', () => {
-    const { Poskinds, StemkindsForPos } = FreewordMeta
+    const { Poskinds, PosStemkinds } = FreewordMeta
 
     expect(Poskinds).to.be.an('array')
-    expect(StemkindsForPos).to.be.an('object')
+    expect(PosStemkinds).to.be.an('object')
   })
 })

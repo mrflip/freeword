@@ -5,7 +5,9 @@
   "scripts": {
     "test": "mocha",
     "twitch": "mocha --watch",
-    "dev": "yarn twitch"
+    "dev": "yarn twitch",
+    "publish:public": "yarn npm publish --access public",
+    "publish:public-npm": "npm publish --access public"
   },
   "devDependencies": {
     "@types/chai": "^5.2.2",
@@ -28,7 +30,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mrflip/freeword"
+    "url": "git+https://github.com/mrflip/freeword.git"
   },
   "type": "module",
   "main": "./index.js",

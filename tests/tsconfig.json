@@ -1,0 +1,26 @@
+{
+  "$schema":  "https://json.schemastore.org/tsconfig",
+  "display":  "Node 23",
+  "exclude":  ["node_modules", "built", "**/built/**/*", "built/**/*", "**/.yarn/**/*", "**/aside/**/*"],
+  "extends":  "../tsconfig.json",
+  //
+  "compilerOptions": {
+    "tsBuildInfoFile":                    "../.tsbuildinfo-freeword-tests",
+    "outDir":                             "../built-freeword-tests",
+    "rootDir":                            "..",
+    //
+    "noEmit":                             true,
+    "composite":                          false,
+    "isolatedModules":                    true,
+
+    // Strictness settings
+    // "noImplicitAny":                      false,
+    // "noImplicitOverride":                 false,
+    // "noUnusedLocals":                     false,
+    //
+    // "paths": { "@": ["../src"], "@/*": ["../src/*"] },
+    //
+    "types":                              ["./testGlobals.d.ts", "jest", "chai", "node", "sinon", "snowball-stemmers"],
+    "noErrorTruncation":                  false  // true to see super-long error messages
+  }
+}

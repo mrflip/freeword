@@ -37,7 +37,7 @@ import type { VerbStemkind, NounStemkind } from '@freeword/freeword-all-byword';
 const verbEntry: WordformT & { stemkind: VerbStemkind } = Object.values(Words).filter((word) => (word.pos === 'verb')));
 
 // Import constants and types directly from src
-import { Poskinds, StemkindsForPos, AdjStemkind } from '@freeword/freeword-all-byword';
+import { Poskinds, PosStemkinds, AdjStemkind } from '@freeword/freeword-all-byword';
 ```
 
 ## API
@@ -80,10 +80,10 @@ The package also exports specific types for better type safety:
 The package also exports constants that can be imported from the `/src` subpath:
 
 ```typescript
-import { Poskinds, StemkindsForPos } from 'freeword/src';
+import { Poskinds, PosStemkinds } from 'freeword/src';
 
 // Poskinds: Array of all part of speech types
-// StemkindsForPos: Mapping of part of speech to available stemkinds
+// PosStemkinds: Mapping of part of speech to available stemkinds
 ```
 
 ## License

@@ -1,0 +1,582 @@
+import      _                               /**/  from 'lodash'
+import type * as TY                               from '@/lib/types.ts'
+
+export const ExampleGamekeys = {
+  monkeyshines: 'myh-kfr-oei-nsa', // farm > monkeyshines
+  medium:       'myn-kgu-vre-ioa', // vivarium > monkeying, voyageur > ramekin
+  mini:         'myk-ngu-vre-ioa', // voyageur > ramekin, vivarium > monkey > yoga
+  tiny:         'ack-zon-rew-bhy', // workbench > hazy, workbench > haze > eye, charabanc > chokey > yowza
+  mondo:        'eoa-tnr-usc-ihl', // unclothes > sari
+  weird:        'ats-ncb-lod-ikp', // spondaic > clickbait, adaption > niblicks, blacktops > sib > band
+} as const
+export type ExampleGamekey  = (typeof ExampleGamekeys)[keyof typeof ExampleGamekeys]
+export type ExampleGamename = keyof typeof ExampleGamekeys
+export type ExampleWord     = (typeof ExampleWords)[keyof typeof ExampleWords][number]
+export type WordTuple       = readonly [ExampleWord, ExampleWord] | readonly [ExampleWord, ExampleWord, ExampleWord]
+
+export const ValidSolutions = {
+  monkeyshines: [ // myh-kfr-oei-nsa
+    ['farm',      'monkeyshines'],
+    ['farm',      'monkeyish'],
+    ['fam',       'monkeyish', 'harm'],
+    ['feminises', 'shofar',    'risky'], ['nemesis', 'shofar', 'risky'],
+    ['minimises', 'shofar',    'risky'], ['nemesis', 'shofar', 'risky'],
+  ],
+  mini:   [
+    ['voyageur', 'ramekin'],               ['vivarium', 'monkey', 'yoga'],
+    ['margravine', 'euro', 'okay'],        ['okay', 'yum', 'margravine'],
+    ['voyageur', 'ram', 'mink'],
+    ['vivarium', 'monkey', 'yoga'],
+  ],
+  tiny:   [
+    ['workbench', 'hazy'], ['workbench', 'haze', 'eye'], ['charabanc', 'chokey', 'yowza'],
+  ],
+  medium: [
+    ['vivarium', 'monkeying'],              ['voyageur', 'ramekin'],                ['moviemaking', 'grungy'],
+    ['voyageur', 'rim', 'moviemaking'],     ['mum', 'moviemaking', 'gravy'],
+    // ['voyageur', 'ram', 'moviemaking'],
+    ['yum', 'moviemaking', 'gar'],          ['moviemaking', 'gravamina', 'armoury'],
+    ['voyageur', 'ram', 'mink'],            ['voyageur', 'rim', 'mink'],            ['mum', 'monkeying', 'gravy'],
+    ['vivarium', 'monkey', 'yoga'],         ['margravine', 'euro', 'okaying'],
+  ],
+  mondo:  [
+    ['unclothes', 'sari'],
+  ],
+  weird:  [
+    ['spondaic', 'clickbait'], ['adaption', 'niblicks'], ['blacktops', 'sib', 'band'],
+    ['bandana', 'antibiotic', 'clapbacks'],
+  ],
+} as const satisfies Record<ExampleGamename, WordTuple[]>
+export const ValidSolutionCoverstrs = {
+  monkeyshines: [
+    'afrm > mehiknosy', 'afrm > mehiknosy', 'afm > meiknosyh > hamr',
+    'efimns > safhor > riksy', 'eimns > safhor > riksy', 'eimns > safhor > riksy', 'eimns > safhor > riksy',
+  ],
+  medium:       [
+    'airuvm > megiknoy', 'aegouvyr > raeikmn', 'aeikmnovg > gnruy',
+    'aegouvyr > rim > maegiknov', 'um > maeiknovg > garvy',
+    'uym > maeiknovg > gar', 'aeikmnovg > gimnrva > amoruy',
+  ],
+  mini:         [
+    'aegouvyr > raeikmn', 'airuvm > meknoy > yago', 'agimnrve > eruo > oaky',
+    'akoy > yum > maeginrv', 'aegouvyr > ram > mikn', 'airuvm > meknoy > yago',
+  ],
+  tiny:         [
+    'bceknorwh > hayz',    'bceknorwh > haze > ey',    'abhnrc > cehkoy > yaowz',
+  ],
+  mondo:        ['cehlnotus > sair'],
+  weird:        ['adinopsc > cabiklt', 'adioptn > nbcikls', 'abcklopts > sib > badn', 'bdna > abinotc > cabklps',
+
+  ],
+} as const satisfies Record<ExampleGamename, string[]>
+
+export const ExampleWords = {
+  monkeyshines: [
+    'amines',       'ermines',      'fam',          'famines',      'farm',         'feminines',    'feminises',    'feminisms',
+    'firearm',      'fishery',      'foam',         'foram',        'foraminifers', 'foray',        'forays',       'form',
+    'hairy',        'haram',        'harm',         'harmines',     'harmonises',   'hay',          'hoary',        'hokey',
+    'homines',      'honk',         'honky',        'horsehair',    'imines',       'inform',       'informers',    'inmeshes',
+    'kairomones',   'karyokineses', 'kin',          'mariners',     'marines',      'men',          'menhirs',      'merinos',
+    'mimes',        'mine',         'miners',       'mines',        'minimise',     'minimises',    'minishes',     'minkes',
+    'misinfers',    'mom',          'monikers',     'monishes',     'monk',         'monkey',       'monkeyish',    'monkeys',
+    'monkeyshines', 'monoamines',   'monokines',    'moraines',     'nemeses',      'nemesis',      'oafish',
+    'rainmakers',   'ram',          'ramekin',      'rekey',        'rekeys',       'remises',      'rims',         'risky',
+    'romaines',     'ryke',         'rykes',        'seafarer',     'seafoam',      'seahorses',    'sermonisers',  'sermonises',
+    'shaken',       'shaker',       'shaky',        'shofar',       'smarm',        'smoky',        'sori',         'yam',
+  ],
+  mini: [
+    'envoy',        'euro',         'ivy',          'margravine',   'men',          'mine',         'mink',         'mirage',
+    'mom',          'monk',         'monkey',       'navy',         'okay',         'ram',          'ramekin',      'vivarium',
+    'voyageur',     'yam',          'yoga',         'yuk',          'yum',
+  ],
+  tiny: [
+    'branch',    'charabanc', 'chokey',    'crazy',     'eye',       'hanky',     'hay',
+    'haze',      'hazy',      'hoary',     'hokey',     'workbench', 'yowza',
+  ],
+  medium: [
+    'armoury',      'envoy',        'euro',         'gar',          'gravamina',    'gravy',        'grungy',       'ivy',
+    'margravine',   'men',          'mine',         'mink',         'mirage',       'mom',          'monk',         'monkey',
+    'monkeying',    'moviemaking',  'mum',          'navy',         'okay',         'okaying',      'ram',          'ramekin',
+    'rim',          'vivarium',     'voyageur',     'yam',          'yoga',         'yum',
+  ],
+  mondo: [
+    'actuator',     'erotica',      'esoterica',    'horsehair',    'launcher',     'rainouts',     'ratios',       'reconstitution',
+    'relaunches',   'restitution',  'retina',       'riots',        'rotis',        'routines',     'salutatorians', 'sari',
+    'secretarial',  'sori',         'sororities',   'stir',         'stirs',        'stories',      'technical',    'unclothes',
+    'unlatches',
+  ],
+  weird: [
+    'adaption',     'anaconda',     'antibiotic',   'band',         'bandana',      'biconditional', 'blacktops',    'clapbacks',
+    'clickbait',    'dispositional', 'lackadaisical', 'laconic',      'laptops',      'niblicks',     'sib',          'spondaic',
+  ],
+} as const satisfies Record<ExampleGamename, string[]>
+export const AllExampleWords: readonly ExampleWord[] = _.flatten(Object.values(ExampleWords))
+
+export const NotGameWords = {
+  monkeyshines:[
+    'actuator',      'adaption',      'anaconda',      'antibiotic',    'band',          'bandana',
+    'biconditional', 'blacktops',     'branch',        'charabanc',     'chokey',        'clapbacks',
+    'clickbait',     'crazy',         'dispositional', 'erotica',       'esoterica',     'gar',
+    'gravamina',     'gravy',         'grungy',        'lackadaisical', 'laconic',       'laptops',
+    'launcher',      'margravine',    'mirage',        'monkeying',     'moviemaking',   'niblicks',
+    'okaying',       'reconstitution', 'relaunches',    'salutatorians', 'secretarial',   'sib',
+    'spondaic',      'technical',     'unclothes',     'unlatches',     'voyageur',      'workbench',
+    'yoga',
+  ],
+  medium: [
+    'actuator',      'adaption',      'anaconda',      'antibiotic',    'band',          'bandana',
+    'biconditional', 'blacktops',     'branch',        'charabanc',     'chokey',        'clapbacks',
+    'clickbait',     'crazy',         'dispositional', 'erotica',       'esoterica',     'fam',
+    'sib',           'spondaic',      'technical',     'unclothes',     'unlatches',     'workbench',
+  ],
+
+mini:[
+    'actuator',      'adaption',      'anaconda',      'antibiotic',    'band',          'bandana',
+    'form',          'hairy',         'hanky',         'haram',         'harm',          'harmines',
+    'sib',           'spondaic',      'technical',     'unclothes',     'unlatches',     'workbench',
+  ],
+  tiny: [
+    'adaption',      'amines',        'anaconda',      'antibiotic',    'band',          'bandana',
+    'foraminifers',  'foray',         'forays',        'form',          'gar',           'gravamina',
+    'moraines',      'moviemaking',   'nemesis',       'niblicks',      'oafish',        'okaying',
+    'stories',       'technical',     'unclothes',     'unlatches',     'vivarium',      'voyageur',
+    'yoga',
+  ],
+  mondo: [
+    'adaption',      'anaconda',      'antibiotic',    'band',          'bandana',       'biconditional',
+    'feminisms',     'firearm',       'fishery',       'foam',          'foram',         'foraminifers',
+    'mink',          'minkes',        'mirage',        'misinfers',     'monikers',      'monk',
+    'monkey',        'monkeying',     'monkeyish',     'monkeys',       'monkeyshines',  'monokines',
+    'sib',           'smoky',         'spondaic',      'voyageur',      'workbench',     'yoga',
+    'yuk',
+  ],
+
+  weird:[
+    'amines',        'branch',        'charabanc',     'chokey',        'envoy',         'ermines',
+    'farm',          'feminines',     'feminises',     'feminisms',     'firearm',       'fishery',
+    'gar',           'gravamina',     'gravy',         'grungy',        'hairy',         'hanky',
+    'minimise',      'minimises',     'minishes',      'minkes',        'mirage',        'misinfers',
+    'rekey',         'rekeys',        'relaunches',    'remises',       'restitution',   'retina',
+    'unlatches',     'voyageur',      'workbench',     'yoga',
+  ],
+} as const satisfies Record<ExampleGamename, ExampleWord[]>
+
+export const InvalidSolutions = {
+  monkeyshines: {
+    not12uniqs1:      { reason: 'unpaired',  input: ['farmonkeyshines'] },
+    not12uniqs2:      { reason: 'needs12',   input: ['mimesis', 'sermonisers'] },
+    not12uniqs3:      { reason: 'needs12',   input: ['mimesis', 'sermonisers', 'sememes'] },
+    pathableInvalidA: { reason: 'nonwords',  input: ['foaoaoaoamfmfm', 'monkeyshines'] },
+    pathableInvalidB: { reason: 'nonwords',  input: ['farm', 'monkeyshinesksksksk'] },
+    pathableInvalidC: { reason: 'nonwords',  input: ['oaoaoaoamkmkm', 'monkeyshines', 'shofar'] },
+    pathableInvalidD: { reason: 'nonwords',  input: ['fam', 'monkeyshinesksksks', 'shofar'] },
+    pathableInvalidE: { reason: 'nonwords',  input: ['fam', 'monkeyshines', 'shofarmrmrmr'] },
+    unpathableWordA:  { reason: 'nonwords',  input: ['fram', 'monkeyshines'] },
+    unpathableWordB:  { reason: 'nonwords',  input: ['farm', 'monkeyshiness'] },
+    unpathableWordC:  { reason: 'nonwords',  input: ['ffam', 'monkeyshines', 'shofar'] },
+    unpathableWordD:  { reason: 'nonwords',  input: ['fam',  'monkeyshiness', 'shofar'] },
+    unpathableWordE:  { reason: 'nonwords',  input: ['fam',  'monkeyshines', 'sshofar'] },
+    notJointedA:      { reason: 'joint1',    input: ['monkeyshines', 'farm'] },
+    notJointedB:      { reason: 'joint2',    input: ['monkeyshines', 'smarm', 'farm'] },
+    notJointedC:      { reason: 'joint1',    input: ['farmers', 'monkeyshine', 'shofar'] },
+    notJointedD:      { reason: 'joint2',    input: ['farm', 'monkeyshine', 'shofar'] },
+  }
+} as const satisfies Record<string, Record<string, { reason: TY.SolutionCheckResult, input: any }>>
+
+export const MonkeyishHeads = [
+  'e',         'ei',        'i',         'eik',       'ik',        'ek',        'k',         'eikm',      'ikm',       'ekm',       'km',        'eim',       'im',        'em',        'm',         'eikmn',     'ikmn',      'ekmn',      'kmn',       'eimn',
+  'imn',       'emn',       'mn',        'eikn',      'ikn',       'ekn',       'kn',        'ein',       'in',        'en',        'n',         'eikmno',    'ikmno',     'ekmno',     'kmno',      'eimno',     'imno',      'emno',      'mno',       'eikno',
+  'ikno',      'ekno',      'kno',       'eino',      'ino',       'eno',       'no',        'eikmo',     'ikmo',      'ekmo',      'kmo',       'eimo',      'imo',       'emo',       'mo',        'eiko',      'iko',       'eko',       'ko',        'eio',
+  'io',        'eo',        'o',         'eikmnos',   'ikmnos',    'ekmnos',    'kmnos',     'eimnos',    'imnos',     'emnos',     'mnos',      'eiknos',    'iknos',     'eknos',     'knos',      'einos',     'inos',      'enos',      'nos',       'eikmos',
+  'ikmos',     'ekmos',     'kmos',      'eimos',     'imos',      'emos',      'mos',       'eikos',     'ikos',      'ekos',      'kos',       'eios',      'ios',       'eos',       'os',        'eikmns',    'ikmns',     'ekmns',     'kmns',      'eimns',
+  'imns',      'emns',      'mns',       'eikns',     'ikns',      'ekns',      'kns',       'eins',      'ins',       'ens',       'ns',        'eikms',     'ikms',      'ekms',      'kms',       'eims',      'ims',       'ems',       'ms',        'eiks',
+  'iks',       'eks',       'ks',        'eis',       'is',        'es',        's',         'eikmnosy',  'ikmnosy',   'ekmnosy',   'kmnosy',    'eimnosy',   'imnosy',    'emnosy',    'mnosy',     'eiknosy',   'iknosy',    'eknosy',    'knosy',     'einosy',
+  'inosy',     'enosy',     'nosy',      'eikmosy',   'ikmosy',    'ekmosy',    'kmosy',     'eimosy',    'imosy',     'emosy',     'mosy',      'eikosy',    'ikosy',     'ekosy',     'kosy',      'eiosy',     'iosy',      'eosy',      'osy',       'eikmnsy',
+  'ikmnsy',    'ekmnsy',    'kmnsy',     'eimnsy',    'imnsy',     'emnsy',     'mnsy',      'eiknsy',    'iknsy',     'eknsy',     'knsy',      'einsy',     'insy',      'ensy',      'nsy',       'eikmsy',    'ikmsy',     'ekmsy',     'kmsy',      'eimsy',
+  'imsy',      'emsy',      'msy',       'eiksy',     'iksy',      'eksy',      'ksy',       'eisy',      'isy',       'esy',       'sy',        'eikmnoy',   'ikmnoy',    'ekmnoy',    'kmnoy',     'eimnoy',    'imnoy',     'emnoy',     'mnoy',      'eiknoy',
+  'iknoy',     'eknoy',     'knoy',      'einoy',     'inoy',      'enoy',      'noy',       'eikmoy',    'ikmoy',     'ekmoy',     'kmoy',      'eimoy',     'imoy',      'emoy',      'moy',       'eikoy',     'ikoy',      'ekoy',      'koy',       'eioy',
+  'ioy',       'eoy',       'oy',        'eikmny',    'ikmny',     'ekmny',     'kmny',      'eimny',     'imny',      'emny',      'mny',       'eikny',     'ikny',      'ekny',      'kny',       'einy',      'iny',       'eny',       'ny',        'eikmy',
+  'ikmy',      'ekmy',      'kmy',       'eimy',      'imy',       'emy',       'my',        'eiky',      'iky',       'eky',       'ky',        'eiy',       'iy',        'ey',        'y',
+]
+export const MonkeyshinesHeads = [
+
+  'e',         'eh',        'h',         'ehi',       'hi',        'ei',        'i',         'ehik',      'hik',       'eik',       'ik',        'ehk',       'hk',        'ek',        'k',         'ehikm',     'hikm',      'eikm',      'ikm',       'ehkm',
+  'hkm',       'ekm',       'km',        'ehim',      'him',       'eim',       'im',        'ehm',       'hm',        'em',        'm',         'ehikmn',    'hikmn',     'eikmn',     'ikmn',      'ehkmn',     'hkmn',      'ekmn',      'kmn',       'ehimn',
+  'himn',      'eimn',      'imn',       'ehmn',      'hmn',       'emn',       'mn',        'ehikn',     'hikn',      'eikn',      'ikn',       'ehkn',      'hkn',       'ekn',       'kn',        'ehin',      'hin',       'ein',       'in',        'ehn',
+  'hn',        'en',        'n',         'ehikmno',   'hikmno',    'eikmno',    'ikmno',     'ehkmno',    'hkmno',     'ekmno',     'kmno',      'ehimno',    'himno',     'eimno',     'imno',      'ehmno',     'hmno',      'emno',      'mno',       'ehikno',
+  'hikno',     'eikno',     'ikno',      'ehkno',     'hkno',      'ekno',      'kno',       'ehino',     'hino',      'eino',      'ino',       'ehno',      'hno',       'eno',       'no',        'ehikmo',    'hikmo',     'eikmo',     'ikmo',      'ehkmo',
+  'hkmo',      'ekmo',      'kmo',       'ehimo',     'himo',      'eimo',      'imo',       'ehmo',      'hmo',       'emo',       'mo',        'ehiko',     'hiko',      'eiko',      'iko',       'ehko',      'hko',       'eko',       'ko',        'ehio',
+  'hio',       'eio',       'io',        'eho',       'ho',        'eo',        'o',         'ehikmnoy',  'hikmnoy',   'eikmnoy',   'ikmnoy',    'ehkmnoy',   'hkmnoy',    'ekmnoy',    'kmnoy',     'ehimnoy',   'himnoy',    'eimnoy',    'imnoy',     'ehmnoy',
+  'hmnoy',     'emnoy',     'mnoy',      'ehiknoy',   'hiknoy',    'eiknoy',    'iknoy',     'ehknoy',    'hknoy',     'eknoy',     'knoy',      'ehinoy',    'hinoy',     'einoy',     'inoy',      'ehnoy',     'hnoy',      'enoy',      'noy',       'ehikmoy',
+  'hikmoy',    'eikmoy',    'ikmoy',     'ehkmoy',    'hkmoy',     'ekmoy',     'kmoy',      'ehimoy',    'himoy',     'eimoy',     'imoy',      'ehmoy',     'hmoy',      'emoy',      'moy',       'ehikoy',    'hikoy',     'eikoy',     'ikoy',      'ehkoy',
+  'hkoy',      'ekoy',      'koy',       'ehioy',     'hioy',      'eioy',      'ioy',       'ehoy',      'hoy',       'eoy',       'oy',        'ehikmny',   'hikmny',    'eikmny',    'ikmny',     'ehkmny',    'hkmny',     'ekmny',     'kmny',      'ehimny',
+  'himny',     'eimny',     'imny',      'ehmny',     'hmny',      'emny',      'mny',       'ehikny',    'hikny',     'eikny',     'ikny',      'ehkny',     'hkny',      'ekny',      'kny',       'ehiny',     'hiny',      'einy',      'iny',       'ehny',
+  'hny',       'eny',       'ny',        'ehikmy',    'hikmy',     'eikmy',     'ikmy',      'ehkmy',     'hkmy',      'ekmy',      'kmy',       'ehimy',     'himy',      'eimy',      'imy',       'ehmy',      'hmy',       'emy',       'my',        'ehiky',
+  'hiky',      'eiky',      'iky',       'ehky',      'hky',       'eky',       'ky',        'ehiy',      'hiy',       'eiy',       'iy',        'ehy',       'hy',        'ey',        'y',
+
+]
+export const MonkeyishFronts    = MonkeyishHeads.map((head)    => (head + 'h'))
+export const MonkeyshinesFronts = MonkeyshinesHeads.map((head) => (head + 's'))
+export const MonkeyishBodies   = [
+  'meh',       'meih',      'mih',       'meikh',     'mikh',      'mekh',      'mkh',       'meiknh',    'miknh',     'meknh',     'mknh',      'meinh',     'minh',      'menh',      'mnh',       'meiknoh',   'miknoh',    'meknoh',    'mknoh',     'meinoh',
+  'minoh',     'menoh',     'mnoh',      'meikoh',    'mikoh',     'mekoh',     'mkoh',      'meioh',     'mioh',      'meoh',      'moh',       'meiknosh',  'miknosh',   'meknosh',   'mknosh',    'meinosh',   'minosh',    'menosh',    'mnosh',     'meikosh',
+  'mikosh',    'mekosh',    'mkosh',     'meiosh',    'miosh',     'meosh',     'mosh',      'meiknsh',   'miknsh',    'meknsh',    'mknsh',     'meinsh',    'minsh',     'mensh',     'mnsh',      'meiksh',    'miksh',     'meksh',     'mksh',      'meish',
+  'mish',      'mesh',      'msh',       'meiknosyh', 'miknosyh',  'meknosyh',  'mknosyh',   'meinosyh',  'minosyh',   'menosyh',   'mnosyh',    'meikosyh',  'mikosyh',   'mekosyh',   'mkosyh',    'meiosyh',   'miosyh',    'meosyh',    'mosyh',     'meiknsyh',
+  'miknsyh',   'meknsyh',   'mknsyh',    'meinsyh',   'minsyh',    'mensyh',    'mnsyh',     'meiksyh',   'miksyh',    'meksyh',    'mksyh',     'meisyh',    'misyh',     'mesyh',     'msyh',      'meiknoyh',  'miknoyh',   'meknoyh',   'mknoyh',    'meinoyh',
+  'minoyh',    'menoyh',    'mnoyh',     'meikoyh',   'mikoyh',    'mekoyh',    'mkoyh',     'meioyh',    'mioyh',     'meoyh',     'moyh',      'meiknyh',   'miknyh',    'meknyh',    'mknyh',     'meinyh',    'minyh',     'menyh',     'mnyh',      'meikyh',
+  'mikyh',     'mekyh',     'mkyh',      'meiyh',     'miyh',      'meyh',      'myh',
+]
+export const MonkeyshinesBodies = [
+  'mes',       'mehs',      'mhs',       'mehis',     'mhis',      'meis',      'mis',       'mehiks',    'mhiks',     'meiks',     'miks',      'mehks',     'mhks',      'meks',      'mks',       'mehikns',   'mhikns',    'meikns',    'mikns',     'mehkns',
+  'mhkns',     'mekns',     'mkns',      'mehins',    'mhins',     'meins',     'mins',      'mehns',     'mhns',      'mens',      'mns',       'mehiknos',  'mhiknos',   'meiknos',   'miknos',    'mehknos',   'mhknos',    'meknos',    'mknos',     'mehinos',
+  'mhinos',    'meinos',    'minos',     'mehnos',    'mhnos',     'menos',     'mnos',      'mehikos',   'mhikos',    'meikos',    'mikos',     'mehkos',    'mhkos',     'mekos',     'mkos',      'mehios',    'mhios',     'meios',     'mios',      'mehos',
+  'mhos',      'meos',      'mos',       'mehiknoys', 'mhiknoys',  'meiknoys',  'miknoys',   'mehknoys',  'mhknoys',   'meknoys',   'mknoys',    'mehinoys',  'mhinoys',   'meinoys',   'minoys',    'mehnoys',   'mhnoys',    'menoys',    'mnoys',     'mehikoys',
+  'mhikoys',   'meikoys',   'mikoys',    'mehkoys',   'mhkoys',    'mekoys',    'mkoys',     'mehioys',   'mhioys',    'meioys',    'mioys',     'mehoys',    'mhoys',     'meoys',     'moys',      'mehiknys',  'mhiknys',   'meiknys',   'miknys',    'mehknys',
+  'mhknys',    'meknys',    'mknys',     'mehinys',   'mhinys',    'meinys',    'minys',     'mehnys',    'mhnys',     'menys',     'mnys',      'mehikys',   'mhikys',    'meikys',    'mikys',     'mehkys',    'mhkys',     'mekys',     'mkys',      'mehiys',
+  'mhiys',     'meiys',     'miys',      'mehys',     'mhys',      'meys',      'mys',
+]
+export const MonkeyishTails = [
+  'e', 'eh', 'h', 'ehi', 'hi', 'ei', 'i', 'ehik', 'hik', 'eik', 'ik', 'ehk', 'hk', 'ek', 'k', 'ehikn', 'hikn', 'eikn', 'ikn', 'ehkn', 'hkn', 'ekn', 'kn', 'ehin', 'hin',
+  'ein', 'in', 'ehn', 'hn', 'en', 'n', 'ehikno', 'hikno', 'eikno', 'ikno', 'ehkno', 'hkno', 'ekno', 'kno', 'ehino', 'hino', 'eino', 'ino', 'ehno', 'hno', 'eno', 'no', 'ehiko', 'hiko', 'eiko',
+  'iko', 'ehko', 'hko', 'eko', 'ko', 'ehio', 'hio', 'eio', 'io', 'eho', 'ho', 'eo', 'o', 'ehiknos', 'hiknos', 'eiknos', 'iknos', 'ehknos', 'hknos', 'eknos', 'knos', 'ehinos', 'hinos', 'einos', 'inos',
+  'ehnos', 'hnos', 'enos', 'nos', 'ehikos', 'hikos', 'eikos', 'ikos', 'ehkos', 'hkos', 'ekos', 'kos', 'ehios', 'hios', 'eios', 'ios', 'ehos', 'hos', 'eos', 'os', 'ehikns', 'hikns', 'eikns', 'ikns', 'ehkns',
+  'hkns', 'ekns', 'kns', 'ehins', 'hins', 'eins', 'ins', 'ehns', 'hns', 'ens', 'ns', 'ehiks', 'hiks', 'eiks', 'iks', 'ehks', 'hks', 'eks', 'ks', 'ehis', 'his', 'eis', 'is', 'ehs', 'hs',
+  'es', 's', 'ehiknosy', 'hiknosy', 'eiknosy', 'iknosy', 'ehknosy', 'hknosy', 'eknosy', 'knosy', 'ehinosy', 'hinosy', 'einosy', 'inosy', 'ehnosy', 'hnosy', 'enosy', 'nosy', 'ehikosy', 'hikosy', 'eikosy', 'ikosy', 'ehkosy', 'hkosy', 'ekosy',
+  'kosy', 'ehiosy', 'hiosy', 'eiosy', 'iosy', 'ehosy', 'hosy', 'eosy', 'osy', 'ehiknsy', 'hiknsy', 'eiknsy', 'iknsy', 'ehknsy', 'hknsy', 'eknsy', 'knsy', 'ehinsy', 'hinsy', 'einsy', 'insy', 'ehnsy', 'hnsy', 'ensy', 'nsy',
+  'ehiksy', 'hiksy', 'eiksy', 'iksy', 'ehksy', 'hksy', 'eksy', 'ksy', 'ehisy', 'hisy', 'eisy', 'isy', 'ehsy', 'hsy', 'esy', 'sy', 'ehiknoy', 'hiknoy', 'eiknoy', 'iknoy', 'ehknoy', 'hknoy', 'eknoy', 'knoy', 'ehinoy',
+  'hinoy', 'einoy', 'inoy', 'ehnoy', 'hnoy', 'enoy', 'noy', 'ehikoy', 'hikoy', 'eikoy', 'ikoy', 'ehkoy', 'hkoy', 'ekoy', 'koy', 'ehioy', 'hioy', 'eioy', 'ioy', 'ehoy', 'hoy', 'eoy', 'oy', 'ehikny', 'hikny',
+  'eikny', 'ikny', 'ehkny', 'hkny', 'ekny', 'kny', 'ehiny', 'hiny', 'einy', 'iny', 'ehny', 'hny', 'eny', 'ny', 'ehiky', 'hiky', 'eiky', 'iky', 'ehky', 'hky', 'eky', 'ky', 'ehiy', 'hiy', 'eiy',
+  'iy', 'ehy', 'hy', 'ey', 'y',
+]
+export const MonkeyishBacks = MonkeyishTails.map((tail) => ('m' + tail))
+export const MonkeyshinesTails = MonkeyishTails
+export const MonkeyshinesBacks = MonkeyshinesTails.map((tail) => ('m' + tail))
+export interface GuessInfo extends TY.GuessProps {
+  beg: TY.Letter, end: TY.Letter,
+  letters: TY.Letter[],
+  uniqs: Set<TY.Letter>,
+  dupes: TY.Letter[],
+  heads: string[],                         tails: string[],
+  fronts: string[],      bodies: string[], backs: string[],
+  headstr: string,       midstr: string,   tailstr: string,
+  frontstr: string,      backstr: string,  bodystr: string,
+  dupestr: string,
+}
+export const GuessProps: Record<string, GuessInfo> = {
+  monkey: {
+    word:         'monkey', beg: 'm', end: 'y',
+    letters:      ['m', 'o', 'n', 'k', 'e', 'y'],
+    uniqs:        new Set(['e', 'k', 'm', 'n', 'o', 'y']),
+    dupes:        [], dupestr: '',
+    heads: [
+      'e', 'ek', 'k', 'ekm', 'km', 'em', 'm', 'ekmn', 'kmn', 'emn', 'mn', 'ekn', 'kn', 'en', 'n', 'ekmno',
+      'kmno', 'emno', 'mno', 'ekno', 'kno', 'eno', 'no', 'ekmo', 'kmo', 'emo', 'mo', 'eko', 'ko', 'eo', 'o',
+    ],
+    fronts: [
+      'ey', 'eky', 'ky', 'ekmy', 'kmy', 'emy', 'my', 'ekmny', 'kmny', 'emny', 'mny', 'ekny', 'kny', 'eny', 'ny', 'ekmnoy',
+      'kmnoy', 'emnoy', 'mnoy', 'eknoy', 'knoy', 'enoy', 'noy', 'ekmoy', 'kmoy', 'emoy', 'moy', 'ekoy', 'koy', 'eoy', 'oy',
+    ],
+    bodies: [
+      'mey',       'meky',      'mky',       'mekny',     'mkny',      'meny',      'mny',       'meknoy',    'mknoy',     'menoy',     'mnoy',      'mekoy',     'mkoy',      'meoy',      'moy',
+    ],
+    tails: [
+      'e', 'ek', 'k', 'ekn', 'kn', 'en', 'n', 'ekno', 'kno', 'eno', 'no', 'eko', 'ko', 'eo', 'o', 'eknoy',
+      'knoy', 'enoy', 'noy', 'ekoy', 'koy', 'eoy', 'oy', 'ekny', 'kny', 'eny', 'ny', 'eky', 'ky', 'ey', 'y',
+    ],
+    backs: [
+      'me', 'mek', 'mk', 'mekn', 'mkn', 'men', 'mn', 'mekno', 'mkno', 'meno', 'mno', 'meko', 'mko', 'meo', 'mo', 'meknoy',
+      'mknoy', 'menoy', 'mnoy', 'mekoy', 'mkoy', 'meoy', 'moy', 'mekny', 'mkny', 'meny', 'mny', 'meky', 'mky', 'mey', 'my',
+    ],
+    frontstr:     'ekmnoy',
+    headstr:      'ekmno',
+    bodystr:      'meknoy',
+    midstr:        'ekno',
+    tailstr:       'eknoy',
+    backstr:      'meknoy',
+  },
+  mines: {
+    word:        'mines',
+    beg:         'm',
+    end:         's',
+    letters:     [ 'm', 'i', 'n', 'e', 's' ],
+    uniqs:       new Set([ 'e', 'i', 'm', 'n', 's' ]),
+    dupes:       [],
+    dupestr:     '',
+    heads:       [ 'e', 'ei', 'i', 'eim', 'im', 'em', 'm', 'eimn', 'imn', 'emn', 'mn', 'ein', 'in', 'en', 'n' ],
+    fronts:      [ 'es', 'eis', 'is', 'eims', 'ims', 'ems', 'ms', 'eimns', 'imns', 'emns', 'mns', 'eins', 'ins', 'ens', 'ns' ],
+    bodies:      [ 'mes', 'meis', 'mis', 'meins', 'mins', 'mens', 'mns' ],
+    tails:       [ 'e', 'ei', 'i', 'ein', 'in', 'en', 'n', 'eins', 'ins', 'ens', 'ns', 'eis', 'is', 'es', 's' ],
+    backs:       [ 'me', 'mei', 'mi', 'mein', 'min', 'men', 'mn', 'meins', 'mins', 'mens', 'mns', 'meis', 'mis', 'mes', 'ms' ],
+    headstr:     'eimn',
+    frontstr:    'eimns',
+    midstr:      'ein',
+    bodystr:     'meins',
+    tailstr:     'eins',
+    backstr:     'meins'
+  },
+  mine: {
+    word:        'mine',
+    beg:         'm',
+    end:         'e',
+    letters:     [ 'm', 'i', 'n', 'e' ],
+    uniqs:       new Set([ 'e', 'i', 'm', 'n' ]),
+    dupes:       [],
+    dupestr:     '',
+    heads:       [ 'i', 'im', 'm', 'imn', 'mn', 'in', 'n' ],
+    fronts:      [ 'ie', 'ime', 'me', 'imne', 'mne', 'ine', 'ne' ],
+    bodies:      [ 'mie', 'mine', 'mne' ],
+    tails:       [ 'e', 'ei', 'i', 'ein', 'in', 'en', 'n' ],
+    backs:       [ 'me', 'mei', 'mi', 'mein', 'min', 'men', 'mn' ],
+    headstr:     'imn',
+    frontstr:    'imne',
+    midstr:      'in',
+    bodystr:     'mine',
+    tailstr:     'ein',
+    backstr:     'mein'
+  },
+  men: {
+    word:         'men', beg: 'm', end: 'n',
+    letters:      ['m', 'e', 'n'],
+    uniqs:        new Set(['e', 'm', 'n']),
+    dupes:        [], dupestr: '',
+    heads:        ['e',  'em', 'm'],
+    fronts:       ['en', 'emn', 'mn'],
+    bodies:       ['men'],
+    tails:        ['e',  'en', 'n'],
+    backs:        ['me',  'men',  'mn'],
+    headstr:       'em',
+    frontstr:     'emn',
+    midstr:        'e',
+    bodystr:      'men',
+    tailstr:       'en',
+    backstr:      'men',
+  },
+  nemesis: {
+    word:         'nemesis', beg: 'n', end: 's',
+    letters:     [ 'n', 'e', 'm', 'e', 's', 'i', 's' ],
+    uniqs:       new Set([ 'e', 'i', 'm', 'n', 's' ]),
+    dupes:       [ 'e', 's' ],
+    dupestr:     'es',
+    heads:       [   'e',   'ei',   'i',   'eim',   'im',   'em',   'm',  'eimn',  'imn',  'emn',  'mn',  'ein',  'in',  'en',  'n' ],
+    fronts:      [  'es',  'eis',  'is',  'eims',  'ims',  'ems',  'ms', 'eimns', 'imns', 'emns', 'mns', 'eins', 'ins', 'ens', 'ns' ],
+    bodies:      [ 'nes', 'neis', 'nis', 'neims', 'nims', 'nems', 'nms' ],
+    tails:       [  'e',   'ei',   'i',   'eim',   'im',   'em',   'm',  'eims',  'ims',  'ems',  'ms',  'eis',  'is',  'es',  's' ],
+    backs:       [ 'ne',  'nei',  'ni',  'neim',  'nim',  'nem',  'nm', 'neims', 'nims', 'nems', 'nms', 'neis', 'nis', 'nes', 'ns' ],
+    headstr:     'eimn',
+    frontstr:    'eimns',
+    midstr:      'eim',
+    bodystr:     'neims',
+    tailstr:     'eims',
+    backstr:     'neims'
+  },
+  nemeses: {
+    word:         'nemeses', beg: 'n', end: 's',
+    headstr:     'emn',
+    frontstr:    'emns',
+    midstr:      'em',
+    bodystr:     'nems',
+    tailstr:     'ems',
+    backstr:     'nems',
+    letters:     [ 'n', 'e', 'm', 'e', 's', 'e', 's' ],
+    uniqs:       new Set([ 'e', 'm', 'n', 's' ]),
+    dupes:       [ 'e', 'e', 's' ],
+    dupestr:     'ees',
+    heads:       [ 'e',   'em',   'm',  'emn',  'mn',  'en',  'n' ],
+    fronts:      [ 'es',  'ems',  'ms', 'emns', 'mns', 'ens', 'ns' ],
+    bodies:      [ 'nes', 'nems', 'nms' ],
+    tails:       [ 'e',   'em',   'm',  'ems',  'ms',  'es',  's' ],
+    backs:       [ 'ne',  'nem',  'nm', 'nems', 'nms', 'nes', 'ns' ],
+  },
+  minimise: {
+    word:        'minimise', beg: 'm', end: 'e',
+    letters:     [ 'm', 'i', 'n', 'i', 'm', 'i', 's', 'e' ],
+    uniqs:       new Set([ 'e', 'i', 'm', 'n', 's' ]),
+    dupes:       [ 'i', 'i', 'm' ],
+    dupestr:     'iim',
+    headstr:     'imns',
+    frontstr:    'imnse',
+    midstr:      'ins',
+    bodystr:     'minse',
+    tailstr:     'eins',
+    backstr:     'meins',
+    heads:       [ 'i', 'im', 'm', 'imn', 'mn', 'in', 'n', 'imns', 'mns', 'ins', 'ns', 'ims', 'ms', 'is', 's' ],
+    fronts:      [ 'ie', 'ime', 'me', 'imne', 'mne', 'ine', 'ne', 'imnse', 'mnse', 'inse', 'nse', 'imse', 'mse', 'ise', 'se' ],
+    bodies:      [ 'mie', 'mine', 'mne', 'minse', 'mnse', 'mise', 'mse' ],
+    tails:       [ 'e', 'ei', 'i', 'ein', 'in', 'en', 'n', 'eins', 'ins', 'ens', 'ns', 'eis', 'is', 'es', 's' ],
+    backs:       [ 'me', 'mei', 'mi', 'mein', 'min', 'men', 'mn', 'meins', 'mins', 'mens', 'mns', 'meis', 'mis', 'mes', 'ms' ],
+
+  },
+  minimises: {
+    word:        'minimises', beg: 'm', end: 's',
+    letters:     [ 'm', 'i', 'n', 'i', 'm', 'i', 's', 'e', 's' ],
+    uniqs:       new Set([ 'e', 'i', 'm', 'n', 's' ]),
+    dupes:       [ 'i', 'i', 'm', 's' ],
+    dupestr:      'iims',
+    headstr:      'eimn',
+    frontstr:     'eimns',
+    midstr:        'ein',
+    bodystr:      'meins',
+    tailstr:      'eins',
+    backstr:     'meins',
+    heads:       [ 'e',   'ei',   'i',   'eim',   'im',   'em',   'm',  'eimn',  'imn',  'emn',  'mn',  'ein',  'in',  'en',  'n' ],
+    fronts:      [ 'es',  'eis',  'is',  'eims',  'ims',  'ems',  'ms', 'eimns', 'imns', 'emns', 'mns', 'eins', 'ins', 'ens', 'ns' ],
+    bodies:      [ 'mes', 'meis', 'mis', 'meins', 'mins', 'mens', 'mns' ],
+    tails:       [ 'e',   'ei',   'i',   'ein',   'in',   'en',   'n',   'eins',  'ins',  'ens',  'ns',  'eis',  'is',  'es',  's' ],
+    backs:       [ 'me',  'mei',  'mi',  'mein',  'min',  'men',  'mn',  'meins', 'mins', 'mens', 'mns', 'meis', 'mis', 'mes', 'ms' ],
+  },
+  mom: {
+    word:         'mom', beg: 'm', end: 'm',
+    letters:      ['m', 'o', 'm'],
+    uniqs:        new Set(['m', 'o']),
+    dupes:        ['m'], dupestr: 'm',
+    tails:        ['o'],
+    heads:        ['o'],
+    fronts:       ['om'],
+    bodies:       ['mom'],
+    backs:        ['mo'],
+    headstr:      'o',
+    frontstr:     'om',
+    midstr:        'o',
+    bodystr:      'mom',
+    tailstr:      'o',
+    backstr:      'mo',
+  },
+  monkeyish: {
+    word:         'monkeyish', beg: 'm', end: 'h',
+    letters:     [ 'm', 'o', 'n', 'k', 'e', 'y', 'i', 's', 'h' ],
+    uniqs:        new Set(['e', 'h', 'i', 'k', 'm', 'n', 'o', 's', 'y']),
+    dupes:        [], dupestr: '',
+    headstr:      'eikmnosy',
+    frontstr:     'eikmnosyh',
+    bodystr:      'meiknosyh',
+    midstr:         'eiknosy',
+    tailstr:       'ehiknosy',
+    backstr:      'mehiknosy',
+    heads:        MonkeyishHeads,
+    fronts:       MonkeyishFronts,
+    bodies:       MonkeyishBodies,
+    tails:        MonkeyishTails,
+    backs:        MonkeyishBacks,
+  },
+  monkeyshines: {
+    word:         'monkeyshines', beg: 'm', end: 's',
+    letters:      ['m', 'o', 'n', 'k', 'e', 'y', 's', 'h', 'i', 'n', 'e', 's'],
+    uniqs:        new Set(['e', 'h', 'i', 'k', 'm', 'n', 'o', 's', 'y']),
+    dupes:        ['e', 'n', 's'], dupestr: 'ens',
+    heads:        MonkeyshinesHeads,
+    fronts:       MonkeyshinesFronts,
+    bodies:       MonkeyshinesBodies,
+    tails:        MonkeyshinesTails,
+    backs:        MonkeyshinesBacks,
+    headstr:      'ehikmnoy',
+    frontstr:     'ehikmnoys',
+    bodystr:      'mehiknoys',
+    midstr:        'ehiknoy',
+    tailstr:       'ehiknosy',
+    backstr:      'mehiknosy',
+  }
+} satisfies Partial<Record<ExampleWord, GuessInfo>>
+
+export interface SolveExamplesT { gamekey: string, score: number, dupestr: string, dupestr1: string, dupestr2: string, dupestr3: string, dupelen: number, title: string, coverstr: string, frontstr: string, headstr: string, midstr: string, bodystr: string, tailstr: string, backstr: string | undefined, words: string[], letters: string[], dupes: string[], pathlen: number, pair: boolean, trio: boolean, extras?: any }
+export const SolveProps: TY.Bag<SolveExamplesT> = {
+  'farm > monkeyish': {
+    gamekey:     'myh-kfr-oei-nsa',
+    score:       130,
+    headstr:     'afr',
+    midstr:      'ehiknosy',
+    backstr:     '',
+    frontstr:    'afrm',
+    bodystr:     'mehiknosy',
+    tailstr:     '',
+    words:       [ 'farm', 'monkeyish' ],
+    letters:     [ 'f', 'a', 'r', 'm', 'm', 'o', 'n', 'k', 'e', 'y', 'i', 's', 'h' ],
+    dupes:       [ 'm' ],
+    pathlen:     2,
+    pair:        true,
+    trio:        false,
+    // extras:      undefined,
+    dupestr:     'm',
+    dupestr1:    'm',
+    dupestr2:    '',
+    dupestr3:    '',
+    dupelen:     1,
+    title:       'farm > monkeyish',
+    coverstr:    'afrm > mehiknosy',
+  },
+  'firearm > monkeyshines': {
+    gamekey:     'myh-kfr-oei-nsa',
+    score:       190,
+    title:       'firearm > monkeyshines',
+    coverstr:    'afrm > mehiknosy',
+    headstr:     'afr',
+    backstr:     '',
+    midstr:      'ehiknosy',
+    frontstr:    'afrm',
+    bodystr:     'mehiknosy',
+    tailstr:     '',
+    words:       [ 'firearm', 'monkeyshines' ],
+    letters:     [ 'f', 'i', 'r', 'e', 'a', 'r', 'm', 'm', 'o', 'n', 'k', 'e', 'y', 's', 'h', 'i', 'n', 'e', 's' ],
+    dupes:       [ 'e', 'e', 'i', 'm', 'n', 'r', 's' ],
+    dupestr:     'eeimnrs',
+    dupestr1:    'eimr',
+    dupestr2:    'ens',
+    dupestr3:    '',
+    dupelen:     7,
+    pathlen:     2,
+    pair:        true,
+    trio:        false,
+    // extras:      undefined,
+  },
+  'fam > monkeyish > haram': {
+    gamekey:     'myh-kfr-oei-nsa',
+    title:       'fam > monkeyish > haram',
+    coverstr:    'afm > meiknosyh > hr',
+    words:       [ 'fam', 'monkeyish', 'haram' ],
+    score:       1_170,
+    headstr:     'af',
+    midstr:      'eiknosy',
+    tailstr:     'r',
+    frontstr:    'afm',
+    bodystr:     'meiknosyh',
+    backstr:     'hr',
+    letters:     [ 'f', 'a', 'm', 'm', 'o', 'n', 'k', 'e', 'y', 'i', 's', 'h', 'h', 'a', 'r', 'a', 'm' ],
+    dupes:       [ 'a', 'a', 'h', 'm', 'm' ],
+    pathlen:     3,
+    pair:        false,
+    trio:        true,
+    dupestr:     'aahmm',
+    dupestr1:    'm',
+    dupestr2:    '',
+    dupestr3:    'aahm',
+    dupelen:      5,
+    // extras:      undefined,
+  },
+} as const satisfies TY.Bag<SolveExamplesT>
+
+
+export const InvalidGamekeys = {
+  too_few_parts:            'abc-def-ghi',
+  too_many_parts:           'abc-def-ghi-jkl-mno',
+  uppercase:                'ABC-DEF-GHI-JKL',
+  wrong_length:             'abc-def-gh-jkl',
+  trailing_dash:            'abc-def-ghi-jkl-',
+  leading_dash:             '-abc-def-ghi-jkl',
+  wrong_separator:          'abc_def_ghi_jkl',
+  extra_content:            'abc-def-ghi-jkl-extra',
+  empty_string:             '',
+  completely_wrong:         'not-a-gamekey'
+}
+export const NormalizedGamekeys = {
+  "abc-def-ghi-jkl":       'abc-def-ghi-jkl',
+  "abc-def-ghi":           'abc-def-ghi-myk',
+  "abc-def-ghi-jkl-mno":   'abc-def-ghi-jkl',
+  "ABC-DEF-GHI-JKL":       'abc-def-ghi-jkl',
+  "abc-def-gh-jkl":        'abc-def-ghj-klm',
+  "abc-def-ghi-jkl-":      'abc-def-ghi-jkl',
+  "-abc def,ghi-j!!":      'abc-def-ghi-jmy',
+  "abc_def_ghi_jkl":       'abc-def-ghi-jkl',
+  "abc-def-ghi-jkl-extra": 'abc-def-ghi-jkl',
+  "":                      'myh-kfr-oei-nsa',
+  "not-a-gamekey":         'not-agm-eky-hfr',
+  "~~!!abc def!!ghijklmnopqrs  ": 'abc-def-ghi-jkl'
+}
