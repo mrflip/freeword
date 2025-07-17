@@ -20,6 +20,7 @@
     "_z": "echo ."
   },
   "dependencies": {
+    "esm-seedrandom": "3.0.5-esm.2",
     "lodash": "^4.17.21",
     "luxon": "^3.6.1",
     "snowball-stemmers": "^0.6.0",

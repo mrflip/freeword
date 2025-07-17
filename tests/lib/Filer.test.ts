@@ -154,7 +154,7 @@ describe('Filer', () => {
         expect(result.gist).to.equal('blankPath')
         expect(result.err).to.be.instanceOf(Error)
         expect(result.err!.message).to.include('Blank path is not a reasonable input')
-        expect(result.origMsg).to.equal('Blank path provided')
+        expect(result.origmsg).to.equal('Blank path provided')
         expect((result as any).args).to.deep.equal({ anypath: '' })
       }
     })
@@ -165,7 +165,7 @@ describe('Filer', () => {
       if (!result.ok) {
         expect(result.gist).to.equal('blankPath')
         expect(result.err).to.be.instanceOf(Error)
-        expect(result.origMsg).to.equal('Blank path provided')
+        expect(result.origmsg).to.equal('Blank path provided')
         expect((result as any).args).to.deep.equal({ anypath: null })
       }
     })
@@ -464,7 +464,7 @@ describe('Filer', () => {
         expect(result.gist).to.equal('parseErr')
         expect(result.err).to.be.instanceOf(Error)
         expect(result.err!.message).to.include('Failed to stringify data to JSON')
-        expect(result.origMsg).to.include('Converting circular structure to JSON')
+        expect(result.origmsg).to.include('Converting circular structure to JSON')
         expect((result as any).args).to.equal(outputFile)
       }
     })

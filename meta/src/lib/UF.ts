@@ -3,7 +3,7 @@ import      * as NodeUtil                         from 'node:util'
 import type * as TY                               from '../types.ts'
 export      { sprintf, vsprintf }                 from 'sprintf-js'
 import      { nextTick }                          from 'node:process'
-import      { A2Zlos }                      from '../lexicon/LexiconConsts.ts'
+import      { AtoZlos }                      from '../lexicon/LexiconConsts.ts'
 //
 export      *                                      from './Rot13.ts'
 
@@ -15,11 +15,11 @@ export type ArrKVFunc<RT,  VT = any>                              = (value: VT, 
 export type KVFunc<RT,     VT = any, KT = string | number>        = (value: VT, keyOrIndex: KT, index: number, ...args: any) => RT
 
 /** @returns a bag with keys a, b, ... z and values of type VT */
-export function alphabetLookupBag<VT>(seed: VT | ((ltr: TY.A2Zlo) => VT)): Record<TY.A2Zlo, VT> {
+export function alphabetLookupBag<VT>(seed: VT | ((ltr: TY.AtoZlo) => VT)): Record<TY.AtoZlo, VT> {
   if (_.isFunction(seed)) {
-    return objectify(A2Zlos, (ltr) => seed(ltr))
+    return objectify(AtoZlos, (ltr) => seed(ltr))
   }
-  return objectify(A2Zlos, () => (seed))
+  return objectify(AtoZlos, () => (seed))
 }
 
 /** Assign a **non-enumerable**, writable, configurable property to an object

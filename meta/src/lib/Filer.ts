@@ -10,23 +10,23 @@ import type * as FT                               from './FilerTypes.ts'
  * @param err - The error to wrap
  * @param gist - The gist of the error (e.g. 'badPath', 'badInput', 'blankPath')
  * @param preambleMsg - A message to prepend to the error message
- * @param errExtensions - Additional error extensions to add to the error
+ * @param tmi - Additional error extensions to add to the error
  * @param pathinfo - The pathinfo object to add to the error
  */
-function badOutcome<GT extends FT.FilerGist = FT.FilerGist>(err: Error, gist: GT, preambleMsg: string, errExtensions: TY.AnyBag, pathinfo:  FT.PathinfoT): FT.BadFilerResult<GT>
-function badOutcome<GT extends FT.FilerGist = FT.FilerGist>(err: Error, gist: GT, preambleMsg: string, errExtensions: TY.AnyBag, pathinfo?: FT.PathinfoT | undefined): FT.BadFilerResult<GT>
-function badOutcome<GT extends FT.FilerGist = FT.FilerGist>(err: Error, gist: GT, preambleMsg: string, errExtensions: TY.AnyBag, pathinfo?: FT.PathinfoT | undefined): FT.BadFilerResult<GT> {
-  const origMsg = err.message
-  const extError: TY.ExtError = new Error(`${preambleMsg}: ${origMsg}`) as TY.ExtError
-  const extensions: Omit<FT.BadFilerResult<GT>, 'err'> = {
+function badOutcome<GT extends FT.FilerGist = FT.FilerGist>(err: Error, gist: GT, preambleMsg: string, tmi: TY.AnyBag, pathinfo:  FT.PathinfoT): FT.BadFilerResult<GT>
+function badOutcome<GT extends FT.FilerGist = FT.FilerGist>(err: Error, gist: GT, preambleMsg: string, tmi: TY.AnyBag, pathinfo?: FT.PathinfoT | undefined): FT.BadFilerResult<GT>
+function badOutcome<GT extends FT.FilerGist = FT.FilerGist>(err: Error, gist: GT, preambleMsg: string, tmi: TY.AnyBag, pathinfo?: FT.PathinfoT | undefined): FT.BadFilerResult<GT> {
+  const origmsg = err.message
+  const extError: TY.ExtError = new Error(`${preambleMsg}: ${origmsg}`) as TY.ExtError
+  const errTMI: Omit<FT.BadFilerResult<GT>, 'err'> = {
     ...(pathinfo || {}),
-    ...errExtensions,
+    ...tmi,
     ok: false,
     gist,
-    origMsg,
+    origmsg,
   }
-  extError.extensions = extensions
-  return { ...extensions, err: extError }
+  extError.extensions = errTMI
+  return { ...errTMI, err: extError }
 }
 
 /**

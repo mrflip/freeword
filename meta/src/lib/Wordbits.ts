@@ -4,19 +4,83 @@ import type * as TY                               from '../types.ts'
 import      * as WordbitsTables                   from './WordbitsTables.ts'
 //
 
+const BITS_SMALLEST_26 = 0b11_1111_1111_1111_1111_1111_1111
+const BITS_SMALLEST_14 = 0b11_1111_1111_1111
+const BITS_SMALLEST_12 =    0b1111_1111_1111
+const BITS_SMALLEST_8  =         0b1111_1111
+const BITS_SMALLEST_2  =                0b11
+const WordbitsMask     = BITS_SMALLEST_26
+
+/** Which letters in A are missing from B?            | `A - B`     | Wordbits | Difference           | `A & ~B & WordbitMask`     | */
+export function aMinusB(aBits: TY.WordbitsT, bBits: TY.WordbitsT):          TY.WordbitsT {
+  return aBits & ~bBits & WordbitsMask
+}
+
+/** Which letters appear in either A or B (or both)?  | `A ∪ B`     | Wordbits | Union                | `A \| B`                   | */
+export function inEither(aBits: TY.WordbitsT, bBits: TY.WordbitsT):         TY.WordbitsT {
+  return aBits | bBits
+}
+
+/** Which letters do both A and B have in common?     | `A ∩ B`     | Wordbits | Intersection         | `A & B`                    | */
+export function inBoth(aBits: TY.WordbitsT, bBits: TY.WordbitsT):           TY.WordbitsT {
+  return aBits & bBits
+}
+
+/** Which letters are in A, or in B, but not in both? | `A ∆ B`     | Wordbits | Symmetric Difference | `A ^ B`                    | */
+export function inEitherNotBoth(aBits: TY.WordbitsT, bBits: TY.WordbitsT):  TY.WordbitsT {
+  return aBits ^ bBits
+}
+
+/** Do A and B share any letters at all?              | `A ∩ B ≠ ∅` | boolean  | Overlap              | `(A & B) !== 0`            | */
+export function hasOverlap(aBits: TY.WordbitsT, bBits: TY.WordbitsT): boolean  {
+  return (aBits & bBits) !== 0
+}
+
+/** Do A and B have no letters in common?             | `A ∩ B = ∅` | boolean  | Disjoint             | `(A & B) === 0`            | */
+export function hasNoOverlap(aBits: TY.WordbitsT, bBits: TY.WordbitsT): boolean  {
+  return (aBits & bBits) === 0
+}
+/** Do A and B use exactly the same letters?          | `A = B`     | boolean  | Equality             | `A === B`                  | */
+export function isEqual(aBits: TY.WordbitsT, bBits: TY.WordbitsT): boolean  {
+  return aBits === bBits
+}
+
 export function missingLtrs(wordbits: TY.WordbitsT): TY.MissingBits {
   return ~wordbits & BITS_SMALLEST_26
 }
 
 /** @returns a mask suitable for use in s1MaskContainsS2 */
-export const getContainsMask = missingLtrs
+export const containsMaskFor = missingLtrs
+
+/** @returns a mask suitable for use in s1MaskContainsS2 */
+export function containsMaskForWord(word: TY.Word | TY.Letter[]): TY.MissingBits {
+  return missingLtrs(wordbitsForWord(word))
+}
 
 /** @returns true if s1 contains s2 -- NOTE: you must pass in `~s1`, not `s1` */
-export function maskedAContainsB(maskA: TY.MissingBits, bitsB: TY.WordbitsT): boolean {
+export function aHasAllOfBMasked(maskA: TY.MissingBits, bitsB: TY.WordbitsT): boolean {
   // maskA has a bit set for each element maskA does not have,
   // so if maskA & bitsB has anything set, then bitsB has an element that maskA does not have
   return (maskA & bitsB) === 0
 }
+
+/** Does A include *all* of the letters in B?         | `A ⊆ B`     | boolean  | Subset               | `(A & B) === A`            | */
+export function aHasAllOfB(aBits: TY.WordbitsT, bBits: TY.WordbitsT): boolean  {
+  return (aBits & bBits) === aBits
+}
+
+/** Does A include all the letters in B *and more*?   | `A ⊊ B`     | boolean  | Strict Subset        | `(A & B) === A && A !== B` | */
+export function aHasAllAndMoreB(aBits: TY.WordbitsT, bBits: TY.WordbitsT): boolean  {
+  return (aBits & bBits) === aBits && aBits !== bBits
+}
+
+/** Is at least one letter in A missing from B?       | `A ⊄ B`     | boolean  | Not Subset           | `(A & B) !== A`            | */
+export function aHasMissingFromB(aBits: TY.WordbitsT, bBits: TY.WordbitsT): boolean  {
+  return (aBits & bBits) !== aBits
+}
+
+/** Which letters are *not* in A?                     | `¬A`        | Wordbits | Complement           | `~A & WordbitMask`         | */
+export function missingFrom(aBits: TY.WordbitsT): TY.WordbitsT { return ~aBits & WordbitsMask }
 
 /** @returns letters that are in both A and B -- as wordbits */
 export function inBothAandB(bitsA: TY.WordbitsT, bitsB: TY.WordbitsT): TY.WordbitsT {
@@ -29,20 +93,13 @@ export function inEitherAorB(bitsA: TY.WordbitsT, bitsB: TY.WordbitsT): TY.Wordb
 }
 
 /** @returns the wordbit mask for a single letter */
-export function wordbitForLtr(ltr: TY.A2Zlo): number {
+export function wordbitForLtr(ltr: TY.AtoZlo): number {
   return WordbitsTables.ltrToWordbitsTable[ltr]
 }
 
-const BITS_SMALLEST_26 = 0b11_1111_1111_1111_1111_1111_1111
-const BITS_SMALLEST_14 = 0b11_1111_1111_1111
-const BITS_SMALLEST_12 =    0b1111_1111_1111
-const BITS_SMALLEST_8  =         0b1111_1111
-// const BITS_SMALLEST_4  =           0b1111
-const BITS_SMALLEST_2  =                0b11
-
 const MAGIC_NUMBER14x  =     0x2000_4000_8001n
-const MAGIC_NUMBER14c  = 0x111_1111_1111_1111n
-const MAGIC_NUMBER14m  = 0b1111n
+const MAGIC_NUMBER14m  = 0x111_1111_1111_1111n
+const MAGIC_NUMBER14r  = 0b1111n
 
 // 1. The multiply step repeats the bitfield four times, shifted by 2^15
 //    (the fourteen, and an extra one each time).
@@ -52,7 +109,8 @@ const MAGIC_NUMBER14m  = 0b1111n
 // We need to use a bigint to avoid overflow for over 8 bits
 //
 export function countBits14Magic(wordbits: bigint | number): number {
-  return Number((((BigInt(wordbits) * MAGIC_NUMBER14x) & MAGIC_NUMBER14c) % MAGIC_NUMBER14m))
+  // mult by x, mask by m, read by r
+  return Number((((BigInt(wordbits) * MAGIC_NUMBER14x) & MAGIC_NUMBER14m) % MAGIC_NUMBER14r))
 }
 
 /** @returns the number of bits set in the bitfield */
@@ -79,7 +137,7 @@ export function normalizeWord(str: TY.StringMaybe): TY.Word {
 export function wordbitsForWord(word: TY.Word | TY.Letter[]): TY.WordbitsT {
   let bitfield = 0
   for (const ltr of word) {
-    bitfield |= WordbitsTables.ltrToWordbitsTable[ltr as TY.A2Zlo]
+    bitfield |= WordbitsTables.ltrToWordbitsTable[ltr as TY.AtoZlo]
   }
   return bitfield
 }
@@ -106,11 +164,11 @@ export function rot13Wordbits(wordbits: TY.WordbitsT): TY.WordbitsT {
 }
 
 /** @returns the unique letters in the word, in alphabetical order */
-export function wordbitsToLetters(wordbits: TY.WordbitsT): TY.Shingle {
-  const bits00_06 =  wordbits        & 0b111_1111 as TY.A2Znum
-  const bits07_13 = (wordbits >>  7) & 0b111_1111 as TY.A2Znum
-  const bits14_20 = (wordbits >> 14) & 0b111_1111 as TY.A2Znum
-  const bits21_25 = (wordbits >> 21) &   0b1_1111 as TY.A2Znum
+export function ltrsForWordbits(wordbits: TY.WordbitsT): TY.Shingle {
+  const bits00_06 =  wordbits        & 0b111_1111 as TY.AtoZnum
+  const bits07_13 = (wordbits >>  7) & 0b111_1111 as TY.AtoZnum
+  const bits14_20 = (wordbits >> 14) & 0b111_1111 as TY.AtoZnum
+  const bits21_25 = (wordbits >> 21) &   0b1_1111 as TY.AtoZnum
   const uniqs = (
     WordbitsTables.abcdefgFor00_06[bits00_06]! +
     WordbitsTables.hijklmnFor07_13[bits07_13]! +
@@ -135,21 +193,21 @@ export function prettyWordbits(wordbits: TY.WordbitsT): string {
   // return WordbitsTables.prettyBinaryTable26[wordbits]
 }
 
-type DigestedWord = {
+export type DigestedWord = {
   /** the original word                    */ word:      TY.Word,
-  /** array of the word's letters, sorted  */ ltrs:      TY.A2Zlo[],
-  /** the first letter in the word         */ beg:       TY.A2Zlo,
-  /** the last letter in the word          */ end:       TY.A2Zlo,
+  /** array of the word's letters, sorted  */ ltrs:      TY.AtoZlo[],
+  /** the first letter in the word         */ beg:       TY.AtoZlo,
+  /** the last letter in the word          */ end:       TY.AtoZlo,
   /** wordbits of word's unique letters    */ wordbits:  TY.WordbitsT,
   /** wordbits of letters absent from word */ missbits:  TY.WordbitsT,
   /** wordbit mask of the initial letter   */ begbit:    TY.WordbitsT,
   /** wordbit mask of the final letter     */ endbit:    TY.WordbitsT,
-  /** uniq letters, sorted and joined      */ uniqarr:   TY.A2Zlo[],
+  /** uniq letters, sorted and joined      */ uniqarr:   TY.AtoZlo[],
   /** duplicated letters, in alphabetic order; the first occurrence goes in uniqstr,
    * all remaining occurrences go in dupearr. `uniqstr.length + dupearr.length === word.length`
    * @example for 'minimises', uniqstr: 'eimns', dupestr: 'iims'
    * @example for 'mines',     uniqstr: 'eimns', dupestr: ''
-   *                                       */ dupearr:   TY.A2Zlo[],
+   *                                       */ dupearr:   TY.AtoZlo[],
 }
 
 /** @returns {DigestedWord} a summary of the wordbits encoding for a word
@@ -157,11 +215,11 @@ type DigestedWord = {
  */
 export function digestWord(word: TY.Word): DigestedWord {
   let wordbits   = 0
-  let dupearr    = [] as TY.A2Zlo[]
-  let uniqarr    = [] as TY.A2Zlo[]
-  const ltrs = word.split('').sort() as TY.A2Zlo[]
-  const beg = ltrs[0] as TY.A2Zlo
-  const end = ltrs[ltrs.length - 1] as TY.A2Zlo
+  let dupearr    = [] as TY.AtoZlo[]
+  let uniqarr    = [] as TY.AtoZlo[]
+  const ltrs = word.split('').sort() as TY.AtoZlo[]
+  const beg = ltrs[0] as TY.AtoZlo
+  const end = ltrs[ltrs.length - 1] as TY.AtoZlo
   for (const ltr of ltrs) {
     const ltrmask = WordbitsTables.ltrToWordbitsTable[ltr]
     if (wordbits & ltrmask) { dupearr.push(ltr); continue }

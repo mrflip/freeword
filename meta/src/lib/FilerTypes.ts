@@ -29,7 +29,7 @@ export interface FilerResult<VT = any> extends Omit<Partial<PathinfoT>, 'ok'> {
   val?:        VT
   err?:        ExtError
   raw?:        any
-  extensions?: Record<string, any>
+  tmi?: Record<string, any>
 }
 
 export type Abspath = string
@@ -52,7 +52,7 @@ export interface BadFilerResult<GT extends FilerGist = FilerGist> extends FilerR
   gist:     GT
   err:      ExtError
   val?:     never
-  origMsg?: string
+  origmsg?: string
 }
 
 export type CoreReadGist  = 'readErr' | 'fileNotFound' | 'badPath' | 'badInput' | 'blankPath'

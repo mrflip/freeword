@@ -3,7 +3,7 @@ import       { expect }                           from 'chai'
 import       { Poskinds, Wordforms }              from '@freeword/all-byword'
 import       * as FW                              from '@freeword/meta'
 import type  * as TY                              from '@freeword/meta'
-import       { ExampleWordforms, HaveEtc, SyzygyEtc, ActEtc, CushionEtc, NotWords } from './Fixtures.js'
+import       { ExampleWordforms, HaveEtc, SyzygyEtc, ActEtc, CushionEtc, NotWords } from '../Fixtures.ts'
 
 describe('Wordforms', () => {
   it('should be a lookup table of word forms by word', () => {

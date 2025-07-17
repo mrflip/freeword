@@ -26,10 +26,10 @@ const jestConfig: JestConfigWithTsJest = {
   //   '!**/*.d.ts',
   // ],
   moduleNameMapper: {
-    '^@freeword/meta$': '<rootDir>/meta/src',
-    '^@freeword/meta/(.*)$': '<rootDir>/meta/src/$1',
-    '^@freeword/all-byword$': '<rootDir>/repos/freeword-all-byword',
-    '^@freeword/all-byword/(.*)$': '<rootDir>/repos/freeword-all-byword/$1',
+    '^@freeword/meta$':                   '<rootDir>/meta',
+    '^@freeword/meta/(.*)$':              '<rootDir>/meta/$1',
+    '^@freeword/all-byword$':             '<rootDir>/repos/freeword-all-byword',
+    '^@freeword/all-byword/(.*)$':        '<rootDir>/repos/freeword-all-byword/$1',
     // Remove or comment out the old '@/...' mappings to src
     // '^@/db/(.*)$': '<rootDir>/db/$1',
     // '^@/(.*)$': '<rootDir>/src/$1',

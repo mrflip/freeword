@@ -3,7 +3,8 @@ import      _                                /**/ from 'lodash'
 //import type * as TY                             from '@/lib/types'
 import type { WordformT }                         from '@freeword/meta'
 
-const ExampleWords = [
+export const SpotcheckWords = ['monkeyshines', 'idiomaticnesses', 'aah', 'zzz', 'syzygy', 'slainte', 'twixt', 'ourself', 'the']
+export const ExampleWords = [
   'monkeyshines',    /** use for spot-checks                  */
   'more',            /** other spot checks: pos:noun   freq near 2e6 (1_999_448)   */
   'person',          /** other spot checks: pos:noun   freq near 2e5   (200_520)   */
@@ -29,31 +30,19 @@ const ExampleWords = [
   'quoth',           /** verb with no inflections                */
   'syzygy',          /** rare but has a non-derived frequency    */
   'idiomaticnesses', /** has a lot going on                      */
+  // stem-ish cases
   'spoony',          /** several derived terms                   */
   'spooniest',       /** several derived terms                   */
   'spoonily',        /** several derived terms                   */
   'spoonier',        /** several derived terms                   */
   'spoonies',        /** several derived terms                   */
-  // stem-ish cases
-  'act',              /** stem-ish */
-  'acted',            /** stem-ish */
-  'acting',           /** stem-ish */
-  'actings',          /** stem-ish */
-  'actively',         /** stem-ish */
-  'astutely',         /** stem-ish */
-  'actor',            /** stem-ish */
-  'actorish',         /** stem-ish */
-  'actorly',          /** stem-ish */
-  'actors',           /** stem-ish */
-  'actable',          /** stem-ish */
-] as const
+] as const satisfies string[]
+export type ExampleWords = typeof ExampleWords[number]
 
 // rg -N "word: *'(more|which|person|incredible|joy|thinker|intermingling|clavichords|chimp|monkeyshines|the|syzygy|aah|zzz|idiomaticnesses|set|sheep|yowza|ourself|quoth|had|haddest|hadst|has|hast|hath|have|haves|having)'" db/freeword-all-byword.js
 // aah:              { word: 'aah',            core: 'aah',            pos: 'verb',    stemkind: 'v_core',     suffix: '',             stemcore: 'aah',                stemsplit: 'aah|',              freq:      153, wordbits: 0b00_0000_0000_0000_0000_1000_0001,    gloss: 'to exclaim in amazement, joy, or surprise' },
 //     23      |       |       |       15      |
 //     |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |       |
-
-type ExampleWords = typeof ExampleWords[number]
 
 export const ExampleWordforms = {
   monkeyshines:    { word: 'monkeyshines',    core: 'monkeyshines',    pos: 'intj', stemkind: 'intj_irr',  suffix: 'es',          stemcore: 'monkeyshines',  stemsplit: 'monkeyshin|es',   freq:        11, wordbits: 0b01_0000_0100_0111_0101_1001_0000, gloss: 'monkeyshines' },
@@ -68,35 +57,23 @@ export const ExampleWordforms = {
   because:         { word: 'because',         core: 'because',         pos: 'conj', stemkind: 'conj_core', suffix: '',            stemcore: 'because',       stemsplit: 'becaus|e',        freq:    945607, wordbits: 0b00_0001_0100_0000_0000_0001_0111, gloss: 'for the reason that' },
   the:             { word: 'the',             core: 'the',             pos: 'art',  stemkind: 'art_core',  suffix: '',            stemcore: 'the',           stemsplit: 'th|e',            freq:  58784490, wordbits: 0b00_0000_1000_0000_0000_1001_0000, gloss: 'definite article used to specify or make particular' },
   cushiest:        { word: 'cushiest',        core: 'cushy',           pos: 'adj',  stemkind: 'adj_est',   suffix: 'cushiest',    stemcore: 'cushy',         stemsplit: 'cush|iest',       freq:        20, wordbits: 0b00_0001_1100_0000_0001_1001_0100, gloss: 'easy' },
-  syzygies:        { word: 'syzygies',      core: 'syzygy',      pos: 'noun', stemkind: 'n_pl_s',    suffix: 'gies',        stemcore: 'syzygy',      stemsplit: 'syzyg|ies',       freq:     13, wordbits: 0b11_0000_0100_0000_0001_0101_0000, gloss: 'the configuration of the earth, moon, and sun lying in a straight line' },
-  are:             { word: 'are',           core: 'be',          pos: 'verb', stemkind: 'v_irr',     suffix: 'are',         stemcore: 'be',          stemsplit: '|are',            freq: 4291754, wordbits: 0b00_0000_0010_0000_0000_0001_0001, gloss: 'to have actuality' },
-  mellific:        { word: 'mellific',      core: 'mellific',    pos: 'adj',  stemkind: 'adj_core',  suffix: '',            stemcore: 'mellific',    stemsplit: 'mellif|ic',       freq:      1, wordbits: 0b00_0000_0000_0001_1001_0011_0100, gloss: 'producing honey' },  //
+  syzygies:        { word: 'syzygies',        core: 'syzygy',      pos: 'noun', stemkind: 'n_pl_s',    suffix: 'gies',        stemcore: 'syzygy',      stemsplit: 'syzyg|ies',       freq:     13, wordbits: 0b11_0000_0100_0000_0001_0101_0000, gloss: 'the configuration of the earth, moon, and sun lying in a straight line' },
+  are:             { word: 'are',             core: 'be',          pos: 'verb', stemkind: 'v_irr',     suffix: 'are',         stemcore: 'be',          stemsplit: '|are',            freq: 4291754, wordbits: 0b00_0000_0010_0000_0000_0001_0001, gloss: 'to have actuality' },
+  mellific:        { word: 'mellific',        core: 'mellific',    pos: 'adj',  stemkind: 'adj_core',  suffix: '',            stemcore: 'mellific',    stemsplit: 'mellif|ic',       freq:      1, wordbits: 0b00_0000_0000_0001_1001_0011_0100, gloss: 'producing honey' },  //
   aah:             { word: 'aah',             core: 'aah',             pos: 'verb', stemkind: 'v_core',    suffix: '',            stemcore: 'aah',           stemsplit: 'aah|',            freq:       153, wordbits: 0b00_0000_0000_0000_0000_1000_0001, gloss: 'to exclaim in amazement, joy, or surprise' },
-  aardvark:        { word: 'aardvark',      core: 'aardvark',    pos: 'noun', stemkind: 'n_core',    suffix: '',            stemcore: 'aardvark',    stemsplit: 'aardvark|',       freq:    238, wordbits: 0b00_0010_0010_0000_0100_0000_1001, gloss: 'an African mammal' },
+  aardvark:        { word: 'aardvark',        core: 'aardvark',    pos: 'noun', stemkind: 'n_core',    suffix: '',            stemcore: 'aardvark',    stemsplit: 'aardvark|',       freq:    238, wordbits: 0b00_0010_0010_0000_0100_0000_1001, gloss: 'an African mammal' },
   zzz:             { word: 'zzz',             core: 'zzz',             pos: 'intj', stemkind: 'intj_core', suffix: '',            stemcore: 'zzz',           stemsplit: 'zzz|',            freq:        60, wordbits: 0b10_0000_0000_0000_0000_0000_0000, gloss: 'used to suggest the sound of snoring' },
   //
   syzygy:          { word: 'syzygy',          core: 'syzygy',          pos: 'noun', stemkind: 'n_core',    suffix: '',            stemcore: 'syzygy',        stemsplit: 'syzyg|y',         freq:        95, wordbits: 0b11_0000_0100_0000_0000_0100_0000, gloss: 'the configuration of the earth, moon, and sun lying in a straight line' },
   sheep:           { word: 'sheep',           core: 'sheep',           pos: 'noun', stemkind: 'n_both',    suffix: '',            stemcore: 'sheep',         stemsplit: 'sheep|',          freq:     12407, wordbits: 0b00_0000_0100_1000_0000_1001_0000, gloss: 'a ruminant mammal' },
   quoth:           { word: 'quoth',           core: 'quoth',           pos: 'verb', stemkind: 'v_core',    suffix: '',            stemcore: 'quoth',         stemsplit: 'quoth|',          freq:        54, wordbits: 0b00_0001_1001_0100_0000_1000_0000, gloss: 'said; _quoth_ is the only accepted form of this verb: it cannot be conjugated' },
   idiomaticnesses: { word: 'idiomaticnesses', core: 'idiomaticnesses', pos: 'intj', stemkind: 'intj_irr',  suffix: 'icnesses', stemcore: 'idiomaticnesses', stemsplit: 'idiomat|icnesses', freq:       78, wordbits: 0b00_0000_1100_0111_0001_0001_1101, gloss: 'idiomaticnesses' },
-  set:             { word: 'set',           core: 'set',         pos: 'verb', stemkind: 'v_core',    suffix: '',            stemcore: 'set',         stemsplit: 'set|',            freq: 373574, wordbits: 0b00_0000_1100_0000_0000_0001_0000, gloss: 'to put in a particular position' },
+  set:             { word: 'set',             core: 'set',         pos: 'verb', stemkind: 'v_core',    suffix: '',            stemcore: 'set',         stemsplit: 'set|',            freq: 373574, wordbits: 0b00_0000_1100_0000_0000_0001_0000, gloss: 'to put in a particular position' },
   spoony:          { word: 'spoony',          core: 'spoony',          pos: 'noun', stemkind: 'n_core',    suffix: '',            stemcore: 'spoony',        stemsplit: 'spoon|y',         freq:        51, wordbits: 0b01_0000_0100_1110_0000_0000_0000, gloss: 'a spoony person' },
-  spoonier:        { word: 'spoonier',      core: 'spoony',      pos: 'adj',  stemkind: 'adj_er',    suffix: 'spoonier',    stemcore: 'spoony',      stemsplit: 'spoon|ier',       freq:     20, wordbits: 0b00_0000_0110_1110_0001_0001_0000, gloss: 'overly sentimental' },
-  spoonies:        { word: 'spoonies',      core: 'spoony',      pos: 'noun', stemkind: 'n_pl_s',    suffix: 'spoonies',    stemcore: 'spoony',      stemsplit: 'spoon|ies',       freq:     20, wordbits: 0b00_0000_0100_1110_0001_0001_0000, gloss: 'a spoony person' },
-  spooniest:       { word: 'spooniest',     core: 'spoony',      pos: 'adj',  stemkind: 'adj_est',   suffix: 'spooniest',   stemcore: 'spoony',      stemsplit: 'spoon|iest',      freq:     20, wordbits: 0b00_0000_1100_1110_0001_0001_0000, gloss: 'overly sentimental' },
-  spoonily:        { word: 'spoonily',      core: 'spoony',      pos: 'adv',  stemkind: 'adv_ly',    suffix: 'spoonily',    stemcore: 'spoonily',    stemsplit: 'spoon|ily',       freq:     20, wordbits: 0b01_0000_0100_1110_1001_0000_0000, gloss: 'overly sentimental' },
-  //
-  act:             { word: 'act',             core: 'act',             pos: 'verb', stemkind: 'v_core',    suffix: '',            stemcore: 'act',         stemsplit: 'act|',            freq: 152775, wordbits: 0b00_0000_1000_0000_0000_0000_0101, gloss: 'to do something' },
-  acted:           { word: 'acted',           core: 'act',             pos: 'verb', stemkind: 'v_ed',      suffix: 'ed',          stemcore: 'act',         stemsplit: 'act|ed',          freq:  20179, wordbits: 0b00_0000_1000_0000_0000_0001_1101, gloss: 'to do something' },
-  acting:          { word: 'acting',          core: 'acting',          pos: 'noun', stemkind: 'n_core',    suffix: '',            stemcore: 'acting',      stemsplit: 'act|ing',         freq:  51336, wordbits: 0b00_0000_1000_0010_0001_0100_0101, gloss: 'the occupation of an actor' },
-  actings:         { word: 'actings',         core: 'acting',          pos: 'noun', stemkind: 'n_pl_s',    suffix: 's',           stemcore: 'acting',      stemsplit: 'act|ings',        freq:     18, wordbits: 0b00_0000_1100_0010_0001_0100_0101, gloss: 'the occupation of an actor' },
-  actively:        { word: 'actively',        core: 'actively',        pos: 'adv',  stemkind: 'adv_core',  suffix: '',            stemcore: 'actively',    stemsplit: 'activel|y',       freq:  16400, wordbits: 0b01_0010_1000_0000_1001_0001_0101, gloss: 'with activity' },
-  astutely:        { word: 'astutely',        core: 'astute',          pos: 'adv',  stemkind: 'adv_ly',    suffix: 'astutely',    stemcore: 'astutely',    stemsplit: 'astut|ely',       freq:    167, wordbits: 0b01_0001_1100_0000_1000_0001_0001, gloss: 'shrewd' },
-  actor:           { word: 'actor',           core: 'actor',           pos: 'noun', stemkind: 'n_core',    suffix: '',            stemcore: 'actor',       stemsplit: 'actor|',          freq:  45184, wordbits: 0b00_0000_1010_0100_0000_0000_0101, gloss: 'a theatrical performer' },
-  actorish:        { word: 'actorish',        core: 'actor',           pos: 'adj',  stemkind: 'adj_ish',   suffix: 'actorish',    stemcore: 'actorish',    stemsplit: 'actor|ish',       freq:  18074, wordbits: 0b00_0000_1110_0100_0001_1000_0101, gloss: 'a theatrical performer' },
-  actorly:         { word: 'actorly',         core: 'actor',           pos: 'adj',  stemkind: 'adj_ly',    suffix: 'actorly',     stemcore: 'actorish',    stemsplit: 'actor|ly',        freq:     10, wordbits: 0b01_0000_1010_0100_1000_0000_0101, gloss: 'a theatrical performer' },
-  actors:          { word: 'actors',          core: 'actor',           pos: 'noun', stemkind: 'n_pl_s',    suffix: 's',           stemcore: 'actor',       stemsplit: 'actor|s',         freq:  28765, wordbits: 0b00_0000_1110_0100_0000_0000_0101, gloss: 'a theatrical performer' },
-  actable:         { word: 'actable',         core: 'actable',         pos: 'adj',  stemkind: 'adj_core',  suffix: '',            stemcore: 'actable',     stemsplit: 'actabl|e',        freq:      1, wordbits: 0b00_0000_1000_0000_1000_0001_0111, gloss: 'suitable for performance on the stage' },
+  spoonier:        { word: 'spoonier',        core: 'spoony',      pos: 'adj',  stemkind: 'adj_er',    suffix: 'spoonier',    stemcore: 'spoony',      stemsplit: 'spoon|ier',       freq:     20, wordbits: 0b00_0000_0110_1110_0001_0001_0000, gloss: 'overly sentimental' },
+  spoonies:        { word: 'spoonies',        core: 'spoony',      pos: 'noun', stemkind: 'n_pl_s',    suffix: 'spoonies',    stemcore: 'spoony',      stemsplit: 'spoon|ies',       freq:     20, wordbits: 0b00_0000_0100_1110_0001_0001_0000, gloss: 'a spoony person' },
+  spooniest:       { word: 'spooniest',       core: 'spoony',      pos: 'adj',  stemkind: 'adj_est',   suffix: 'spooniest',   stemcore: 'spoony',      stemsplit: 'spoon|iest',      freq:     20, wordbits: 0b00_0000_1100_1110_0001_0001_0000, gloss: 'overly sentimental' },
+  spoonily:        { word: 'spoonily',        core: 'spoony',      pos: 'adv',  stemkind: 'adv_ly',    suffix: 'spoonily',    stemcore: 'spoonily',    stemsplit: 'spoon|ily',       freq:     20, wordbits: 0b01_0000_0100_1110_1001_0000_0000, gloss: 'overly sentimental' },
 } as const satisfies Record<ExampleWords, WordformT>
 
 export const HaveEtc = {
@@ -109,7 +86,7 @@ export const HaveEtc = {
   have:            { word: 'have',            core: 'have',            pos: 'noun', stemkind: 'n_core',    suffix: '',            stemcore: 'have',          stemsplit: 'hav|e',           freq:   3586008, wordbits: 0b00_0010_0000_0000_0000_1001_0001, gloss: 'a wealthy person' },
   haves:           { word: 'haves',           core: 'have',            pos: 'noun', stemkind: 'n_pl_s',    suffix: 's',           stemcore: 'have',          stemsplit: 'hav|es',          freq:       671, wordbits: 0b00_0010_0100_0000_0000_1001_0001, gloss: 'a wealthy person' },
   having:          { word: 'having',          core: 'have',            pos: 'verb', stemkind: 'v_ing',     suffix: 'having',      stemcore: 'have',          stemsplit: 'hav|ing',         freq:    310475, wordbits: 0b00_0010_0000_0010_0001_1100_0001, gloss: 'to be in possession of' },
-}
+} as const satisfies Record<string, WordformT>
 
 export const SyzygyEtc = {
   syzygal:         { word: 'syzygal',       core: 'syzygy',      pos: 'adj',  stemkind: 'adj_al',    suffix: 'syzygal',     stemcore: 'syzygal',     stemsplit: 'syzyg|al',        freq:     38, wordbits: 0b11_0000_0100_0000_1000_0100_0001, gloss: 'the configuration of the earth, moon, and sun lying in a straight line' },
@@ -117,7 +94,7 @@ export const SyzygyEtc = {
   syzygial:        { word: 'syzygial',      core: 'syzygy',      pos: 'adj',  stemkind: 'adj_al',    suffix: 'syzygial',    stemcore: 'syzygal',     stemsplit: 'syzyg|ial',       freq:     38, wordbits: 0b11_0000_0100_0000_1001_0100_0001, gloss: 'the configuration of the earth, moon, and sun lying in a straight line' },
   syzygies:        { word: 'syzygies',      core: 'syzygy',      pos: 'noun', stemkind: 'n_pl_s',    suffix: 'gies',        stemcore: 'syzygy',      stemsplit: 'syzyg|ies',       freq:     13, wordbits: 0b11_0000_0100_0000_0001_0101_0000, gloss: 'the configuration of the earth, moon, and sun lying in a straight line' },
   syzygy:          { word: 'syzygy',        core: 'syzygy',      pos: 'noun', stemkind: 'n_core',    suffix: '',            stemcore: 'syzygy',      stemsplit: 'syzyg|y',         freq:     95, wordbits: 0b11_0000_0100_0000_0000_0100_0000, gloss: 'the configuration of the earth, moon, and sun lying in a straight line' },
-}
+} as const satisfies Record<string, WordformT>
 
 export const ActEtc = {
   act:             { word: 'act',           core: 'act',         pos: 'verb', stemkind: 'v_core',    suffix: '',            stemcore: 'act',         stemsplit: 'act|',            freq: 152775, wordbits: 0b00_0000_1000_0000_0000_0000_0101, gloss: 'to do something' },
@@ -159,7 +136,7 @@ export const ActEtc = {
   activized:       { word: 'activized',     core: 'activize',    pos: 'verb', stemkind: 'v_ed',      suffix: 'ized',        stemcore: 'activize',    stemsplit: 'activ|ized',      freq:  56273, wordbits: 0b10_0010_1000_0000_0001_0001_1101, gloss: 'to activate' },
   activizes:       { word: 'activizes',     core: 'activize',    pos: 'verb', stemkind: 'v_pl_s',    suffix: 'izes',        stemcore: 'activize',    stemsplit: 'activ|izes',      freq:  56273, wordbits: 0b10_0010_1100_0000_0001_0001_0101, gloss: 'to activate' },
   activizing:      { word: 'activizing',    core: 'activize',    pos: 'verb', stemkind: 'v_ing',     suffix: 'izing',       stemcore: 'activize',    stemsplit: 'activ|izing',     freq:  56273, wordbits: 0b10_0010_1000_0010_0001_0100_0101, gloss: 'to activate' },
-}
+} as const satisfies Record<string, WordformT>
 
 export const CushionEtc = {
   cushier:         { word: 'cushier',       core: 'cushy',       pos: 'adj',  stemkind: 'adj_er',    suffix: 'cushier',     stemcore: 'cushy',       stemsplit: 'cush|ier',        freq:     27, wordbits: 0b00_0001_0110_0000_0001_1001_0100, gloss: 'easy' },
@@ -175,13 +152,13 @@ export const CushionEtc = {
   cushions:        { word: 'cushions',      core: 'cushion',     pos: 'verb', stemkind: 'v_pl_s',    suffix: 's',           stemcore: 'cushion',     stemsplit: 'cushion|s',       freq:   1080, wordbits: 0b00_0001_0100_0110_0001_1000_0100, gloss: 'to pad with soft material' },
   cushiony:        { word: 'cushiony',      core: 'cushiony',    pos: 'adj',  stemkind: 'adj_core',  suffix: '',            stemcore: 'cushiony',    stemsplit: 'cushion|y',       freq:     15, wordbits: 0b01_0001_0100_0110_0001_1000_0100, gloss: 'soft' },
   cushy:           { word: 'cushy',         core: 'cushy',       pos: 'adj',  stemkind: 'adj_core',  suffix: '',            stemcore: 'cushy',       stemsplit: 'cush|y',          freq:    606, wordbits: 0b01_0001_0100_0000_0000_1000_0100, gloss: 'easy' },
-}
+} as const satisfies Record<string, WordformT>
 
 // blank is not a word; this repo does not have
 export const NotWords = [
   '',       // blank should not be here but a processing bug might disagree
   'poofs',  // terms considered offensive are published separately
-] as const
+] as const satisfies string[]
 
 // approximate counts
 //   art:      1

@@ -457,17 +457,16 @@ __metadata:
     "@types/lodash": "npm:^4.17.18"
     "@types/luxon": "npm:^3"
     "@types/node": "npm:^24.0.14"
-    "@types/seedrandom": "npm:^3"
     "@types/sinon": "npm:^17.0.4"
     "@types/sinon-chai": "npm:^4.0.0"
     "@types/snowball-stemmers": "npm:^0.6.2"
     "@types/sprintf-js": "npm:^1"
     chai: "npm:^5.2.0"
+    esm-seedrandom: "npm:3.0.5-esm.2"
     jest: "npm:^30.0.2"
     jest-util: "npm:^30.0.2"
     lodash: "npm:^4.17.21"
     luxon: "npm:^3.6.1"
-    seedrandom: "npm:^3.0.5"
     sinon: "npm:^21.0.0"
     sinon-chai: "npm:^4.0.0"
     snowball-stemmers: "npm:^0.6.0"
@@ -1865,6 +1864,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"esm-seedrandom@npm:3.0.5-esm.2":
+  version: 3.0.5-esm.2
+  resolution: "esm-seedrandom@npm:3.0.5-esm.2"
+  checksum: 10/3a6d46ee982fe89a22e472a14fa3e5ebedc940f747576332534a65afff0eb9cba0d881e08d5ecf23557896638194b97087aeef90a7d9bc14c52a24c61cde1e62
+  languageName: node
+  linkType: hard
+
 "esprima@npm:^4.0.0":
   version: 4.0.1
   resolution: "esprima@npm:4.0.1"
@@ -2216,6 +2222,7 @@ __metadata:
     "@types/snowball-stemmers": "npm:^0.6.2"
     "@types/sprintf-js": "npm:^1"
     chai: "npm:^5.2.0"
+    esm-seedrandom: "npm:3.0.5-esm.2"
     jest: "npm:^30.0.2"
     jest-util: "npm:^30.0.2"
     lodash: "npm:^4.17.21"

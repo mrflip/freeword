@@ -9,11 +9,11 @@ export type Word         = string
 /* A single lower-cased letter */
 export type Letter       = string
 /* Enum to strictly type lowercase a-z */
-export type A2Zlo    = (typeof FW.A2Zlos)[number]
+export type AtoZlo    = (typeof FW.AtoZlos)[number]
 /** Enum to strictly type uppercase A-Z */
-export type A2Zup    = (typeof FW.A2Zups)[number]
+export type AtoZup    = (typeof FW.AtoZups)[number]
 /** Enum to strictly type letter index 0-25 */
-export type A2Znum   = (typeof FW.A2Znums)[number]
+export type AtoZnum   = (typeof FW.AtoZnums)[number]
 
 /** any object with a word property */
 export type Worded       = { word: string }
