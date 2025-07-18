@@ -1,12 +1,29 @@
 #!/bin/bash
 SCRIPTDIR="$(realpath $(dirname $0))"
 MAINDIR="$(realpath $(dirname $SCRIPTDIR))"
-FWVER=$(cat $MAINDIR/VERSION.txt)
-
-$SCRIPTDIR/version-extract.sh
 
 yarn workspaces foreach --all run build
 # yarn workspace internals rcun test --verbose=false
+
+# Find the version of main package, and stamp it on all the other packages
+$SCRIPTDIR/version-extract.sh $MAINDIR/package.json
+$SCRIPTDIR/version-extract.sh $MAINDIR/meta/package.json
+MAINVER=$(cat $MAINDIR/VERSION.txt)
+METAVER=$(cat $MAINDIR/meta/VERSION.txt)
+echo "MAINVER: $MAINVER METAVER: $METAVER"
+$SCRIPTDIR/version-clobber.sh "^$METAVER"
+$SCRIPTDIR/version-show.sh || true
+#
+yarn workspaces foreach --all version "$MAINVER"
+yarn workspaces foreach --all run npm version $MAINVER --force --allow-same-version
+#
+$SCRIPTDIR/version-show.sh || true
+
+yarn workspaces foreach --all run shipme --access public --verbose=false # "$@"
+
+$SCRIPTDIR/version-clobber.sh "workspace:*"
+$SCRIPTDIR/version-show.sh || true
+
 
 # VERSIONSTRAT=${1:-pre}
 # if [ "${NPMTAG:-}" = "" ]; then
@@ -21,13 +38,3 @@ yarn workspaces foreach --all run build
 #     NPMTAG=next
 #   fi
 # fi
-
-grep '"version"' package.json */package.json */*/package.json || true
-echo "VERSION: ${FWVER-'(none)'} VERSIONSTRAT: ${VERSIONSTRAT:-'(none)'} NPMTAG: ${NPMTAG:-'(none)'}"
-#
-yarn workspaces foreach --all version $FWVER
-yarn workspaces foreach --all run npm version $FWVER --force --allow-same-version
-#
-grep '"version"' package.json */package.json */*/package.json || true
-
-# yarn workspaces foreach --all run shipme --access public --dry-run --verbose=false
