@@ -37,3 +37,4 @@ import { WordformT, Consts } from '@freeword/meta';
 
 ## Note
 This package is intended for internal and downstream use by Freeword-related projects. All updates to types and constants should be made in the root `src/` directory and published via this package.
+

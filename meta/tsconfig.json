@@ -1,0 +1,15 @@
+{
+  "$schema":                "https://json.schemastore.org/tsconfig",
+  "extends":                "./tsconfig-base.json",
+  // "include":                            ["src/**/*.ts", "db/**/*.ts", "src/**/*.js"],
+  "compilerOptions": {
+    "tsBuildInfoFile":                    "../.tsbuildinfo-meta",
+    "outDir":                             "./built",  /* Specify the path to .tsbuildinfo incremental compilation file. */
+    "lib":                                ["esnext"],
+    "incremental":                        true,
+    "composite":                          true,
+    "noEmit":                             false, /* Disable emitting files from a compilation. */
+    "noErrorTruncation":                  false // true to see all errors
+  }
+
+}

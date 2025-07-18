@@ -83,6 +83,5 @@
     "index.js",
     "index.d.ts"
   ],
-  "packageManager": "yarn@4.9.2",
-  "stableVersion": "1.0.0"
+  "packageManager": "yarn@4.9.2"
 }

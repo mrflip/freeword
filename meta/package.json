@@ -1,19 +1,17 @@
 {
   "name": "@freeword/meta",
-  "version": "1.0.1",
+  "version": "1.0.11",
   "description": "Meta package for Freeword: exports all core types, constants, and utilities from the src/ directory.",
   "scripts": {
+    "shipme": "npm publish",
+    "build": "yarn tsc --build --verbose",
     "_1": " echo .",
-    "test": "           yarn node --experimental-vm-modules                      $(yarn bin jest)",
-    "test:plain": "     yarn node --experimental-vm-modules --enable-source-maps $(yarn bin jest)",
-    "test:coverage": "  yarn node --experimental-vm-modules --enable-source-maps $(yarn bin jest) --coverage",
-    "test:watch": "     yarn node --experimental-vm-modules --enable-source-maps $(yarn bin jest) --watch",
-    "twitch": "         yarn node --experimental-vm-modules --enable-source-maps $(yarn bin jest) --watch",
+    "test": "           ( cd .. ; yarn test )",
+    "test:plain": "     ( cd .. ; yarn test )",
+    "test:coverage": "  ( cd .. ; yarn test ) --coverage ",
+    "test:watch": "     ( cd .. ; yarn test ) --watch    ",
+    "twitch": "         ( cd .. ; yarn test ) --watch    ",
     "_2": " echo .",
-    "test:inrepos": "   yarn workspace -- fix this",
-    "git:yarnicles": "  git ci -m 'chore: pkgs + yarnicles' .yarn yarn.lock .yarnrc.yml package.json",
-    "_3": " echo .",
-    "publish": "npm publish --access public",
     "_z": "echo ."
   },
   "dependencies": {
@@ -24,8 +22,6 @@
     "sprintf-js": "^1.1.3"
   },
   "devDependencies": {
-    "@freeword/all-byword": "workspace:*",
-    "@freeword/meta": "workspace:*",
     "@jest/globals": "^30.0.4",
     "@jest/types": "^30.0.1",
     "@types/chai": "^5.2.2",
@@ -71,9 +67,5 @@
       "import": "./built/index.js"
     }
   },
-  "files": [
-    "index.js",
-    "index.ts"
-  ],
   "packageManager": "yarn@4.9.2"
 }

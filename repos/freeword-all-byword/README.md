@@ -5,7 +5,9 @@ Open dictionary with word forms list.
 ## Installation
 
 ```bash
-npm install @freeword/freeword-all-byword
+# whichever package manager you like:
+# npm install @freeword/all-byword
+yarn add @freeword/all-byword
 ```
 
 ## Usage
@@ -13,31 +15,31 @@ npm install @freeword/freeword-all-byword
 ### JavaScript
 
 ```javascript
-import { Wordforms } from '@freeword/freeword-all-byword';
+import { Wordforms } from '@freeword/all-byword';
 
 // Use WordformsList as needed
 console.log(Wordforms.monkeyshines);
 ```
 Name it what you like, or use the namespaced version:
 ```
-import { Wordforms as Dictionary } from '@freeword/freeword-all-byword';
+import { Wordforms as Dictionary } from '@freeword/all-byword';
 ```
 
 ### TypeScript
 
 ```typescript
-import { Wordforms, type WordformT, type Poskind, type Stemkind } from '@freeword/freeword-all-byword';
+import { Wordforms, type WordformT, type Poskind, type Stemkind } from '@freeword/all-byword';
 
 // TypeScript provides full type safety
 const entry: WordformT = Wordforms.aardvark;
 console.log(entry?.gloss); // "an African mammal"
 
 // You can also use specific stemkind types for better type safety
-import type { VerbStemkind, NounStemkind } from '@freeword/freeword-all-byword';
+import type { VerbStemkind, NounStemkind } from '@freeword/all-byword';
 const verbEntry: WordformT & { stemkind: VerbStemkind } = Object.values(Words).filter((word) => (word.pos === 'verb')));
 
 // Import constants and types directly from src
-import { Poskinds, PosStemkinds, AdjStemkind } from '@freeword/freeword-all-byword';
+import { Poskinds, PosStemkinds, AdjStemkind } from '@freeword/all-byword';
 ```
 
 ## API

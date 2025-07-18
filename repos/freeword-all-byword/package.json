@@ -1,12 +1,12 @@
 {
   "name": "@freeword/all-byword",
-  "version": "1.0.0",
+  "version": "1.0.11",
   "description": "A Practical Dictionary, containing all(*) words in our collection, exported as a lookup table by word. Has useful metadata assembled from freely licensed sources of varying quality. (*) About 1000 highly offensive words are omitted, but available from @freeword/offensive; see the README for details.",
   "scripts": {
-    "publish": "npm publish --access public"
+    "shipme": "npm publish"
   },
   "dependencies": {
-    "@freeword/meta": "^1.0.0"
+    "@freeword/meta": "workspace:*"
   },
   "keywords": [
     "dictionary",
@@ -31,9 +31,5 @@
       "import": "./index.js"
     }
   },
-  "files": [
-    "index.js",
-    "index.d.ts"
-  ],
   "packageManager": "yarn@4.9.2"
 }
