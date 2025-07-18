@@ -1,7 +1,6 @@
-import jest from '@jest/globals'
-
-export const jestExpect = jest.expect
+import { expect as jestExpect } from '@jest/globals'
 
 export function checkSnapshot(results: any[]) {
-  return jestExpect(results).toMatchSnapshot()
+  jestExpect(results).toMatchSnapshot()
+  return true
 }

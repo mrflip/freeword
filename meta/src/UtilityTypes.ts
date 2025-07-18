@@ -49,6 +49,7 @@ export interface GoodOutcome<VT = any, GT extends string = string> extends Outco
   val:      VT
   err?:     never
 }
+
 export interface ExtError extends Error {
   /** Additional information about the process. Compatible with typing of BadOutcome but otherwise unrestricted */
   extensions: AnyBag & {
@@ -72,7 +73,11 @@ export type OmitStatics<T, Replacement> =
     }
     : Omit<T, keyof Replacement>
 
+/** A type that can be an Iterable, Iterator, or Generator */
+export type AnySyncIterable<VT, RT = any>  = Iterable<VT> | Iterator<VT> | Generator<VT, RT, VT | undefined>
+/** A type that can be an AsyncIterable, AsyncIterator, or AsyncGenerator */
+export type AnyAsyncIterable<VT, RT = any> = AsyncIterable<VT> | AsyncIterator<VT> | AsyncGenerator<VT, RT, VT | undefined>
 /** A type that can be an AsyncIterable or an Iterable */
-export type AnyIterable<VT> = AsyncIterable<VT> | Iterable<VT>
+export type AnyIterable<VT, RT = any>      = AnySyncIterable<VT, RT> | AnyAsyncIterable<VT, RT>
 
 // --

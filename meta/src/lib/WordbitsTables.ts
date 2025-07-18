@@ -46,19 +46,19 @@ export const hijklmnFor07_13: readonly TY.Shingle[] = [
   '',      'h',      'i',      'hi',      'j',      'hj',      'ij',      'hij',
   'k',     'hk',     'ik',     'hik',     'jk',     'hjk',     'ijk',     'hijk',
   'l',     'hl',     'il',     'hil',     'jl',     'hjl',     'ijl',     'hijl',
-  'lk',    'hlk',    'ilk',    'hilk',    'jlk',    'hjlk',    'ijkl',    'hijkl',
+  'kl',    'hkl',    'ikl',    'hikl',    'jkl',    'hjkl',    'ijkl',    'hijkl',
   'm',     'hm',     'im',     'him',     'jm',     'hjm',     'ijm',     'hijm',
   'km',    'hkm',    'ikm',    'hikm',    'jkm',    'hjkm',    'ijkm',    'hijkm',
   'lm',    'hlm',    'ilm',    'hilm',    'jlm',    'hjlm',    'ijlm',    'hijlm',
-  'lkm',   'hlkm',   'ilkm',   'hilkm',   'jlkm',   'hjlkm',   'ijklm',   'hijklm',
+  'klm',   'hklm',   'iklm',   'hiklm',   'jklm',   'hjklm',   'ijklm',   'hijklm',
   'n',     'hn',     'in',     'hin',     'jn',     'hjn',     'ijn',     'hijn',
   'kn',    'hkn',    'ikn',    'hikn',    'jkn',    'hjkn',    'ijkn',    'hijkn',
   'ln',    'hln',    'iln',    'hiln',    'jln',    'hjln',    'ijln',    'hijln',
-  'lkn',   'hlkn',   'ilkn',   'hilkn',   'jlkn',   'hjlkn',   'ijkln',   'hijkln',
+  'kln',   'hkln',   'ikln',   'hikln',   'jkln',   'hjkln',   'ijkln',   'hijkln',
   'mn',    'hmn',    'imn',    'himn',    'jmn',    'hjmn',    'ijmn',    'hijmn',
   'kmn',   'hkmn',   'ikmn',   'hikmn',   'jkmn',   'hjkmn',   'ijkmn',   'hijkmn',
   'lmn',   'hlmn',   'ilmn',   'hilmn',   'jlmn',   'hjlmn',   'ijlmn',   'hijlmn',
-  'lkmn',  'hlkmn',  'ilkmn',  'hilkmn',  'jlkmn',  'hjlkmn',  'ijklmn',  'hijklmn',
+  'klmn',  'hklmn',  'iklmn',  'hiklmn',  'jklmn',  'hjklmn',  'ijklmn',  'hijklmn',
 ]
 /** Lookup for bits 14 to 20 (opqrstu) of Wordbits to the specific uniq letters they encode */
 export const opqrstuFor14_20: readonly TY.Shingle[] = [

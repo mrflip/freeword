@@ -4,8 +4,8 @@ import      { promises as fs }                    from 'fs'
 import      path                                  from 'path'
 import      os                                    from 'os'
 // import   * as UF                               from '@/lib/UF'
-import type * as TY                               from '@/lib/FilerTypes.ts'
-import      { _abspathForPathparts,  _abspathForPathname,  pathinfoFor, starlines, dumptext, dumpjson, mkdirp} from '@/lib/Filer.js'
+import type * as TY                               from '../../meta/src/types.ts'
+import      { _abspathForPathparts,  _abspathForPathname,  pathinfoFor, starlines, dumptext, dumpjson, mkdirp} from '../../meta/src/lib/Filer.ts'
 
 describe('Filer', () => {
   let tempDir: string

@@ -97,13 +97,4 @@ export type WordDict  = Bag<WordformT>
 
 // == [Process related types] -- tagged type to allow non-erroring return values
 
-export interface StepOutcome<VT> {
-  ok:                   boolean
-  val?:                 VT | undefined
-  errmsg?:              string | undefined
-  tmi?:                 AnyBag
-}
-export interface GoodOutcome<VT> extends StepOutcome<VT> { ok: true, val: VT }
-export interface BadOutcome  extends StepOutcome<never>  { ok: false, errmsg: string }
-
 // --

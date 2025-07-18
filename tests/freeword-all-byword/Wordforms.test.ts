@@ -1,4 +1,4 @@
-import      _                                /**/ from 'lodash'
+import      _, { type Dictionary }                                /**/ from 'lodash'
 import       { expect }                           from 'chai'
 import       { Poskinds, Wordforms }              from '@freeword/all-byword'
 import       * as FW                              from '@freeword/meta'
@@ -214,13 +214,14 @@ describe('Wordforms', () => {
     })
 
     it('should have reasonable distribution of parts of speech', () => {
-      const posCounts:    Record<TY.Poskind, number> = _.mapKeys(Poskinds, _.constant(0)) as Record<TY.Poskind, number>
-      _.each(Wordforms, ((word: TY.Word) => {
-        const     pos   = Wordforms[word]?.pos as TY.Poskind
-        posCounts[pos]  = (posCounts[pos] || 0) + 1
-      }))
-      const wanted = { noun: 58876, verb: 38592, adj: 12759, adv: 1799, prep: 62, conj: 17, pron: 51, intj: 84979 } as const
-      if (! _.isEqual(posCounts, wanted)) { console.log(FW.pretty(posCounts)) }
+      // const posCounts:    Record<TY.Poskind, number> = _.mapKeys(Poskinds, _.constant(0)) as TY.Bag<number> as Record<TY.Poskind, number>
+      // _.each(Wordforms, ((wordform: TY.WordformT) => {
+      //   const     pos   = wordform.pos // as TY.Poskind
+      //   posCounts[pos]  = (posCounts[pos] || 0) + 1
+      // }))
+      const posCounts = _.countBy(_.values(Wordforms), 'pos')
+      const wanted = { noun: 58876, verb: 38592, adj: 12759, adv: 1799, prep: 62, conj: 17, pron: 51, art: !, intj: 84979 } as const
+      if (! _.isEqual(posCounts, wanted)) { console.log(FW.UF.prettify(posCounts)) }
       expect(posCounts).to.eql(wanted)
     })
   })

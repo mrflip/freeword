@@ -164,7 +164,7 @@ export function rot13Wordbits(wordbits: TY.WordbitsT): TY.WordbitsT {
 }
 
 /** @returns the unique letters in the word, in alphabetical order */
-export function ltrsForWordbits(wordbits: TY.WordbitsT): TY.Shingle {
+export function wordForWordbits(wordbits: TY.WordbitsT): TY.Shingle {
   const bits00_06 =  wordbits        & 0b111_1111 as TY.AtoZnum
   const bits07_13 = (wordbits >>  7) & 0b111_1111 as TY.AtoZnum
   const bits14_20 = (wordbits >> 14) & 0b111_1111 as TY.AtoZnum
@@ -217,9 +217,10 @@ export function digestWord(word: TY.Word): DigestedWord {
   let wordbits   = 0
   let dupearr    = [] as TY.AtoZlo[]
   let uniqarr    = [] as TY.AtoZlo[]
-  const ltrs = word.split('').sort() as TY.AtoZlo[]
+  const ltrs = word.split('') as TY.AtoZlo[]
   const beg = ltrs[0] as TY.AtoZlo
   const end = ltrs[ltrs.length - 1] as TY.AtoZlo
+  ltrs.sort()
   for (const ltr of ltrs) {
     const ltrmask = WordbitsTables.ltrToWordbitsTable[ltr]
     if (wordbits & ltrmask) { dupearr.push(ltr); continue }

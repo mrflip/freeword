@@ -1,5 +1,7 @@
 import      _                                /**/ from 'lodash'
 import type * as TY                               from '../types.ts'
+//
+export *                                          from '../UtilityConsts.ts'
 
 export const Poskinds     = [
   'adj', 'adv', 'verb', 'noun', 'intj', 'prep', 'conj', 'pron', 'art',

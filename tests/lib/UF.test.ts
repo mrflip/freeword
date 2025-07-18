@@ -1,14 +1,14 @@
 import      _                                /**/ from 'lodash'
 import      { expect }                            from 'chai'
-import      * as UF                              from '../../meta/src/lib/UF.ts'
+import      { UF }                                from '@freeword/meta'
 
 describe('UF', () => {
   describe('AlphabetList', () => {
     it('should contain all 26 letters of the alphabet', () => {
-      expect(UF.AlphabetList).to.have.length(26)
-      expect(UF.AlphabetList[0]).to.equal('a')
-      expect(UF.AlphabetList[25]).to.equal('z')
-      expect(UF.AlphabetList).to.be.an('array')
+      expect(UF.AtoZlos).to.have.length(26)
+      expect(UF.AtoZlos[0]).to.equal('a')
+      expect(UF.AtoZlos[25]).to.equal('z')
+      expect(UF.AtoZlos).to.be.an('array')
     })
   })
 

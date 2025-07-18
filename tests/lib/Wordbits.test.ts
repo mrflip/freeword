@@ -2,8 +2,10 @@ import      _                                /**/ from 'lodash'
 import      { expect }                            from 'chai'
 import type * as TY                               from '@freeword/meta'
 import      { Wordbits, UF }                      from '@freeword/meta'
-import      { ExampleWords }                  from '../Fixtures.ts'
-import { checkSnapshot } from '../TestHelpers.ts'
+import      { ExampleWords }                      from '../Fixtures.ts'
+import { checkSnapshot }                          from '../TestHelpers.ts'
+
+const { prettyWordbits } = Wordbits
 
 describe('Wordbits', () => {
 
@@ -57,7 +59,7 @@ describe('Wordbits', () => {
       expect(Wordbits.aHasAllOfBMasked(chimpsMask, chimpsBits)).to.be.true // a equal  to b
       expect(Wordbits.aHasAllOfBMasked(adoMask,       adoBits)).to.be.true    // a equal  to b
     })
-    it.each(ExampleWords)('should return false for non-matching words', (word) => {
+    it('should return false for non-matching words', () => {
       expect(Wordbits.aHasAllOfBMasked(chimpsMask,  adiosBits)).to.be.false  // intersect with leftovers in each
       expect(Wordbits.aHasAllOfBMasked(chimpsMask,    adoBits)).to.be.false    // do not intersect
       expect(Wordbits.aHasAllOfBMasked(adoMask,    chimpsBits)).to.be.false // do not intersect
@@ -76,26 +78,28 @@ describe('Wordbits', () => {
       expect(digested.uniqarr).to.eql(expectedUniqs)
       expect(digested.beg).to.eql(beg)
       expect(digested.end).to.eql(end)
-      expect(Wordbits.ltrsForWordbits(digested.wordbits)).to.eql(expectedUniqs)
-      expect(Wordbits.ltrsForWordbits(digested.begbit)).to.eql(_.without(expectedUniqs, beg, end))
-      expect(Wordbits.ltrsForWordbits(digested.endbit)).to.eql(_.without(expectedUniqs, end))
-      expect(Wordbits.ltrsForWordbits(digested.missbits)).to.eql(_.without(expectedUniqs, beg))
+      expect(Wordbits.wordForWordbits(digested.wordbits)).to.eql(expectedUniqs.join(''))
+      expect(Wordbits.wordForWordbits(digested.begbit)).to.eql(beg)
+      expect(Wordbits.wordForWordbits(digested.endbit)).to.eql(end)
+      expect(Wordbits.wordForWordbits(digested.missbits)).to.eql(_.without(UF.AtoZlos, ...expectedUniqs).join(''))
     }) as any)
     describe('DigestedExamples', () => {
+      function atozArr(str: string) { return str.split('') as TY.AtoZlo[] }
       // align with (uniqarr|dupearr|\w+bits):
       const DigestedExamples: Record<TY.Word, Wordbits.DigestedWord> = {
-        monkeyshines: { word: 'monkeyshines', uniqarr: 'ehikmnosy'.split(''), beg: 'm', end: 's', uniqstr: 'ehikmnosy', dupestr: 'ens',  missstr: 'afr',        headstr: 'ehikmnoy', midstr: 'ehiknoy', tailstr: 'ehiknosy', dupearr: 'ens'.split(''),  gamebits: 0b1101_1111_1010, missbits: 0b0010_0000_0101, midbits: 0b1001_1011_1010, headbits: 0b1001_1111_1010, tailbits: 0b1101_1011_1010, begbits: 0b0000_0100_0000, endbits: 0b0100_0000_0000 },
-        mom:          { word: 'mom',          uniqarr: 'mo'.split(''),        beg: 'm', end: 'm', uniqstr: 'mo',        dupestr: 'm',    missstr: 'aefhiknrsy', headstr: 'o',        midstr: 'o',       tailstr: 'o',        dupearr: 'm'.split(''),    gamebits: 0b0001_0100_0000, missbits: 0b1110_1011_1111, midbits: 0b0001_0000_0000, headbits: 0b0001_0000_0000, tailbits: 0b0001_0000_0000, begbits: 0b0000_0100_0000, endbits: 0b0000_0100_0000 },
-        mon:          { word: 'mon',          uniqarr: 'mno'.split(''),       beg: 'm', end: 'n', uniqstr: 'mno',       dupestr: '',     missstr: 'aefhikrsy',  headstr: 'mo',       midstr: 'o',       tailstr: 'no',       dupearr: ''.split(''),     gamebits: 0b0001_1100_0000, missbits: 0b1110_0011_1111, midbits: 0b0001_0000_0000, headbits: 0b0001_0100_0000, tailbits: 0b0001_1000_0000, begbits: 0b0000_0100_0000, endbits: 0b0000_1000_0000 },
-        monkeyish:    { word: 'monkeyish',    uniqarr: 'ehikmnosy'.split(''), beg: 'm', end: 'h', uniqstr: 'ehikmnosy', dupestr: '',     missstr: 'afr',        headstr: 'eikmnosy', midstr: 'eiknosy', tailstr: 'ehiknosy', dupearr: ''.split(''),     gamebits: 0b1101_1111_1010, missbits: 0b0010_0000_0101, midbits: 0b1101_1011_0010, headbits: 0b1101_1111_0010, tailbits: 0b1101_1011_1010, begbits: 0b0000_0100_0000, endbits: 0b0000_0000_1000 },
-        nemesis:      { word: 'nemesis',      uniqarr: 'eimns'.split(''),     beg: 'n', end: 's', uniqstr: 'eimns',     dupestr: 'es',   missstr: 'afhkory',    headstr: 'eimn',     midstr: 'eim',     tailstr: 'eims',     dupearr: 'es'.split(''),   gamebits: 0b0100_1101_0010, missbits: 0b1011_0010_1101, midbits: 0b0000_0101_0010, headbits: 0b0000_1101_0010, tailbits: 0b0100_0101_0010, begbits: 0b0000_1000_0000, endbits: 0b0100_0000_0000 },
-        minimises:    { word: 'minimises',    uniqarr: 'eimns'.split(''),     beg: 'm', end: 's', uniqstr: 'eimns',     dupestr: 'iims', missstr: 'afhkory',    headstr: 'eimn',     midstr: 'ein',     tailstr: 'eins',     dupearr: 'iims'.split(''), gamebits: 0b0100_1101_0010, missbits: 0b1011_0010_1101, midbits: 0b0000_1001_0010, headbits: 0b0000_1101_0010, tailbits: 0b0100_1001_0010, begbits: 0b0000_0100_0000, endbits: 0b0100_0000_0000 },
-        sermonisers:  { word: 'sermonisers',  uniqarr: 'eimnors'.split(''),   beg: 's', end: 's', uniqstr: 'eimnors',   dupestr: 'erss', missstr: 'afhky',      headstr: 'eimnor',   midstr: 'eimnor',  tailstr: 'eimnor',   dupearr: 'erss'.split(''), gamebits: 0b0111_1101_0010, missbits: 0b1000_0010_1101, midbits: 0b0011_1101_0010, headbits: 0b0011_1101_0010, tailbits: 0b0011_1101_0010, begbits: 0b0100_0000_0000, endbits: 0b0100_0000_0000 },
-        sermonises:   { word: 'sermonises',   uniqarr: 'eimnors'.split(''),   beg: 's', end: 's', uniqstr: 'eimnors',   dupestr: 'ess',  missstr: 'afhky',      headstr: 'eimnor',   midstr: 'eimnor',  tailstr: 'eimnor',   dupearr: 'ess'.split(''),  gamebits: 0b0111_1101_0010, missbits: 0b1000_0010_1101, midbits: 0b0011_1101_0010, headbits: 0b0011_1101_0010, tailbits: 0b0011_1101_0010, begbits: 0b0100_0000_0000, endbits: 0b0100_0000_0000 },
+        monkeyshines: { word: 'monkeyshines', beg: 'm', end: 's', ltrs: atozArr('eehikmnnossy'), uniqarr: atozArr('ehikmnosy'), dupearr: atozArr('ens'),  wordbits: 0b01_0000_0100_0111_0101_1001_0000, begbit: 0b00_0000_0000_0001_0000_0000_0000, endbit: 0b00_0000_0100_0000_0000_0000_0000, missbits: 0b10_1111_1011_1000_1010_0110_1111 },
+        mom:          { word: 'mom',          beg: 'm', end: 'm', ltrs: atozArr('mmo'),          uniqarr: atozArr('mo'),        dupearr: atozArr('m'),    wordbits: 0b00_0000_0000_0101_0000_0000_0000, begbit: 0b00_0000_0000_0001_0000_0000_0000, endbit: 0b00_0000_0000_0001_0000_0000_0000, missbits: 0b11_1111_1111_1010_1111_1111_1111 },
+        mon:          { word: 'mon',          beg: 'm', end: 'n', ltrs: atozArr('mno'),          uniqarr: atozArr('mno'),       dupearr: atozArr(''),     wordbits: 0b00_0000_0000_0111_0000_0000_0000, begbit: 0b00_0000_0000_0001_0000_0000_0000, endbit: 0b00_0000_0000_0010_0000_0000_0000, missbits: 0b11_1111_1111_1000_1111_1111_1111 },
+        monkeyish:    { word: 'monkeyish',    beg: 'm', end: 'h', ltrs: atozArr('ehikmnosy'),    uniqarr: atozArr('ehikmnosy'), dupearr: atozArr(''),     wordbits: 0b01_0000_0100_0111_0101_1001_0000, begbit: 0b00_0000_0000_0001_0000_0000_0000, endbit: 0b00_0000_0000_0000_0000_1000_0000, missbits: 0b10_1111_1011_1000_1010_0110_1111 },
+        nemesis:      { word: 'nemesis',      beg: 'n', end: 's', ltrs: atozArr('eeimnss'),      uniqarr: atozArr('eimns'),     dupearr: atozArr('es'),   wordbits: 0b00_0000_0100_0011_0001_0001_0000, begbit: 0b00_0000_0000_0010_0000_0000_0000, endbit: 0b00_0000_0100_0000_0000_0000_0000, missbits: 0b11_1111_1011_1100_1110_1110_1111 },
+        minimises:    { word: 'minimises',    beg: 'm', end: 's', ltrs: atozArr('eiiimmnss'),    uniqarr: atozArr('eimns'),     dupearr: atozArr('iims'), wordbits: 0b00_0000_0100_0011_0001_0001_0000, begbit: 0b00_0000_0000_0001_0000_0000_0000, endbit: 0b00_0000_0100_0000_0000_0000_0000, missbits: 0b11_1111_1011_1100_1110_1110_1111 },
+        sermonisers:  { word: 'sermonisers',  beg: 's', end: 's', ltrs: atozArr('eeimnorrsss'),  uniqarr: atozArr('eimnors'),   dupearr: atozArr('erss'), wordbits: 0b00_0000_0110_0111_0001_0001_0000, begbit: 0b00_0000_0100_0000_0000_0000_0000, endbit: 0b00_0000_0100_0000_0000_0000_0000, missbits: 0b11_1111_1001_1000_1110_1110_1111 },
+        sermonises:   { word: 'sermonises',   beg: 's', end: 's', ltrs: atozArr('eeimnorsss'),   uniqarr: atozArr('eimnors'),   dupearr: atozArr('ess'),  wordbits: 0b00_0000_0110_0111_0001_0001_0000, begbit: 0b00_0000_0100_0000_0000_0000_0000, endbit: 0b00_0000_0100_0000_0000_0000_0000, missbits: 0b11_1111_1001_1000_1110_1110_1111 },
       }
       // console.log(UF.prettify(_.mapValues(DigestedExamples, (_x, word) => {
-      //   const { word:_w, uniqarr, dupearr, gamebits, missbits, midbits, headbits, tailbits, begbits, endbits, ...rest } = wayDigestGameword(word, gamebitsTable)
-      //   return { word, ...rest, uniqarr: uniqarr.join(''), dupearr: dupearr.join(''), gamebits: prettyGamebits(gamebits), missbits: prettyGamebits(missbits), midbits: prettyGamebits(midbits), headbits: prettyGamebits(headbits), tailbits: prettyGamebits(tailbits), begbits: prettyGamebits(begbits), endbits: prettyGamebits(endbits) }
+      //   const digested = Wordbits.digestWord(word)
+      //   const { word:_w, beg, end, ltrs,               uniqarr,                    dupearr, begbit, endbit,  missbits, wordbits } = digested
+      //   return { word,   beg, end, ltrs: ltrs.join(''), uniqarr: uniqarr.join(''), dupearr: dupearr.join(''), wordbits: prettyWordbits(wordbits), begbit: prettyWordbits(begbit), endbit: prettyWordbits(endbit), missbits: prettyWordbits(missbits) }
       // })))
       it.each(_.entries(DigestedExamples))('should digest %s', (word, wanted) => {
         expect(Wordbits.digestWord(word)).to.eql(wanted)
@@ -137,10 +141,11 @@ describe('Wordbits', () => {
       expect({ naive1, magic1, noop1, naive2, magic2, noop2, naive3a, magic3a, noop3a, naive3b, magic3b, noop3b, naive3c, magic3c, noop3c, naive3d, magic3d, noop3d, naiveTime, magicTime, noopTime }).to.be.an('object')
     })
     it('should count bits in a 28-bit number by magic bit flicking', () => {
-      const pow2from00to12   = _.range(0, 4000).map((x) => )
+      const pow2from00to12   = _.range(0, 4000).map((x) => 2**x)
       const pow2fromto12   = _.range(0, 2**12)
       const naive     = [
         ..._.map(numbers, countBits28Naive),
+      ]
       const magic     = _.map(numbers, Wordbits.countBits28)
       expect(magic).to.eql(naive)
     })
@@ -148,7 +153,7 @@ describe('Wordbits', () => {
 
   describe('prettyGamebits/prettyWordbits', () => {
     it('should produce a 26-bit number as a string with separators', () => {
-      _.each(AllGameWords, (word) => {
+      _.each(ExampleWords, (word) => {
         const wordbits = Wordbits.wordbitsForWord(word)
         const result = prettyWordbits(wordbits)
         const plain  = result.replaceAll(/[_]/g, '')

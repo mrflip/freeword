@@ -3,9 +3,13 @@ import      * as NodeUtil                         from 'node:util'
 import type * as TY                               from '../types.ts'
 export      { sprintf, vsprintf }                 from 'sprintf-js'
 import      { nextTick }                          from 'node:process'
-import      { AtoZlos }                      from '../lexicon/LexiconConsts.ts'
+import      { AtoZlos }                          from '../lexicon/LexiconConsts.ts'
 //
-export      *                                      from './Rot13.ts'
+export      *                                     from './Streaming.ts'
+export      *                                     from './Random.ts'
+export      *                                     from '../UtilityConsts.ts'
+export type *                                     from '../types.ts'
+export      *                                     from './Rot13.ts'
 
 export type ObjKey        = string          | symbol
 export type ClxnKey       = string | number | symbol
@@ -285,6 +289,33 @@ export function bagslice<VT extends object>(bag: VT, start: number | undefined, 
   return _.pick(bag, keys)
 }
 
+type PairSortFn<VT extends object, KT extends keyof VT = keyof VT> = ((entry: [key: KT, val: VT[KT]]) => any)
+
+export function sortOnKeys<VT    extends object, KT extends keyof VT = keyof VT>([key, _val]: [KT, VT[KT]]) { return key }
+export function sortOnNumkeys<VT extends object, KT extends keyof VT = keyof VT>([key, _val]: [KT, VT[KT]]) { return Number(key) }
+
+/** Sort a bag by a funtion -- by default, its keys.
+ * @note **by default, keys that parse as positive integers (1, 2, 3, ...) will appear first in retrieval order**.
+ * This is part of the spec for Object.
+ * @example { '1': 1, '2': 2, '-1': -1, '0.9': 0.9, '1.1': 1.1 }
+ * If you use the magic function `sortOnNumkeys`,
+ * keys that stringify as integers will be reinserted as `x.0`:
+ * @example { '-1.0': -1, '0.9': 0.9, '1.0': 1, '1.1': 1.1, '2.0': 2 }
+ */
+export function bagsort<VT extends object, KT extends keyof VT = keyof VT>(bag: VT, sortfn: PairSortFn<VT, KT> = sortOnKeys, { mungeNumKeys = true }: { mungeNumKeys?: boolean } = {}): VT {
+  const result = {} as VT
+  const sorted = _.orderBy(_.entries(bag), sortfn) as [KT, VT[KT]][]
+  if (! mungeNumKeys) {
+    const pairs = _.orderBy(_.entries(bag), sortfn) as [KT, VT][]
+    return _.fromPairs(pairs) as VT
+  }
+  for (const [key, val] of sorted) {
+    const mungedKey = (Number.isInteger(Number(key))) ? (String(key) + '.0') : key
+    result[mungedKey as KT] = val as VT[KT]
+  }
+  return result
+}
+
 /**
  * Sleep for one tick (i.e. let everyone else have a turn)
  * @returns true
@@ -304,25 +335,6 @@ export async function sleepNextTick(): Promise<true> {
 export async function sleep(ms: number, nextTick: boolean = false): Promise<true> {
   if (nextTick) { await sleepNextTick() }
   return new Promise((resolve) => setTimeout(resolve, ms)).then(() => true)
-}
-
-/** @returns an array of all the values in the iterable */
-export async function slurp<VT>(iter: AsyncIterable<VT> | Iterable<VT>): Promise<VT[]> {
-  const vals: VT[] = []
-  for await (const val of iter) { vals.push(val) }
-  return vals
-}
-
-/** @returns an array of all the values in the iterable */
-export async function slurpWithResult<VT, RT>(iter: AsyncIterator<VT> | Iterator<VT> | Generator<VT, RT> | AsyncGenerator<VT, RT>): Promise<{ vals: VT[], ret: any }> {
-  const vals: VT[] = []
-  let   ret: any
-  while (true) {
-    const { done, value } = await iter.next()
-    if (done) { ret = value; break }
-    vals.push(value)
-  }
-  return { vals, ret }
 }
 
 export async function * catiters(...iters: TY.AnyIterable<any>[]) {

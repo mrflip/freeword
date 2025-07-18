@@ -1,4 +1,4 @@
-export const MAX_UINT32 = Math.pow(2, 32) - 1;
+  export const MAX_UINT32 = Math.pow(2, 32) - 1;
 /** String with lowercase a-z, in order */
 export const StrAtoZlo = 'abcdefghijklmnopqrstuvwxyz'
 /** String with UPPER A-Z, in order */
