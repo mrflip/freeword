@@ -1,13 +1,20 @@
 {
   "name": "@freeword/meta",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Meta package for Freeword: exports all core types, constants, and utilities from the src/ directory.",
   "scripts": {
-    "test": "mocha",
-    "twitch": "mocha --watch",
-    "dev": "yarn twitch",
-    "publish:public": "yarn npm publish --access public",
-    "publish:public-npm": "npm publish --access public"
+    "_1": " echo .",
+    "test": "           yarn node --experimental-vm-modules                      $(yarn bin jest)",
+    "test:plain": "     yarn node --experimental-vm-modules --enable-source-maps $(yarn bin jest)",
+    "test:coverage": "  yarn node --experimental-vm-modules --enable-source-maps $(yarn bin jest) --coverage",
+    "test:watch": "     yarn node --experimental-vm-modules --enable-source-maps $(yarn bin jest) --watch",
+    "twitch": "         yarn node --experimental-vm-modules --enable-source-maps $(yarn bin jest) --watch",
+    "_2": " echo .",
+    "test:inrepos": "   yarn workspace -- fix this",
+    "git:yarnicles": "  git ci -m 'chore: pkgs + yarnicles' .yarn yarn.lock .yarnrc.yml package.json",
+    "_3": " echo .",
+    "publish": "npm publish --access public",
+    "_z": "echo ."
   },
   "dependencies": {
     "esm-seedrandom": "3.0.5-esm.2",

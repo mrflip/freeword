@@ -1,6 +1,6 @@
-import _ from 'lodash'
-import { expect } from 'chai'
-import { SeededRandomFactory, UF }                  from '@freeword/meta'
+import      _                                /**/ from 'lodash'
+import      { expect }                            from 'chai'
+import      { SeededRandomFactory, UF }           from '@freeword/meta'
 
 type CheckDistOpts<BT = number> = {
   lo: BT, hi: BT, explo?: BT, exphi?: BT, spread?: number, count?: number, nBins?: number, verbose?: boolean,

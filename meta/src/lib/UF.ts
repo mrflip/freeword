@@ -339,6 +339,6 @@ export async function sleep(ms: number, nextTick: boolean = false): Promise<true
 
 export async function * catiters(...iters: TY.AnyIterable<any>[]) {
   for (const iter of iters) {
-    yield * iter
+    yield * (iter as Iterable<any>)
   }
 }

@@ -113,3 +113,6 @@ Thumbs.db
 node_modules/
 .pnp.*
 
+
+.npmrc
+**/.npmrc*

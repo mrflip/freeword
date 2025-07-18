@@ -2,8 +2,8 @@ import      _                                /**/ from 'lodash'
 import      { expect }                            from 'chai'
 import type * as TY                               from '@freeword/meta'
 import      { Wordbits, UF }                      from '@freeword/meta'
-import      { ExampleWords }                      from '../Fixtures.ts'
-import { checkSnapshot }                          from '../TestHelpers.ts'
+import      { ExampleWords }                      from '../helpers/Fixtures.ts'
+import { checkSnapshot }                          from '../helpers/TestHelpers.ts'
 
 const { prettyWordbits } = Wordbits
 

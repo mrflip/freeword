@@ -1,8 +1,7 @@
-import _ from 'lodash'
-import { expect } from 'chai'
+import      _                                /**/ from 'lodash'
+import      { expect }                            from 'chai'
+import      { UF, Streaming as STL }              from '@freeword/meta'
 // import type * as TY from '../../meta/src/types.ts'
-import * as STL from '../../meta/src/lib/Streaming.ts'
-import * as UF from '../../meta/src/lib/UF.ts'
 
 const _ABCDE      = ['A', 'B', 'C', 'D', 'E']
 const _ABCDEFGHIJ  = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']

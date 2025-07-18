@@ -117,8 +117,8 @@ describe('UF', () => {
 
       expect(result).to.be.an('object')
       expect(result.a).to.be.an('object')
-      expect(result.a.value).to.equal(1)
-      expect(result.b.value).to.equal(2)
+      expect(result.a?.value).to.equal(1)
+      expect(result.b?.value).to.equal(2)
     })
 
         it('should return empty object for null/undefined', () => {

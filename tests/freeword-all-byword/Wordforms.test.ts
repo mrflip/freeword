@@ -1,9 +1,9 @@
 import      _, { type Dictionary }                                /**/ from 'lodash'
 import       { expect }                           from 'chai'
-import       { Poskinds, Wordforms }              from '@freeword/all-byword'
+import       { Wordforms }                        from '@freeword/all-byword'
 import       * as FW                              from '@freeword/meta'
 import type  * as TY                              from '@freeword/meta'
-import       { ExampleWordforms, HaveEtc, SyzygyEtc, ActEtc, CushionEtc, NotWords } from '../Fixtures.ts'
+import       { ExampleWordforms, HaveEtc, SyzygyEtc, ActEtc, CushionEtc, NotWords } from '../helpers/Fixtures.ts'
 
 describe('Wordforms', () => {
   it('should be a lookup table of word forms by word', () => {
@@ -220,7 +220,7 @@ describe('Wordforms', () => {
       //   posCounts[pos]  = (posCounts[pos] || 0) + 1
       // }))
       const posCounts = _.countBy(_.values(Wordforms), 'pos')
-      const wanted = { noun: 58876, verb: 38592, adj: 12759, adv: 1799, prep: 62, conj: 17, pron: 51, art: !, intj: 84979 } as const
+      const wanted = { noun: 58876, verb: 38592, adj: 12759, adv: 1799, prep: 62, conj: 17, pron: 51, art: 1, intj: 84979 } as const
       if (! _.isEqual(posCounts, wanted)) { console.log(FW.UF.prettify(posCounts)) }
       expect(posCounts).to.eql(wanted)
     })

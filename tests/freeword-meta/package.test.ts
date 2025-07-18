@@ -1,5 +1,5 @@
-import * as FreewordMeta from '@freeword/meta'
-import { expect } from 'chai'
+import      { expect }                            from 'chai'
+import      * as FreewordMeta                     from '@freeword/meta'
 
 describe('@freeword/meta package structure', () => {
   it('should be importable as a module', () => {
@@ -21,14 +21,13 @@ describe('@freeword/meta package structure', () => {
 
   it('should not have unexpected properties', () => {
     const allowedProps = [
-      'Poskinds',
-      'PosStemkinds',
-      'default' // ESM default export
+      // 'default', // ESM default export
+      "AtoZlos", "AtoZnums", "AtoZups", "Chars09AZaz", "CharsAZ09Bar", "CharsAZaz", "Filer",
+      "MAX_UINT32", "Numerals", "PosStemkinds", 'Poskinds',
+      "RandomFactory", "SeededRandomFactory", "Stemkinds", "StrAtoZ", "StrAtoZlo", "StrAtoZup",
+      "StrNumerals", "Streaming", "SuffixREForStemkind", "UF", "Wordbits", "Wordform",
     ]
-
-    Object.keys(FreewordMeta).forEach(key => {
-      expect(allowedProps).to.include(key)
-    })
+    expect(FreewordMeta).to.include.keys(...allowedProps)
   })
 
   it('should have immutable constants', () => {

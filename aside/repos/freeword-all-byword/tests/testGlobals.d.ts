@@ -1,0 +1,1 @@
+../../../tests/testGlobals.d.ts

@@ -20,8 +20,8 @@
  * | What if each letter is ROT13'd before comparison? | rot13Wordbits    | `rot13(A)`  | Wordbits | `rot13(A)`                 | ROT13                |
  *
  */
-export * as Wordbits from './Wordbits.ts'
-export * as UF from './UF.ts'
-export * as Filer from './Filer.ts'
-
+export * as Wordbits                          from './Wordbits.ts'
+export * as UF                                from './UF.ts'
+export * as Filer                             from './Filer.ts'
+export * as Streaming                         from './Streaming.ts'
 export { RandomFactory, SeededRandomFactory } from './Random.ts'
