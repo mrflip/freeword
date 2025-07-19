@@ -60,11 +60,13 @@
   },
   "type": "module",
   "main": "./built/index.js",
+  "types": "./built/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "types": "./built/index.d.ts",
-      "import": "./built/index.js"
+      "import": "./built/index.js",
+      "default": "./built/index.js"
     },
     "./UF.js": {
       "types": "./built/src/lib/UF.d.ts",

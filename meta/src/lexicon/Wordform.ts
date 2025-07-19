@@ -105,7 +105,7 @@ export class Wordform implements TY.WordformT {
   }
   get summaryStr() {
     // const altstem = Stemmer.stem(this.word)
-    //                   word, core, pos, stemkind, suffix, stemcore, stemsplit, gloss, wordbits, freq, tmi
+    //                   word, core, pos, stemkind, suffix, stemcore, stemsplit, gloss, freq, wordbits, tmi
     const       { word, core, pos, stemkind, suffix, stemcore, stemsplit, freq, wordbits, gloss } = this;
     const vals = [word, core, pos, stemkind, suffix, stemcore, stemsplit, freq, Wordbits.prettyWordbits(wordbits), gloss.slice(0, 14)]
     return JSPrintf.vsprintf('%-16s %-14s %-7s %-12s %-14s %-14s %-18s %6d %7d %s', vals)
