@@ -1,7 +1,7 @@
 import      _                                /**/ from 'lodash'
 import      * as NodeUtil                         from 'node:util'
 import type * as TY                               from '../types.ts'
-import      { nextTick }                          from 'node:process'
+// import      { nextTick }                       from 'node:process'
 import      { AtoZlos }                          from '../lexicon/LexiconConsts.ts'
 //
 export      { sprintf, vsprintf }                 from 'sprintf-js'
@@ -316,12 +316,14 @@ export function bagsort<VT extends object, KT extends keyof VT = keyof VT>(bag: 
   return result
 }
 
+const nextTicker = (globalThis as any).nextTick ?? ((func: () => void) => (func()))
+
 /**
  * Sleep for one tick (i.e. let everyone else have a turn)
  * @returns true
  */
 export async function sleepNextTick(): Promise<true> {
-  return new Promise((yay) => { nextTick(() => yay(true)) })
+  return new Promise((yay) => { nextTicker(() => yay(true)) })
 }
 
 /**
@@ -332,8 +334,8 @@ export async function sleepNextTick(): Promise<true> {
  *   the duration given PLUS an unknowable amount of time
  * @returns true
  */
-export async function sleep(ms: number, nextTick: boolean = false): Promise<true> {
-  if (nextTick) { await sleepNextTick() }
+export async function sleep(ms: number, awakeNextTick: boolean = false): Promise<true> {
+  if (awakeNextTick) { await sleepNextTick() }
   return new Promise((resolve) => setTimeout(resolve, ms)).then(() => true)
 }
 

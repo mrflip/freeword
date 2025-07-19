@@ -205,10 +205,9 @@ describe('Streaming', () => {
     const SceneArg0Arg1s = fenceposts.map(beg => fenceposts.map(dropend => [beg, dropend])).flat() as [number, number][]
     const SceneLengths = [0, 1, 2, 3, 5, 10, 47, 48, 49, 60, 70, 71, 96, 97, 98, 99, 100, 107, 108, 109, 240]
     const Reservoir = _LongArray
-    describe.each(SceneArg0Arg1s)('given beg %s >= 0 and end %s >= 0', (arg0, arg1) => {
-      it('is set up correctly', () => { expect(_.max(SceneLengths)).to.be.lessThan(Reservoir.length) })
-      it('should agree with Array.slice for arg0>0, arg1>=0', () => {
-        for (const len of SceneLengths) {
+    describe('should agree with Array.slice on pos / pos args', () => {
+      it.each(SceneLengths)('for length %s', (len) => {
+        for (const [arg0, arg1] of SceneArg0Arg1s) {
           const items = Reservoir.slice(0, len)
           const input = generatorFor(items)
           const wanted = items.slice(arg0, arg1)
@@ -218,25 +217,29 @@ describe('Streaming', () => {
         }
       })
     })
-    describe.each(SceneArg0Arg1s)('given horizon %s and end %s', (arg0, arg1) => {
-      it('should agree with Array.slice for arg0<0, arg1>=0', () => {
-        for (const len of SceneLengths) {
+    describe('should agree with Array.slice on neg / pos args', () => {
+      it.each(SceneLengths)('for length %s', (len) => {
+        for (const [arg0, arg1] of SceneArg0Arg1s) {
           const items = Reservoir.slice(0, len)
           const input = generatorFor(items)
           const result = STL.sliceStream(input, -arg0, arg1)
           expect([...result].join('')).to.eql(items.slice(-arg0, arg1).join(''))
         }
       })
-      it('should agree with Array.slice for arg0>0, arg1<0', () => {
-        for (const len of SceneLengths) {
+    })
+    describe('should agree with Array.slice on pos / neg args', () => {
+      it.each(SceneLengths)('for length %s', (len) => {
+        for (const [arg0, arg1] of SceneArg0Arg1s) {
           const items = Reservoir.slice(0, len)
           const input = generatorFor(items)
           const result = STL.sliceStream(input, arg0, -arg1)
           expect([...result].join('')).to.eql(items.slice(arg0, (arg1 === undefined) ? undefined : -arg1).join(''))
         }
       })
-      it('should agree with Array.slice for arg0<0, arg1<0', () => {
-        for (const len of SceneLengths) {
+    })
+    describe('should agree with Array.slice on neg / neg args', () => {
+      it.each(SceneLengths)('for length %s', (len) => {
+        for (const [arg0, arg1] of SceneArg0Arg1s) {
           const items = Reservoir.slice(0, len)
           const input = generatorFor(items)
           const result = STL.sliceStream(input, -arg0, -arg1)
@@ -346,15 +349,15 @@ describe('Streaming', () => {
     const SceneArg0Arg1s = fenceposts.map(beg => fenceposts.map(dropend => [beg, dropend])).flat() as [number, number][]
     const SceneLengths = [0, 1, 2, 3, 5, 10, 47, 48, 49, 60, 70, 71, 96, 97, 98, 99, 100, 107, 108, 109, 240]
     const Reservoir = _LongArray
-    describe.each(SceneArg0Arg1s)('given horizon %s and end %s', (beg, end) => {
-      if (beg >= end) { return }
-      it('is set up correctly', () => { expect(_.max(SceneLengths)).to.be.lessThan(Reservoir.length) })
-      it.each(SceneLengths)('should agree with Array.slice for length %s', (len) => {
-        // for (const len of SceneLengths) {
+    describe('should agree with Array.slice', () => {
+      it.each(SceneLengths)('for length %s', (len) => {
+        for (const [beg, dropend] of SceneArg0Arg1s) {
+          if (beg >= dropend) { return } // not valid to call with beg >= end (that has been handled by sliceStream))
           const input = Reservoir.slice(0, len)
-          const result = STL._sliceStarPosPos(input, beg, end)
-          expect([...result].join('')).to.eql(input.slice(beg, end).join(''))
-        //}
+          const result = STL._sliceStarPosPos(input, beg, dropend)
+          if (! _.isEqual(input.slice(beg, dropend), [...result])) { console.log([...result], beg, dropend, len) }
+          expect([...result].join('')).to.eql(input.slice(beg, dropend).join(''))
+        }
       })
     })
   })
@@ -467,15 +470,16 @@ describe('Streaming', () => {
     const SceneArg0Arg1s = fenceposts.map(beg => fenceposts.map(dropend => [beg, dropend])).flat() as [number, number][]
     const SceneLengths = [0, 1, 2, 3, 5, 10, 47, 48, 49, 60, 70, 71, 96, 97, 98, 99, 100, 107, 108, 109, 240]
     const Reservoir = _LongArray
-    describe.each(SceneArg0Arg1s)('given horizon %s and end %s', (horizon, end) => {
-      it('is set up correctly', () => { expect(_.max(SceneLengths)).to.be.lessThan(Reservoir.length) })
-      for (const len of SceneLengths) {
-        it('should agree with Array.slice', () => {
+    it('is set up correctly', () => { expect(_.max(SceneLengths)).to.be.lessThan(Reservoir.length) })
+    describe('should agree with Array.slice', () => {
+      it.each(SceneLengths)('for length %s', (len) => {
+        for (const [beg, dropend] of SceneArg0Arg1s) {
+          if (beg >= dropend) { return }
           const input = Reservoir.slice(0, len)
-          const result = STL._sliceStarNegNeg(input, horizon, end)
-          expect([...result].join('')).to.eql(input.slice(-horizon, -end).join(''))
-        })
-      }
+          const result = STL._sliceStarNegNeg(input, beg, dropend)
+          expect([...result].join('')).to.eql(input.slice(beg, dropend).join(''))
+        }
+      })
     })
   })
   describe('STL._sliceStarNegPos', () => {
@@ -579,10 +583,10 @@ describe('Streaming', () => {
     const SceneArg0Arg1s = fenceposts.map(beg => fenceposts.map(dropend => [beg, dropend])).flat() as [number, number][]
     const SceneLengths = [0, 1, 2, 3, 5, 10, 47, 48, 49, 60, 70, 71, 96, 97, 98, 99, 100, 107, 108, 109, 240]
     const Reservoir = _LongArray
-    describe.each(SceneArg0Arg1s)('given horizon %s and end %s', (horizon, end) => {
-      it('is set up correctly', () => { expect(_.max(SceneLengths)).to.be.lessThan(Reservoir.length) })
-      it('should agree with Array.slice', () => {
-        for (const len of SceneLengths) {
+    it('is set up correctly', () => { expect(_.max(SceneLengths)).to.be.lessThan(Reservoir.length) })
+    describe('should agree with Array.slice', () => {
+      it.each(SceneLengths)('for length %s', (len) => {
+        for (const [horizon, end] of SceneArg0Arg1s) {
           const input = Reservoir.slice(0, len)
           const result = STL._sliceStarNegPos(input, horizon, end)
           expect([...result].join('')).to.eql(input.slice(-horizon, end).join(''))
@@ -713,10 +717,10 @@ describe('Streaming', () => {
     const SceneArg0Arg1s = fenceposts.map(beg => fenceposts.map(dropend => [beg, dropend])).flat() as [number, number][]
     const SceneLengths = [0, 1, 2, 3, 5, 10, 47, 48, 49, 60, 70, 71, 96, 97, 98, 99, 100, 107, 108, 109, 240]
     const Reservoir = _LongArray
-    describe.each(SceneArg0Arg1s)('given beg %s and dropend %s', (beg, dropend) => {
-      it('is set up correctly', () => { expect(_.max(SceneLengths)).to.be.lessThan(Reservoir.length) })
-      it('should agree with Array.slice', () => {
-        for (const len of SceneLengths) {
+    it('is set up correctly', () => { expect(_.max(SceneLengths)).to.be.lessThan(Reservoir.length) })
+    describe('should agree with Array.slice', () => {
+      it.each(SceneLengths)('for length %s', (len) => {
+        for (const [beg, dropend] of SceneArg0Arg1s) {
           const input = Reservoir.slice(0, len)
           const result = STL._sliceStarPosNeg(input, beg, dropend)
           expect([...result].join('')).to.eql(input.slice(beg, -dropend).join(''))

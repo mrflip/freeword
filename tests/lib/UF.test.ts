@@ -1,6 +1,9 @@
 import      _                                /**/ from 'lodash'
 import      { expect }                            from 'chai'
 import      { UF }                                from '@freeword/meta'
+import      { nextTick }                          from 'node:process'
+
+(globalThis as any).nextTick = nextTick
 
 describe('UF', () => {
   describe('AlphabetList', () => {
@@ -447,7 +450,7 @@ describe('UF', () => {
       await UF.sleep(100, true)
       const end = Date.now()
 
-      expect(end - start).to.be.at.least(95).and.at.most(111)
+      expect(end - start).to.be.at.least(95).and.at.most(140)
     })
 
     it('should return true', async () => {

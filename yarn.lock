@@ -423,19 +423,17 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@freeword/all-byword@workspace:repos/freeword-all-byword"
   dependencies:
-    "@freeword/meta": "npm:^1.0.18-0"
+    "@freeword/meta": "workspace:*"
   languageName: unknown
   linkType: soft
 
 "@freeword/all-flat@workspace:*, @freeword/all-flat@workspace:repos/freeword-all-flat":
   version: 0.0.0-use.local
   resolution: "@freeword/all-flat@workspace:repos/freeword-all-flat"
-  dependencies:
-    "@freeword/meta": "npm:^1.0.18-0"
   languageName: unknown
   linkType: soft
 
-"@freeword/meta@npm:^1.0.18-0, @freeword/meta@workspace:*, @freeword/meta@workspace:meta":
+"@freeword/meta@workspace:*, @freeword/meta@workspace:meta":
   version: 0.0.0-use.local
   resolution: "@freeword/meta@workspace:meta"
   dependencies:
@@ -874,10 +872,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pkgr/core@npm:^0.2.4":
-  version: 0.2.8
-  resolution: "@pkgr/core@npm:0.2.8"
-  checksum: 10/d982b6c08aef49b67cc0b77636f6270b04c04cb3feb679e7efcb8cea7d6ad2eb777018d4b94ef0f4dff2219f9dd0abb5f77be2a8f34b3098073dcd434e9b1c8e
+"@pkgr/core@npm:^0.3.0":
+  version: 0.3.4
+  resolution: "@pkgr/core@npm:0.3.4"
+  checksum: 10/c7830b8579629f71f8f576f3a65983b8c7bb87909aa789e52d9862518dfc8467b7df778131d7908ccc09a388ca963a3c21456d891b0ebb71c39c70b0aa9b9ca6
   languageName: node
   linkType: hard
 
@@ -1067,11 +1065,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*, @types/node@npm:^24.0.14":
-  version: 24.0.14
-  resolution: "@types/node@npm:24.0.14"
+  version: 24.0.15
+  resolution: "@types/node@npm:24.0.15"
   dependencies:
     undici-types: "npm:~7.8.0"
-  checksum: 10/60e546f905734ab37f02f5c30eeb98e350c97837c96e2191972fba0638aa0d414489fad989245a9f106b0a0405410e56fab769fdcfb6504341fc2286d9e1f496
+  checksum: 10/0c55b7f4b0cd4f47e43e587e54545c4f188521678328411033595a6f49f81ed54ec3729ce5025936c51250e31504a32a7f20b520ed9dd71f3ab1530f809975e9
   languageName: node
   linkType: hard
 
@@ -3222,11 +3220,11 @@ __metadata:
   linkType: hard
 
 "napi-postinstall@npm:^0.3.0":
-  version: 0.3.1
-  resolution: "napi-postinstall@npm:0.3.1"
+  version: 0.3.2
+  resolution: "napi-postinstall@npm:0.3.2"
   bin:
     napi-postinstall: lib/cli.js
-  checksum: 10/3dea9d57d13af3f2283955a51dd99b83f8f1ab7a3db3023e8c44548cc2dd7ecfc3a965aefef49a2375bc45a9d6b1ae7835875cf0fe0d3ebc27c8402f2c2f3306
+  checksum: 10/35b7edccbc21b6f2c6c3c9f38a3ae7fc72d34811a72e27287e603fae82da63c862139d404f7281886ddde1f1af0aa310a95617f0424a15a873ce9ae43866ddc0
   languageName: node
   linkType: hard
 
@@ -3854,11 +3852,11 @@ __metadata:
   linkType: hard
 
 "synckit@npm:^0.11.8":
-  version: 0.11.9
-  resolution: "synckit@npm:0.11.9"
+  version: 0.11.10
+  resolution: "synckit@npm:0.11.10"
   dependencies:
-    "@pkgr/core": "npm:^0.2.4"
-  checksum: 10/b5d4073779a252a16ea5d63f6cdabf026dcdd400765222fc70e0d990d5c6ddc2fcbc01617db81011420f6e43e2db1efd507f6a139387d841dfc8079c63de728d
+    "@pkgr/core": "npm:^0.3.0"
+  checksum: 10/e5055e1d57f00cf1d7232ee233a5c9c0b70f05832b1332166ef02f1baa39b2fdd5573dcefbe5b54e8c36d776fcf1a2facd507df797f976ec9507c5d6ee25b920
   languageName: node
   linkType: hard
 

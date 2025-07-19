@@ -3,3 +3,6 @@ db/WordformsList.js filter=lfs diff=lfs merge=lfs -text
 repos/freeword-all-byword/db/freeword-all-byword.js filter=lfs diff=lfs merge=lfs -text
 repos/freeword-all-byword/db/index.js filter=lfs diff=lfs merge=lfs -text
 repos/*/db/*.js filter=lfs diff=lfs merge=lfs -text
+repos/freeword-all-byword/db/freeword-all-byword.json filter=lfs diff=lfs merge=lfs -text
+repos/freeword-all-flat/db/freeword-all-flat.json filter=lfs diff=lfs merge=lfs -text
+db/freeword-all-list-pretty.json filter=lfs diff=lfs merge=lfs -text

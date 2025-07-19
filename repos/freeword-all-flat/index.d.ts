@@ -1,5 +1,5 @@
-// Exports will be Wordforms (the data), default (also that), and everything from @freeword/meta
+import type { Word, WordformT } from './types.ts'
 
-export *           from '@freeword/meta'
-export *           from './db/index.js'
-export { default } from './db/index.js'
+export * from './types.ts'
+export declare const Wordforms: Record<Word, WordformT>
+export default Wordforms

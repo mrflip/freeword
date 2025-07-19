@@ -87,7 +87,7 @@ export type WordformFlat = [
   /** Wordform.freq      */ number,
   /** Wordform.wordbits  */ number,
   /** Wordform.gloss     */ string,
-  /** Wordform.tmi       */ AnyBag?,
+  // /** Wordform.tmi       */ AnyBag?,
 ]
 // --
 

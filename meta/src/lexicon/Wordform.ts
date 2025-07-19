@@ -38,10 +38,10 @@ export class Wordform implements TY.WordformT {
     return _.some(friends, (friend: TY.WordformT) => friend.word.endsWith(suffix))
   }
 
-  get len() { return this.word.length }
-  get leadtail() { const [lead, tail] = this.stemsplit.split('|'); return { lead, tail } }
-  get lead()     { return this.leadtail.lead }
-  get tail()     { return this.leadtail.tail }
+  get len(): number { return this.word.length }
+  get leadtail(): { lead: string, tail: string } { const [lead = '', tail = ''] = this.stemsplit.split('|'); return { lead, tail } }
+  get lead(): TY.Shingle { return this.leadtail.lead }
+  get tail(): TY.Shingle { return this.leadtail.tail }
   get snowball() {
     const stem = Stemmer.stem(this.word)
     if (stem.replace(/i$/, '') === this.lead) { return this.lead }

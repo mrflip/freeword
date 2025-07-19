@@ -13,7 +13,7 @@ fi
 FWVER="$1"
 SCRIPTDIR=$(realpath $(dirname $0))
 MAINDIR=$(realpath $(dirname $SCRIPTDIR))
-AWAYDIR=/tmp/freeword-version-clobber-$(date +%s)
+AWAYDIR=/tmp/freeword-scripts/version-clobber/version-clobber-$(date +%s)
 mkdir $AWAYDIR
 
 # Find all package.json files in repos/*/ and update @freeword/meta version

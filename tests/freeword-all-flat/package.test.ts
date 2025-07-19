@@ -1,4 +1,5 @@
-import * as FreewordAllByword from '@freeword/all-byword'
+import * as FreewordAllByword from '@freeword/all-flat'
+import { Wordforms } from '@freeword/all-flat'
 import { expect } from 'chai'
 
 const SpotChecks = {
@@ -10,7 +11,7 @@ const SpotChecks = {
 describe('@freeword/all-byword package structure', () => {
   it('should be importable as a module', () => {
     expect(FreewordAllByword).to.exist.and.include.keys(
-      'Wordforms', 'default', 'Poskinds', 'PosStemkinds', 'UF', 'Wordbits', 'Wordform',
+      'Wordforms',
     )
   })
 

@@ -1,6 +1,6 @@
 {
   "name": "@freeword/meta",
-  "version": "1.0.18-0",
+  "version": "1.0.18-5",
   "description": "Meta package for Freeword: exports all core types, constants, and utilities from the src/ directory.",
   "scripts": {
     "shipme": "npm publish --access public",
@@ -70,13 +70,29 @@
       "types": "./built/src/lib/UF.d.ts",
       "import": "./built/src/lib/UF.js"
     },
-    "./Wordbits.ts": {
+    "./Wordbits.js": {
       "types": "./built/src/lib/Wordbits.d.ts",
       "import": "./built/src/lib/Wordbits.js"
+    },
+    "./Wordform.js": {
+      "types": "./built/src/lexicon/index.d.ts",
+      "import": "./built/src/lexicon/index.js"
+    },
+    "./Filer.js": {
+      "types": "./built/src/lib/Filer.d.ts",
+      "import": "./built/src/lib/Filer.js"
+    },
+    "./UF": {
+      "types": "./built/src/lib/UF.d.ts",
+      "import": "./built/src/lib/UF.js"
     },
     "./Wordbits": {
       "types": "./built/src/lib/Wordbits.d.ts",
       "import": "./built/src/lib/Wordbits.js"
+    },
+    "./Wordform": {
+      "types": "./built/src/lexicon/index.d.ts",
+      "import": "./built/src/lexicon/index.js"
     },
     "./Filer": {
       "types": "./built/src/lib/Filer.d.ts",
@@ -84,7 +100,13 @@
     }
   },
   "files": [
-    "built", "src", "tsconfig*.json", "VERSION.txt", "README.md", "package.json", "index.ts"
+    "built",
+    "src",
+    "tsconfig*.json",
+    "VERSION.txt",
+    "README.md",
+    "package.json",
+    "index.ts"
   ],
   "packageManager": "yarn@4.9.2",
   "stableVersion": "1.0.17"
