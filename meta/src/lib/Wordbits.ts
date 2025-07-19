@@ -17,7 +17,7 @@ export function aMinusB(aBits: TY.WordbitsT, bBits: TY.WordbitsT):          TY.W
 }
 
 /** Which letters appear in either A or B (or both)?  | `A ∪ B`     | Wordbits | Union                | `A \| B`                   | */
-export function inEither(aBits: TY.WordbitsT, bBits: TY.WordbitsT):         TY.WordbitsT {
+export function union(aBits: TY.WordbitsT, bBits: TY.WordbitsT):         TY.WordbitsT {
   return aBits | bBits
 }
 
@@ -66,7 +66,7 @@ export function aHasAllOfBMasked(maskA: TY.MissingBits, bitsB: TY.WordbitsT): bo
 
 /** Does A include *all* of the letters in B?         | `A ⊆ B`     | boolean  | Subset               | `(A & B) === A`            | */
 export function aHasAllOfB(aBits: TY.WordbitsT, bBits: TY.WordbitsT): boolean  {
-  return (aBits & bBits) === aBits
+  return (aBits & bBits) === bBits
 }
 
 /** Does A include all the letters in B *and more*?   | `A ⊊ B`     | boolean  | Strict Subset        | `(A & B) === A && A !== B` | */
@@ -88,7 +88,7 @@ export function inBothAandB(bitsA: TY.WordbitsT, bitsB: TY.WordbitsT): TY.Wordbi
 }
 
 /** @returns letters that are in either A, or B, or both -- as wordbits */
-export function inEitherAorB(bitsA: TY.WordbitsT, bitsB: TY.WordbitsT): TY.WordbitsT {
+export function unionAorB(bitsA: TY.WordbitsT, bitsB: TY.WordbitsT): TY.WordbitsT {
   return bitsA | bitsB
 }
 
@@ -164,7 +164,7 @@ export function rot13Wordbits(wordbits: TY.WordbitsT): TY.WordbitsT {
 }
 
 /** @returns the unique letters in the word, in alphabetical order */
-export function wordForWordbits(wordbits: TY.WordbitsT): TY.Shingle {
+export function ltrsForWordbits(wordbits: TY.WordbitsT): TY.Shingle {
   const bits00_06 =  wordbits        & 0b111_1111 as TY.AtoZnum
   const bits07_13 = (wordbits >>  7) & 0b111_1111 as TY.AtoZnum
   const bits14_20 = (wordbits >> 14) & 0b111_1111 as TY.AtoZnum

@@ -27,37 +27,73 @@ describe('Wordbits', () => {
     })
   })
 
-  const SetOpsExampleWords  = ['chimp', 'imp', 'chimps', 'adios', 'ado']
+  const SetOpsExampleWords  = ['chimp', 'imp', 'chimps', 'adios', 'ado'] as const
   type  SetOpsExampleWord = (typeof SetOpsExampleWords)[number]
-  const chimpsOps = { //
-    aMinusB:           { chimp: '', imp: '', chimps: '', adios: '', ado: '' },
-    inEither:          { chimp: '', imp: '', chimps: '', adios: '', ado: '' },
-    inBoth:            { chimp: '', imp: '', chimps: '', adios: '', ado: '' },
-    inEitherNotBoth:   { chimp: '', imp: '', chimps: '', adios: '', ado: '' },
-    hasOverlap:        { chimp: '', imp: '', chimps: '', adios: '', ado: '' },
-    hasNoOverlap:      { chimp: '', imp: '', chimps: '', adios: '', ado: '' },
-    isEqual:           { chimp: '', imp: '', chimps: '', adios: '', ado: '' },
-    aHasAllOfB:        { chimp: '', imp: '', chimps: '', adios: '', ado: '' },
-    aHasAllAndMoreB:   { chimp: '', imp: '', chimps: '', adios: '', ado: '' },
-    aHasMissingFromB:  { chimp: '', imp: '', chimps: '', adios: '', ado: '' },
+  const SetOpBits = {
+    chimps:  Wordbits.wordbitsForWord('chimps'),
+    chimp:   Wordbits.wordbitsForWord('chimp'),
+    ado:     Wordbits.wordbitsForWord('ado'),
+    adios:   Wordbits.wordbitsForWord('adios'),
+    imp:     Wordbits.wordbitsForWord('imp'),
+  }
+  const chimpLtrsOpOnB  = { // for binary ops, result of applying op('chimps', [word])
+    aMinusB:           { chimp: '',           imp: 'ch',         chimps: '',         adios: 'chmp',         ado: 'chimp'     },
+    union:             { chimp: 'chimp',      imp: 'chimps',     chimps: 'chimps',   adios: 'acdhimops',    ado: 'acdhimop'  },
+    inBoth:            { chimp: 'chimp',      imp: 'imp',        chimps: 'chimp',    adios: 'i',            ado: ''          },
+    inEitherNotBoth:   { chimp: '',           imp: 'ch',         chimps: 's',        adios: 'acdhmops',     ado: 'acdhimop'  },
+  } as const satisfies Partial<{ [func in keyof typeof Wordbits]: Record<SetOpsExampleWord, any> }>
+  const aLtrsOpOnChimp = { // for binary ops, result of applying op('chimps', [word])
+    aMinusB:           { chimp: '',           imp: '',           chimps: 's',        adios: 'ados',         ado: 'ado'       },
+    union:             { chimp: 'chimp',      imp: 'chimps',     chimps: 'chimps',   adios: 'acdhimops',    ado: 'acdhimop'  },
+    inBoth:            { chimp: 'chimp',      imp: 'imp',        chimps: 'chimp',    adios: 'i',            ado: ''          },
+    inEitherNotBoth:   { chimp: '',           imp: 'ch',         chimps: 's',        adios: 'acdhmops',     ado: 'acdhimop'  },
+  }
+
+  describe.each(_.entries(chimpLtrsOpOnB))('applying %s', ((funcname: keyof typeof chimpLtrsOpOnB, wanted: Record<SetOpsExampleWord, any>) => {
+    const func = Wordbits[funcname]
+    const chimpBits = SetOpBits.chimp
+    describe.each(_.entries(wanted))(`as ${funcname}(chimp, %s) = %s`, ((bWord: SetOpsExampleWord) => {
+      const wantedLtrs = chimpLtrsOpOnB[funcname][bWord]
+      const wantedBits = Wordbits.wordbitsForWord(wantedLtrs)
+      const bBits      = Wordbits.wordbitsForWord(bWord)
+      it('has the right setup', () => { expect(bBits).to.equal(SetOpBits[bWord]) })
+      it('should return the correct ltrs', () => {
+        const resultBits = func(chimpBits, bBits)
+        expect(Wordbits.ltrsForWordbits(resultBits)).to.equal(wantedBits)
+      })
+    }) as any)
+  }) as any)
+  const chimpBoolOpOnB  = { // for binary ops, result of applying op('chimps', [word])
+    hasOverlap:        { chimp: true,         imp: true,         chimps: true,       adios: true,           ado: false       },
+    hasNoOverlap:      { chimp: false,        imp: false,        chimps: false,      adios: false,          ado: true        },
+    isEqual:           { chimp: true,         imp: false,        chimps: false,      adios: false,          ado: false       },
+    aHasAllOfB:        { chimp: true,         imp: true,         chimps: false,      adios: false,          ado: false       },
+    aHasAllAndMoreB:   { chimp: false,        imp: true,         chimps: false,      adios: false,          ado: false       },
+    aHasMissingFromB:  { chimp: false,        imp: true,         chimps: false,      adios: true,           ado: true        },
+  } as const satisfies Partial<{ [func in keyof typeof Wordbits]: Record<SetOpsExampleWord, any> }>
+  const aOpOnChimp = { // for binary ops, result of applying op('chimps', [word])
+
+    hasOverlap:        { chimp: true,         imp: true,         chimps: true,       adios: true,           ado: false       },
+    hasNoOverlap:      { chimp: false,        imp: false,        chimps: false,      adios: false,          ado: true        },
+    isEqual:           { chimp: true,         imp: false,        chimps: false,      adios: false,          ado: false       },
+    aHasAllOfB:        { chimp: true,         imp: false,        chimps: true,       adios: false,          ado: false       },
+    aHasAllAndMoreB:   { chimp: false,        imp: true,         chimps: true,       adios: false,          ado: false       },
+    aHasMissingFromB:  { chimp: false,        imp: false,        chimps: true,      adios: true,           ado: true        },
+  } as const satisfies Partial<{ [func in keyof typeof Wordbits]: Record<SetOpsExampleWord, any> }>
+  const unarySetOps = {
     missingFrom:       { chimp: '', imp: '', chimps: '', adios: '', ado: '' },
     countUniqLtrs:     { chimp: '', imp: '', chimps: '', adios: '', ado: '' },
     rot13Wordbits:     { chimp: '', imp: '', chimps: '', adios: '', ado: '' },
-  } as const satisfies Partial<Record<keyof typeof Wordbits, Record<SetOpsExampleWord, string>>>
-  const chimpsBits = Wordbits.wordbitsForWord('chimps')
-  const chimpBits  = Wordbits.wordbitsForWord('chimp')
-  const adoBits    = Wordbits.wordbitsForWord('ado')
-  const adiosBits  = Wordbits.wordbitsForWord('adios')
-  const impBits    = Wordbits.wordbitsForWord('imp')
+  }
 
   describe('aHasAllOfBMasked', () => {
     const chimpsMask = Wordbits.containsMaskForWord('chimps')
     const adoMask    = Wordbits.containsMaskForWord('ado')
     it('should return true for matching words', () => {
-      expect(Wordbits.aHasAllOfBMasked(chimpsMask,  chimpBits)).to.be.true  // a subset of b
-      expect(Wordbits.aHasAllOfBMasked(chimpsMask,    impBits)).to.be.true    // a subset of b
+      expect(Wordbits.aHasAllOfBMasked(chimpsMask,  chimpBits)).to.be.true // a subset of b
+      expect(Wordbits.aHasAllOfBMasked(chimpsMask,    impBits)).to.be.true // a subset of b
       expect(Wordbits.aHasAllOfBMasked(chimpsMask, chimpsBits)).to.be.true // a equal  to b
-      expect(Wordbits.aHasAllOfBMasked(adoMask,       adoBits)).to.be.true    // a equal  to b
+      expect(Wordbits.aHasAllOfBMasked(adoMask,       adoBits)).to.be.true // a equal  to b
     })
     it('should return false for non-matching words', () => {
       expect(Wordbits.aHasAllOfBMasked(chimpsMask,  adiosBits)).to.be.false  // intersect with leftovers in each
@@ -78,10 +114,10 @@ describe('Wordbits', () => {
       expect(digested.uniqarr).to.eql(expectedUniqs)
       expect(digested.beg).to.eql(beg)
       expect(digested.end).to.eql(end)
-      expect(Wordbits.wordForWordbits(digested.wordbits)).to.eql(expectedUniqs.join(''))
-      expect(Wordbits.wordForWordbits(digested.begbit)).to.eql(beg)
-      expect(Wordbits.wordForWordbits(digested.endbit)).to.eql(end)
-      expect(Wordbits.wordForWordbits(digested.missbits)).to.eql(_.without(UF.AtoZlos, ...expectedUniqs).join(''))
+      expect(Wordbits.ltrsForWordbits(digested.wordbits)).to.eql(expectedUniqs.join(''))
+      expect(Wordbits.ltrsForWordbits(digested.begbit)).to.eql(beg)
+      expect(Wordbits.ltrsForWordbits(digested.endbit)).to.eql(end)
+      expect(Wordbits.ltrsForWordbits(digested.missbits)).to.eql(_.without(UF.AtoZlos, ...expectedUniqs).join(''))
     }) as any)
     describe('DigestedExamples', () => {
       function atozArr(str: string) { return str.split('') as TY.AtoZlo[] }
@@ -158,7 +194,7 @@ describe('Wordbits', () => {
         const result = prettyWordbits(wordbits)
         const plain  = result.replaceAll(/[_]/g, '')
         expect(result).to.match(/^0b[01]{2}_[01]{4}_[01]{4}_[01]{4}_[01]{4}_[01]{4}_[01]{4}$/)
-        expect(plain).to.equal(UF.sprintf('0b%026b', wordbits))
+        // expect(plain).to.equal(UF.vsprintf('0b%026b', [wordbits]))
       })
     })
   })

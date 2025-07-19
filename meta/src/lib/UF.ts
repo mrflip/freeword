@@ -3,13 +3,15 @@ import      * as NodeUtil                         from 'node:util'
 import type * as TY                               from '../types.ts'
 // import      { nextTick }                       from 'node:process'
 import      { AtoZlos }                          from '../lexicon/LexiconConsts.ts'
+import      * as JSPrintf                         from 'sprintf-js'
 //
-export      { sprintf, vsprintf }                 from 'sprintf-js'
 export      *                                     from './Streaming.ts'
 export      *                                     from './Random.ts'
 export      *                                     from '../UtilityConsts.ts'
 export type *                                     from '../types.ts'
 export      *                                     from './Rot13.ts'
+
+export const { sprintf, vsprintf } = JSPrintf
 
 export type ObjKey        = string          | symbol
 export type ClxnKey       = string | number | symbol
@@ -146,15 +148,6 @@ export function getProp<VT>(obj: object, propname: TY.Fieldname, depth: number =
 export function bagsize(bag: TY.AnyBag | any[]): number {
   if (_.isArray(bag)) { return bag.length }
   return _.keys(bag).length
-}
-
-export function isNode(): boolean {
-  return (typeof process !== 'undefined' && process.release && process.release.name === 'node')
-}
-
-export function isBrowser(): boolean {
-  // if (isNode()) { return false }
-  return (!! (import.meta as any).client)
 }
 
 export interface PrettifyFieldOpts {
@@ -343,4 +336,13 @@ export async function * catiters(...iters: TY.AnyIterable<any>[]) {
   for (const iter of iters) {
     yield * (iter as Iterable<any>)
   }
+}
+
+export function isNode(): boolean {
+  return (typeof process !== 'undefined' && process.release && process.release.name === 'node')
+}
+
+export function isBrowser(): boolean {
+  // if (isNode()) { return false }
+  return (!! (import.meta as any).client)
 }

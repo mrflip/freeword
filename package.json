@@ -1,6 +1,6 @@
 {
   "name": "internals",
-  "version": "1.0.18-5",
+  "version": "1.0.19",
   "description": "Host metarepo for Freeword. You don't want this package unless you're working on the Freeword project: see @freeword/freeword, probably, or the variants in the README.",
   "private": true,
   "workspaces": [
@@ -89,6 +89,5 @@
   "files": [
     "README.md"
   ],
-  "packageManager": "yarn@4.9.2",
-  "stableVersion": "1.0.17"
+  "packageManager": "yarn@4.9.2"
 }
