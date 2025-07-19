@@ -1,7 +1,7 @@
 {
   "$schema":                "https://json.schemastore.org/tsconfig",
   "extends":                "./tsconfig-base.json",
-  // "include":                            ["src/**/*.ts", "db/**/*.ts", "src/**/*.js"],
+  // "include":                ["index.ts", "src/**/*.ts", "db/**/*.ts", "src/**/*.js"],
   "compilerOptions": {
     "tsBuildInfoFile":                    "../.tsbuildinfo-meta",
     "outDir":                             "./built",  /* Specify the path to .tsbuildinfo incremental compilation file. */

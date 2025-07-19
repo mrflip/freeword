@@ -1,11 +1,28 @@
 {
 	"folders": [
 		{
+			"name": "meta",
+			"path": "meta"
+		},
+		{
+			"name": "tests",
+			"path": "tests"
+		},
+		{
+			"name": "freeword-all-byword",
+			"path": "repos/freeword-all-byword"
+		},
+		{
+			"name": "freeword",
 			"path": "."
+		},
+		{
+			"path": "../lexiflip"
 		}
 	],
   "settings": {
-    "javascript.referencesCodeLens.showOnAllFunctions": false,
+    "typescript.tsdk": "freeword/.yarn/sdks/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,    "javascript.referencesCodeLens.showOnAllFunctions": false,
     "javascript.referencesCodeLens.enabled": false,
     "files.watcherExclude": {
       "**/db/**/*.js": true
@@ -50,6 +67,5 @@
         "defaultFoldStartRegex": "^([\\s]*#+[\\s]*==+ \\[[\\w]+)"
       }
     },
-
   }
 }

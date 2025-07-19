@@ -1,0 +1,1 @@
+export { default, WordformsAllFlat as Wordforms } from './freeword-all-flat.d.ts'

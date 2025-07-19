@@ -1,5 +1,5 @@
 {
-  "name": "@freeword/all-byword",
+  "name": "@freeword/all-flat",
   "version": "1.0.18-0",
   "description": "A Practical Dictionary, containing all(*) words in our collection, exported as a lookup table by word. Has useful metadata assembled from freely licensed sources of varying quality. (*) About 1000 highly offensive words are omitted, but available from @freeword/offensive; see the README for details.",
   "scripts": {
@@ -24,7 +24,6 @@
   },
   "type": "module",
   "main": "./index.js",
-  "types": "./index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -32,6 +31,10 @@
       "import": "./index.js"
     }
   },
+  "files": [
+    "index.js", "index.d.ts", "db", "LICENSE", "README.md", "package.json",
+    "tsconfig-base.json", "tsconfig.json"
+  ],
   "packageManager": "yarn@4.9.2",
   "stableVersion": "1.0.17"
 }

@@ -1,7 +1,7 @@
 import      _                                /**/ from 'lodash'
 import type * as FW                               from './LexiconConsts.ts'
 import type { AnyBag, Bag }                       from '../UtilityTypes.ts'
-
+import type { LemmaDef }                          from './LemmaDef.ts'
 // == [Utility Alias Types] -- used for expressiveness, they're mostly primitive types
 
 /** a word of lower-cased letters (matching /^[a-z]+$/) */
@@ -77,14 +77,24 @@ export interface WordformT {
 
 /** Flattened version of WordformT for storage */
 export type WordformFlat = [
-  Word, Word, Poskind, Stemkind, Wordpart, Wordstem, Wordstem, string, number, number, AnyBag?,
+  /** Wordform.word      */ Word,
+  /** Wordform.core      */ Word,
+  /** Wordform.pos       */ Poskind,
+  /** Wordform.stemkind  */ Stemkind,
+  /** Wordform.suffix    */ Wordpart,
+  /** Wordform.stemcore  */ Wordstem,
+  /** Wordform.stemsplit */ Wordstem,
+  /** Wordform.freq      */ number,
+  /** Wordform.wordbits  */ number,
+  /** Wordform.gloss     */ string,
+  /** Wordform.tmi       */ AnyBag?,
 ]
 // --
 
 // == [Lemma related props types] -- See the Lemma class for active object
 
 /** A lemma definition is a core word and its children: eg 'dance' with 'dance', 'danced', 'dancing' and 'dances' */
-export interface LemmaDef {
+export interface LemmaDefT {
   /** core word,    eg. `accede` */ core:          Word
   /** all children, incl core    */ defs: readonly WordformT[]
   /** stem, eg. `ac|cede`        */ stem:          Wordstem

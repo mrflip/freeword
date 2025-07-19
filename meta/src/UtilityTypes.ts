@@ -15,6 +15,8 @@ export type Fieldname = string // & { _: 'Fieldname' }
 export interface Outcome<VT = any, GT extends string = string> {
   /** Can the result be trusted (that is, were there no unexpected issues?) */
   ok:          boolean
+  /** A message about the outcome, if any */
+  msg?:        string      | undefined
   /** What was achieved / what went wrong / what was the final state, if known? */
   gist?:       GT          | undefined
   /** Return value of a GoodOutcome; absent in a BadOutcome */

@@ -1,10 +1,10 @@
 import      _                                /**/ from 'lodash'
 import      * as NodeUtil                         from 'node:util'
 import type * as TY                               from '../types.ts'
-export      { sprintf, vsprintf }                 from 'sprintf-js'
 import      { nextTick }                          from 'node:process'
 import      { AtoZlos }                          from '../lexicon/LexiconConsts.ts'
 //
+export      { sprintf, vsprintf }                 from 'sprintf-js'
 export      *                                     from './Streaming.ts'
 export      *                                     from './Random.ts'
 export      *                                     from '../UtilityConsts.ts'

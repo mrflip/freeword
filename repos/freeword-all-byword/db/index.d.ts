@@ -1,1 +1,1 @@
-export { default, WordformsAllByWord as Wordforms } from './freeword-all-byword.d.ts'
+export { default, WordformsAllByword as Wordforms } from './freeword-all-byword.d.ts'

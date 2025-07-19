@@ -1,6 +1,6 @@
 {
   "name": "internals",
-  "version": "1.0.14",
+  "version": "1.0.18-0",
   "description": "Host metarepo for Freeword. You don't want this package unless you're working on the Freeword project: see @freeword/freeword, probably, or the variants in the README.",
   "private": true,
   "workspaces": [
@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@freeword/all-byword": "workspace:*",
+    "@freeword/all-flat": "workspace:*",
     "@freeword/meta": "workspace:*",
     "@jest/globals": "^30.0.4",
     "@jest/types": "^30.0.1",
@@ -87,5 +88,6 @@
     "index.js",
     "index.d.ts"
   ],
-  "packageManager": "yarn@4.9.2"
+  "packageManager": "yarn@4.9.2",
+  "stableVersion": "1.0.17"
 }

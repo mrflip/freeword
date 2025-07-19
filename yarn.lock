@@ -423,11 +423,19 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@freeword/all-byword@workspace:repos/freeword-all-byword"
   dependencies:
-    "@freeword/meta": "workspace:*"
+    "@freeword/meta": "npm:^1.0.18-0"
   languageName: unknown
   linkType: soft
 
-"@freeword/meta@workspace:*, @freeword/meta@workspace:meta":
+"@freeword/all-flat@workspace:*, @freeword/all-flat@workspace:repos/freeword-all-flat":
+  version: 0.0.0-use.local
+  resolution: "@freeword/all-flat@workspace:repos/freeword-all-flat"
+  dependencies:
+    "@freeword/meta": "npm:^1.0.18-0"
+  languageName: unknown
+  linkType: soft
+
+"@freeword/meta@npm:^1.0.18-0, @freeword/meta@workspace:*, @freeword/meta@workspace:meta":
   version: 0.0.0-use.local
   resolution: "@freeword/meta@workspace:meta"
   dependencies:
@@ -2189,6 +2197,7 @@ __metadata:
   resolution: "internals@workspace:."
   dependencies:
     "@freeword/all-byword": "workspace:*"
+    "@freeword/all-flat": "workspace:*"
     "@freeword/meta": "workspace:*"
     "@jest/globals": "npm:^30.0.4"
     "@jest/types": "npm:^30.0.1"

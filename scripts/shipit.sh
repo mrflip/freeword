@@ -7,23 +7,32 @@ yarn workspaces foreach --all run build
 
 # Find the version of main package, and stamp it on all the other packages
 $SCRIPTDIR/version-extract.sh $MAINDIR/package.json
-$SCRIPTDIR/version-extract.sh $MAINDIR/meta/package.json
+#
 MAINVER=$(cat $MAINDIR/VERSION.txt)
+yarn workspaces foreach --all version "$MAINVER"
+
+$SCRIPTDIR/version-extract.sh $MAINDIR/meta/package.json
 METAVER=$(cat $MAINDIR/meta/VERSION.txt)
 echo "MAINVER: $MAINVER METAVER: $METAVER"
+
 $SCRIPTDIR/version-clobber.sh "^$METAVER"
-$SCRIPTDIR/version-show.sh || true
+
 #
-yarn workspaces foreach --all version "$MAINVER"
-yarn workspaces foreach --all run npm version $MAINVER --force --allow-same-version
+yarn workspaces foreach --all --no-private run npm version $MAINVER --force --allow-same-version
 #
 $SCRIPTDIR/version-show.sh || true
 
-yarn workspaces foreach --all run shipme --access public --verbose=false # "$@"
+# for repodir in $MAINDIR/repos/* $MAINDIR/meta ; do
+#   reponame=$(basename $repodir)
+#   cd $repodir
+#   echo $PWD $reponame
+#   npm version $MAINVER --force --allow-same-version
+#   npm publish --verbose=false
+#   cd $MAINDIR
+# done
+# $SCRIPTDIR/version-clobber.sh "workspace:*"
 
-$SCRIPTDIR/version-clobber.sh "workspace:*"
-$SCRIPTDIR/version-show.sh || true
-
+# $SCRIPTDIR/version-show.sh || true
 
 # VERSIONSTRAT=${1:-pre}
 # if [ "${NPMTAG:-}" = "" ]; then

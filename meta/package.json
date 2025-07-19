@@ -1,9 +1,9 @@
 {
   "name": "@freeword/meta",
-  "version": "1.0.14",
+  "version": "1.0.18-0",
   "description": "Meta package for Freeword: exports all core types, constants, and utilities from the src/ directory.",
   "scripts": {
-    "shipme": "npm publish",
+    "shipme": "npm publish --access public",
     "build": "yarn tsc --build --verbose",
     "_1": " echo .",
     "test": "           ( cd .. ; yarn test )",
@@ -59,13 +59,33 @@
     "url": "git+https://github.com/mrflip/freeword.git"
   },
   "type": "module",
-  "main": "./index.js",
-  "types": "./index.ts",
+  "main": "./built/index.js",
   "exports": {
+    "./package.json": "./package.json",
     ".": {
-      "types": "./built/index.ts",
+      "types": "./built/index.d.ts",
       "import": "./built/index.js"
+    },
+    "./UF.js": {
+      "types": "./built/src/lib/UF.d.ts",
+      "import": "./built/src/lib/UF.js"
+    },
+    "./Wordbits.ts": {
+      "types": "./built/src/lib/Wordbits.d.ts",
+      "import": "./built/src/lib/Wordbits.js"
+    },
+    "./Wordbits": {
+      "types": "./built/src/lib/Wordbits.d.ts",
+      "import": "./built/src/lib/Wordbits.js"
+    },
+    "./Filer": {
+      "types": "./built/src/lib/Filer.d.ts",
+      "import": "./built/src/lib/Filer.js"
     }
   },
-  "packageManager": "yarn@4.9.2"
+  "files": [
+    "built", "src", "tsconfig*.json", "VERSION.txt", "README.md", "package.json", "index.ts"
+  ],
+  "packageManager": "yarn@4.9.2",
+  "stableVersion": "1.0.17"
 }
