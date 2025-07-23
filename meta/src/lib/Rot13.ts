@@ -5,6 +5,15 @@ const Rot13Map: Record<TY.AtoZlo, string> = {
 }
 
 /** ROT-13: trivially obscure/decode a string by mapping a->n, b->o, ..., m->z, n->a, ..., z->m. Installation is the reverse of removal. */
-export function rot13word(str: string): string {
-  return str.replace(/[a-zA-Z]/g, ((char: TY.AtoZlo) => Rot13Map[char]) as any)
+export function rot13Word(str: string): string {
+  return str.toLowerCase().replace(/[a-z]/g, ((char: TY.AtoZlo) => Rot13Map[char]) as any)
+}
+
+const Z = 'z'.charCodeAt(0)
+/** ROT-13: trivially obscure/decode a string by mapping a->n, b->o, ..., m->z, n->a, ..., z->m. Installation is the reverse of removal. */
+export function rotNWord(str: string, by: number): string {
+  return str.toLowerCase().replace(/[a-z]/g, ((char: TY.AtoZlo) => {
+    const shifted = char.charCodeAt(0) + by
+    return String.fromCharCode((shifted > Z) ? (shifted - 26) : shifted)
+  }) as any)
 }

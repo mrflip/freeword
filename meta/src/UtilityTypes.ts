@@ -2,6 +2,8 @@
 
 /** Lookup table / dictionary of generic properties */
 export type Bag<VT> = Record<string, VT>
+/** Lookup table / dictionary of generic properties */
+export type PartBag<KT extends string, VT> = Partial<Record<KT, VT>>
 /** Generic bag of properties */
 export type AnyBag = Bag<any>
 /** Bag of strings */

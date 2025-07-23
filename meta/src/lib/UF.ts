@@ -151,16 +151,16 @@ export function bagsize(bag: TY.AnyBag | any[]): number {
 }
 
 export interface PrettifyFieldOpts {
-  chunkSize?: number | undefined
-  colwd?:     number | undefined
-  keywd?:     number | undefined
-  key?:       string | undefined
-  naked?:     boolean | undefined
-  indent?:    string | number | undefined
+  /** per line for arrays    */ chunkSize?: number | undefined
+  /** width per arr item     */ colwd?:     number | undefined
+  /** primary key width      */ keywd?:     number | undefined
+  /** prefix bag with key    */ key?:       string | undefined
+  /** omit the brackets?     */ naked?:     boolean | undefined
+  /** indent for arrays      */ indent?:    string | number | undefined,
 }
 export interface PrettifyOpts extends PrettifyFieldOpts {
-  naked?:        boolean | undefined,
-  chunkArrays?:  boolean | undefined,
+  /** omit the brackets?        */ naked?:        boolean | undefined,
+  /** always align array slots? */ chunkArrays?:  boolean | undefined,
 }
 
 function indentPaddingFor(indent: string | number | undefined) {
@@ -238,7 +238,7 @@ export function prettify(obj: object, { key, naked = false, ...opts }: PrettifyO
  *     // { 'mbr.lotr:sam': { ... }, 'mbr.lotr:frodo': { ... } }
  */
 export function rebag<RVT = any, IVT = any,                        RKT extends ObjKey = string>(clxn: readonly IVT[], func: ArrKVFunc<[RKT, RVT], IVT>): Record<RKT, RVT>
-export function rebag<RVT = any, OT extends TY.AnyBag = TY.AnyBag, RKT extends ObjKey = string, IKT = any>(clxn: OT,  func: ObjKVFunc<[RKT, RVT], OT[keyof OT], keyof OT>): Record<RKT, RVT>
+export function rebag<RVT = any, OT extends object = object, RKT extends ObjKey = string, IKT = any>(clxn: OT,  func: ObjKVFunc<[RKT, RVT], OT[keyof OT], keyof OT>): Record<RKT, RVT>
 export function rebag<RVT = any, IVT = any, RKT extends ObjKey = ObjKey, IKT extends ObjKey = string>(clxn: ReadonlyCollection<IKT, IVT>, func: KVFunc<[RKT, RVT], IVT, IKT>): Record<RKT, RVT>
 export function rebag<RVT = any, IVT = any, RKT extends ObjKey = ObjKey, IKT extends ObjKey = string>(clxn: ReadonlyCollection<IKT, IVT>, func: KVFunc<[RKT, RVT], IVT, IKT>): Record<RKT, RVT> {
   let seq = 0
