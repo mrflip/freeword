@@ -1,5 +1,5 @@
 import      _                                /**/ from 'lodash'
-import      * as UF                               from './UF.ts'
+// import      * as UF                           from './UF.ts'
 import type * as TY                               from '../types.ts'
 import      * as WordbitsTables                   from './WordbitsTables.ts'
 //
@@ -13,13 +13,40 @@ const WordbitsMask     = BITS_SMALLEST_26
 // const BITS_SMALLEST_7  =          0b111_1111
 
 /** Which letters in A are missing from B?            | `A - B`     | Wordbits | Difference           | `A & ~B & WordbitMask`     | */
+export function aMinusB(aBits: TY.WordbitsT, bBits: TY.WordbitsT, mask = WordbitsMask):          TY.WordbitsT {
+  return (aBits & (~bBits)) & WordbitsMask
+}
+/** Which letters in A are missing from B?            | `A - B`     | Wordbits | Difference           | `A & ~B & WordbitMask`     | */
+export function aMinusAll(aBits: TY.WordbitsT, ...bBitses: readonly TY.WordbitsT[]):          TY.WordbitsT {
+  return (aBits & (~unions(...bBitses))) & WordbitsMask
+}
+
+/** Which letters in A are missing from B?            | `A - B`     | Wordbits | Difference           | `A & ~B & WordbitMask`     | */
 export function subtract(aBits: TY.WordbitsT, bBits: TY.WordbitsT):          TY.WordbitsT {
-  return aBits & ~bBits & WordbitsMask
+  return (aBits & (~bBits)) & WordbitsMask
 }
 
 /** Which letters appear in either A or B (or both)?  | `A ∪ B`     | Wordbits | Union                | `A \| B`                   | */
 export function union(aBits: TY.WordbitsT, bBits: TY.WordbitsT):         TY.WordbitsT {
   return aBits | bBits
+}
+/** Which letters appear in any of the given sets?   | `A ∪ B ∪ C` | Wordbits | Union                | `A \| B \| C`               | */
+export function unions(...bitses: TY.WordbitsT[]): TY.WordbitsT {
+  return bitses.reduce((acc, bits) => acc | bits, 0)
+}
+
+/** Which letters appear in either A or B (or both)?  | `A ∪ B`     | Wordbits | Union                | `A \| B`                   | */
+export function inEither(aBits: TY.WordbitsT, bBits: TY.WordbitsT):         TY.WordbitsT {
+  return aBits | bBits
+}
+
+/** Which letters do both A and B have in common?     | `A ∩ B`     | Wordbits | Intersection         | `A & B`                    | */
+export function intersection(aBits: TY.WordbitsT, bBits: TY.WordbitsT):           TY.WordbitsT {
+  return aBits & bBits
+}
+/** Which letters appear in all of the given sets?   | `A ∩ B ∩ C` | Wordbits | Intersection         | `A & B & C`                | */
+export function intersections(...bitses: TY.WordbitsT[]): TY.WordbitsT {
+  return bitses.reduce((acc, bits) => acc & bits, WordbitsMask)
 }
 
 /** Which letters do both A and B have in common?     | `A ∩ B`     | Wordbits | Intersection         | `A & B`                    | */
@@ -31,9 +58,13 @@ export function inBoth(aBits: TY.WordbitsT, bBits: TY.WordbitsT):           TY.W
 export function inEitherNotBoth(aBits: TY.WordbitsT, bBits: TY.WordbitsT):  TY.WordbitsT {
   return aBits ^ bBits
 }
+/** Which letters are in A, or in B, but not in both? | `A ∆ B`     | Wordbits | Symmetric Difference | `A ^ B`                    | */
+export function xor(aBits: TY.WordbitsT, bBits: TY.WordbitsT):  TY.WordbitsT {
+  return aBits ^ bBits
+}
 
 /** Do A and B share any letters at all?              | `A ∩ B ≠ ∅` | boolean  | Overlap              | `(A & B) !== 0`            | */
-export function hasOverlap(aBits: TY.WordbitsT, bBits: TY.WordbitsT): boolean  {
+export function overlaps(aBits: TY.WordbitsT, bBits: TY.WordbitsT): boolean  {
   return (aBits & bBits) !== 0
 }
 
@@ -41,8 +72,12 @@ export function hasOverlap(aBits: TY.WordbitsT, bBits: TY.WordbitsT): boolean  {
 export function hasNoOverlap(aBits: TY.WordbitsT, bBits: TY.WordbitsT): boolean  {
   return (aBits & bBits) === 0
 }
+/** Do A and B have no letters in common?             | `A ∩ B = ∅` | boolean  | Disjoint             | `(A & B) === 0`            | */
+export function disjoint(aBits: TY.WordbitsT, bBits: TY.WordbitsT): boolean  {
+  return (aBits & bBits) === 0
+}
 /** Do A and B use exactly the same letters?          | `A = B`     | boolean  | Equality             | `A === B`                  | */
-export function isEqual(aBits: TY.WordbitsT, bBits: TY.WordbitsT): boolean  {
+export function equals(aBits: TY.WordbitsT, bBits: TY.WordbitsT): boolean  {
   return aBits === bBits
 }
 
@@ -50,21 +85,23 @@ export function missingLtrs(wordbits: TY.WordbitsT): TY.MissingBits {
   return ~wordbits & BITS_SMALLEST_26
 }
 
-/** @returns a mask suitable for use in s1MaskContainsS2 */
-export const containsMaskFor = missingLtrs
+// /** @returns a mask suitable for use in s1MaskContainsS2 */
+// export const containsMaskFor = missingLtrs
+// /** @returns a mask suitable for use in s1MaskContainsS2 */
+// export function containsMaskForWord(word: TY.Word | TY.Letter[]): TY.MissingBits {
+//   return missingLtrs(wordbitsForWord(word))
+// }
+// /** @returns true if s1 contains s2 -- NOTE: you must pass in `~s1`, not `s1` */
+// export function containsMasked(maskA: TY.MissingBits, bitsB: TY.WordbitsT): boolean {
+//   // maskA has a bit set for each element maskA does not have,
+//   // so if maskA & bitsB has anything set, then bitsB has an element that maskA does not have
+//   return (maskA & bitsB) === 0
+// }
 
-/** @returns a mask suitable for use in s1MaskContainsS2 */
-export function containsMaskForWord(word: TY.Word | TY.Letter[]): TY.MissingBits {
-  return missingLtrs(wordbitsForWord(word))
+/** Does A include *all* of the letters in B?         | `A ⊆ B`     | boolean  | Subset               | `(A & B) === A`            | */
+export function contains(aBits: TY.WordbitsT, bBits: TY.WordbitsT): boolean  {
+  return (aBits & bBits) === bBits
 }
-
-/** @returns true if s1 contains s2 -- NOTE: you must pass in `~s1`, not `s1` */
-export function aHasAllOfBMasked(maskA: TY.MissingBits, bitsB: TY.WordbitsT): boolean {
-  // maskA has a bit set for each element maskA does not have,
-  // so if maskA & bitsB has anything set, then bitsB has an element that maskA does not have
-  return (maskA & bitsB) === 0
-}
-
 /** Does A include *all* of the letters in B?         | `A ⊆ B`     | boolean  | Subset               | `(A & B) === A`            | */
 export function aHasAllOfB(aBits: TY.WordbitsT, bBits: TY.WordbitsT): boolean  {
   return (aBits & bBits) === bBits
@@ -72,6 +109,10 @@ export function aHasAllOfB(aBits: TY.WordbitsT, bBits: TY.WordbitsT): boolean  {
 
 /** Does A include all the letters in B *and more*?   | `A ⊊ B`     | boolean  | Strict Subset        | `(A & B) === A && A !== B` | */
 export function aHasAllAndMoreB(aBits: TY.WordbitsT, bBits: TY.WordbitsT): boolean  {
+  return ((aBits & bBits) === bBits) && aBits !== bBits
+}
+/** Does A include all the letters in B *and more*?   | `A ⊊ B`     | boolean  | Strict Subset        | `(A & B) === A && A !== B` | */
+export function strictlyContains(aBits: TY.WordbitsT, bBits: TY.WordbitsT): boolean  {
   return ((aBits & bBits) === bBits) && aBits !== bBits
 }
 
@@ -82,16 +123,6 @@ export function aHasMissingFromB(aBits: TY.WordbitsT, bBits: TY.WordbitsT): bool
 
 /** Which letters are *not* in A?                     | `¬A`        | Wordbits | Complement           | `~A & WordbitMask`         | */
 export function missingFrom(aBits: TY.WordbitsT): TY.WordbitsT { return ~aBits & WordbitsMask }
-
-/** @returns letters that are in both A and B -- as wordbits */
-export function inBothAandB(bitsA: TY.WordbitsT, bitsB: TY.WordbitsT): TY.WordbitsT {
-  return bitsA & bitsB
-}
-
-/** @returns letters that are in either A, or B, or both -- as wordbits */
-export function unionAorB(bitsA: TY.WordbitsT, bitsB: TY.WordbitsT): TY.WordbitsT {
-  return bitsA | bitsB
-}
 
 /** @returns the wordbit mask for a single letter */
 export function wordbitForLtr(ltr: TY.AtoZlo): number {
@@ -132,8 +163,6 @@ const MAGIC_NUMBER14m = 0b0001_0001_0001_0001_0001_0001_0001_0001_0001_0001_0001
 // 2. The AND masks out all but the bottom bit in each nybble
 // 3. The modulo 15 "sums" the nybbles
 // We need to use a bigint to avoid overflow for over 8 bits
-//
-// * https://graphics.stanford.edu/%7Eseander/bithacks.html
 //
 export function countBits14Magic(wordbits: bigint | number): number {
   // mult by x, mask by m, read by r
@@ -247,7 +276,7 @@ export function prettyWordbits(wordbits: TY.WordbitsT): string {
   // return WordbitsTables.prettyBinaryTable26[wordbits]
 }
 export function prettyBinary53(val: number, num = 53): string {
-  return '0b' + (_.chunk(_.padStart(val.toString(2), 56, '0').slice(56 - num).split(''), 4).map((nibbles) => nibbles.join('')).join('_'))
+  return '0b' + (_.chunk(_.padStart(val.toString(2), 56, '0').slice(56 - num).split(''), 4).map((nibbles: string[]) => nibbles.join('')).join('_'))
 }
 export function prettyBinary32(val: number): string {
   return prettyBinary53(val, 32)

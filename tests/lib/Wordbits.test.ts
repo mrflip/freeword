@@ -74,29 +74,34 @@ describe('Wordbits', () => {
   const SetOpsExampleWords  = ['chimp', 'imp', 'chimps', 'adios', 'ado'] as const
   type  SetOpsExampleWord = (typeof SetOpsExampleWords)[number]
   const SetOpBits = {
-    //              zy_xwvu_tsrq_ponm_lkji_hgfe_dcba
-    imp:         0b00_0000_0000_1001_0001_0000_0000,
-    chimp:       0b00_0000_0000_1001_0001_1000_0100,
-    //             .._...._.s.._p..m_...i_h..._.c..  //
-    chimps:      0b00_0000_0100_1001_0001_1000_0100,
-    adios:       0b00_0000_0100_0100_0001_0000_1001,
-    //             .._...._.s.._.o.._...i_...._d..a  //
-    ado:         0b00_0000_0000_0100_0000_0000_1001,
+    //                 zy_xwvu_tsrq_ponm_lkji_hgfe_dcba
+    imp:            0b00_0000_0000_1001_0001_0000_0000,
+    chimp:          0b00_0000_0000_1001_0001_1000_0100,
+    //                .._...._.s.._p..m_...i_h..._.c..  //
+    chimps:         0b00_0000_0100_1001_0001_1000_0100,
+    adios:          0b00_0000_0100_0100_0001_0000_1001,
+    //                .._...._.s.._.o.._...i_...._d..a  //
+    ado:            0b00_0000_0000_0100_0000_0000_1001,
   }
+  const Adchimpos = 0b00_0000_0100_1101_0001_1000_1101
   // console.log(UF.prettify(_.mapValues(SetOpBits, (bits) => prettyWordbits(bits))))
   it('should have the right setup of wordbits', () => { _.each(SetOpBits, (bits, word) => { expect(wordbitsForWord(word)).to.equal(bits) }) })
 
   const chimpLtrsOpOnB  = { // for binary ops, result of applying op('chimps', [word])
-    subtract:           { chimp: '',           imp: 'ch',         chimps: '',         adios: 'chmp',         ado: 'chimp'     },
+    subtract:          { chimp: '',           imp: 'ch',         chimps: '',         adios: 'chmp',         ado: 'chimp'     },
     union:             { chimp: 'chimp',      imp: 'chimp',      chimps: 'chimps',   adios: 'acdhimops',    ado: 'acdhimop'  },
-    inBoth:            { chimp: 'chimp',      imp: 'imp',        chimps: 'chimp',    adios: 'i',            ado: ''          },
+    intersection:      { chimp: 'chimp',      imp: 'imp',        chimps: 'chimp',    adios: 'i',            ado: ''          },
     inEitherNotBoth:   { chimp: '',           imp: 'ch',         chimps: 's',        adios: 'acdhmops',     ado: 'acdhimop'  },
+    xor:               { chimp: '',           imp: 'ch',         chimps: 's',        adios: 'acdhmops',     ado: 'acdhimop'  },
   } as const satisfies Partial<{ [func in keyof typeof Wordbits]: Record<SetOpsExampleWord, string> }>
   const aLtrsOpOnChimp = { // for binary ops, result of applying op('chimps', [word])
-    subtract:           { chimp: '',           imp: '',           chimps: 's',        adios: 'ados',         ado: 'ado'       },
+    subtract:          { chimp: '',           imp: '',           chimps: 's',        adios: 'ados',         ado: 'ado'       },
     union:             { chimp: 'chimp',      imp: 'chimp',      chimps: 'chimps',   adios: 'acdhimops',    ado: 'acdhimop'  },
+    inEither:          { chimp: 'chimp',      imp: 'chimp',      chimps: 'chimps',   adios: 'acdhimops',    ado: 'acdhimop'  },
+    intersection:      { chimp: 'chimp',      imp: 'imp',        chimps: 'chimp',    adios: 'i',            ado: ''          },
     inBoth:            { chimp: 'chimp',      imp: 'imp',        chimps: 'chimp',    adios: 'i',            ado: ''          },
     inEitherNotBoth:   { chimp: '',           imp: 'ch',         chimps: 's',        adios: 'acdhmops',     ado: 'acdhimop'  },
+    xor:               { chimp: '',           imp: 'ch',         chimps: 's',        adios: 'acdhmops',     ado: 'acdhimop'  },
   } as const satisfies Partial<{ [func in keyof typeof Wordbits]: Record<SetOpsExampleWord, string> }>
 
   describe.each(_.entries(chimpLtrsOpOnB))('applying %s', ((funcname: keyof typeof chimpLtrsOpOnB, wanted: Record<SetOpsExampleWord, any>) => {
@@ -122,18 +127,18 @@ describe('Wordbits', () => {
     }) as any)
   }) as any)
   const chimpBoolOpOnB  = { // for binary ops, result of applying op('chimps', [word])
-    hasOverlap:        { chimp: true,         imp: true,         chimps: true,       adios: true,           ado: false       },
-    hasNoOverlap:      { chimp: false,        imp: false,        chimps: false,      adios: false,          ado: true        },
-    isEqual:           { chimp: true,         imp: false,        chimps: false,      adios: false,          ado: false       },
-    aHasAllOfB:        { chimp: true,         imp: true,         chimps: false,      adios: false,          ado: false       },
+    overlaps:          { chimp: true,         imp: true,         chimps: true,       adios: true,           ado: false       },
+    disjoint:          { chimp: false,        imp: false,        chimps: false,      adios: false,          ado: true        },
+    equals:            { chimp: true,         imp: false,        chimps: false,      adios: false,          ado: false       },
+    contains:          { chimp: true,         imp: true,         chimps: false,      adios: false,          ado: false       },
     aHasAllAndMoreB:   { chimp: false,        imp: true,         chimps: false,      adios: false,          ado: false       },
     aHasMissingFromB:  { chimp: false,        imp: true,         chimps: false,      adios: true,           ado: true        },
   } as const satisfies Partial<{ [func in keyof typeof Wordbits]: Record<SetOpsExampleWord, boolean> }>
   const aBoolOpOnChimp = { // for binary ops, result of applying op('chimps', [word])
-    hasOverlap:        { chimp: true,         imp: true,         chimps: true,       adios: true,           ado: false       },
-    hasNoOverlap:      { chimp: false,        imp: false,        chimps: false,      adios: false,          ado: true        },
-    isEqual:           { chimp: true,         imp: false,        chimps: false,      adios: false,          ado: false       },
-    aHasAllOfB:        { chimp: true,         imp: false,        chimps: true,       adios: false,          ado: false       },
+    overlaps:          { chimp: true,         imp: true,         chimps: true,       adios: true,           ado: false       },
+    disjoint:          { chimp: false,        imp: false,        chimps: false,      adios: false,          ado: true        },
+    equals:            { chimp: true,         imp: false,        chimps: false,      adios: false,          ado: false       },
+    contains:          { chimp: true,         imp: false,        chimps: true,       adios: false,          ado: false       },
     aHasAllAndMoreB:   { chimp: false,        imp: false,        chimps: true,       adios: false,          ado: false       },
     aHasMissingFromB:  { chimp: false,        imp: false,        chimps: true,      adios: true,           ado: true        },
   } as const satisfies Partial<{ [func in keyof typeof Wordbits]: Record<SetOpsExampleWord, boolean> }>
@@ -155,6 +160,17 @@ describe('Wordbits', () => {
       expect(resultBits).to.equal(wanted)
     }) as any)
   }) as any)
+  describe('n-ary ops', () => {
+    it('unions', () => {
+      expect(Wordbits.unions([SetOpBits.chimp, SetOpBits.imp, SetOpBits.chimps, SetOpBits.adios, SetOpBits.ado])).to.equal(Adchimpos)
+      expect(Wordbits.unions([SetOpBits.chimp, SetOpBits.imp, SetOpBits.chimps])).to.equal(SetOpBits.chimps)
+    })
+    it('intersections', () => {
+      expect(Wordbits.intersections([SetOpBits.chimp, SetOpBits.imp, SetOpBits.chimps, SetOpBits.adios, SetOpBits.ado])).to.equal(0)
+      expect(Wordbits.intersections([SetOpBits.chimp, SetOpBits.imp, SetOpBits.chimps, SetOpBits.ado])).to.equal(0)
+      expect(Wordbits.intersections([SetOpBits.chimp, SetOpBits.imp, SetOpBits.chimps])).to.equal(SetOpBits.imp)
+    })
+  })
   // console.log(UF.prettify({
   //   wordbitsForWord:     UF.objectify(SetOpsExampleWords, (word) => prettyWordbits(wordbitsForWord(word))),
   //   missingFrom:         UF.objectify(SetOpsExampleWords, (word) => prettyWordbits(Wordbits.missingFrom(wordbitsForWord(word)))),
@@ -242,20 +258,20 @@ describe('Wordbits', () => {
     // _.each([0, 25, 63, (2**25 - 1)], (num) => Wordbits.rotNWordbits(num, 1))
   })
 
-  describe('aHasAllOfBMasked', () => {
+  describe('containsMasked', () => {
     it('should return true for matching words', () => {
-      expect(Wordbits.aHasAllOfB(SetOpBits.chimp,  SetOpBits.chimp)).to.be.true    // a equal of b
-      expect(Wordbits.aHasAllOfB(SetOpBits.chimp,  SetOpBits.imp)).to.be.true      // a subset of b
-      expect(Wordbits.aHasAllOfB(SetOpBits.chimp,  SetOpBits.chimps)).to.be.false  // a superset to b
-      expect(Wordbits.aHasAllOfB(SetOpBits.ado,    SetOpBits.ado)).to.be.true      // a equal  to b
+      expect(Wordbits.contains(SetOpBits.chimp,  SetOpBits.chimp)).to.be.true    // a equal of b
+      expect(Wordbits.contains(SetOpBits.chimp,  SetOpBits.imp)).to.be.true      // a subset of b
+      expect(Wordbits.contains(SetOpBits.chimp,  SetOpBits.chimps)).to.be.false  // a superset to b
+      expect(Wordbits.contains(SetOpBits.ado,    SetOpBits.ado)).to.be.true      // a equal  to b
     })
     it('should return false for non-matching words', () => {
-      expect(Wordbits.aHasAllOfB(SetOpBits.chimp,   SetOpBits.adios)).to.be.false  // intersect with leftovers in each
-      expect(Wordbits.aHasAllOfB(SetOpBits.chimp,   SetOpBits.ado)).to.be.false    // do not intersect
-      expect(Wordbits.aHasAllOfB(SetOpBits.ado,     SetOpBits.chimps)).to.be.false // do not intersect
-      expect(Wordbits.aHasAllOfB(SetOpBits.ado,     SetOpBits.imp)).to.be.false    // do not intersect
-      expect(Wordbits.aHasAllOfB(SetOpBits.ado,     SetOpBits.chimp)).to.be.false  // do not intersect
-      expect(Wordbits.aHasAllOfB(SetOpBits.ado,     SetOpBits.adios)).to.be.false  // b has letters not in a
+      expect(Wordbits.contains(SetOpBits.chimp,   SetOpBits.adios)).to.be.false  // intersect with leftovers in each
+      expect(Wordbits.contains(SetOpBits.chimp,   SetOpBits.ado)).to.be.false    // do not intersect
+      expect(Wordbits.contains(SetOpBits.ado,     SetOpBits.chimps)).to.be.false // do not intersect
+      expect(Wordbits.contains(SetOpBits.ado,     SetOpBits.imp)).to.be.false    // do not intersect
+      expect(Wordbits.contains(SetOpBits.ado,     SetOpBits.chimp)).to.be.false  // do not intersect
+      expect(Wordbits.contains(SetOpBits.ado,     SetOpBits.adios)).to.be.false  // b has letters not in a
     })
   })
 
