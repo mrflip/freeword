@@ -1,10 +1,10 @@
 {
   "name": "@freeword/meta",
-  "version": "1.0.19",
+  "version": "1.0.22",
   "description": "Meta package for Freeword: exports all core types, constants, and utilities from the src/ directory.",
   "scripts": {
-    "shipme": "npm publish --access public",
-    "build": "yarn tsc --build --verbose",
+    "shipme": "         npm publish --access public",
+    "build": "          yarn tsc   --build --verbose",
     "_1": " echo .",
     "test": "           ( cd .. ; yarn test )",
     "test:plain": "     ( cd .. ; yarn test )",
@@ -19,7 +19,8 @@
     "lodash": "^4.17.21",
     "luxon": "^3.6.1",
     "snowball-stemmers": "^0.6.0",
-    "sprintf-js": "^1.1.3"
+    "sprintf-js": "^1.1.3",
+    "zod": "^4.0.17"
   },
   "devDependencies": {
     "@jest/globals": "^30.0.4",

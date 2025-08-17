@@ -1,20 +1,21 @@
 {
   "name": "internals",
-  "version": "1.0.19",
+  "version": "1.0.22",
   "description": "Host metarepo for Freeword. You don't want this package unless you're working on the Freeword project: see @freeword/freeword, probably, or the variants in the README.",
   "private": true,
   "workspaces": [
     "meta",
-    "repos/*"
+    "repos/*",
+    "mungers/*"
   ],
   "scripts": {
-    "shipme": "echo 'I am not a package, but I am still awesome'",
-    "build": "echo 'I do not build, but I am still groovy'",
-    "ship:it": "./scripts/shipit.sh",
-    "ver:show": "./scripts/version-show.sh",
-    "ver:clobber": "./scripts/version-clobber.sh",
-    "ver:extract": "./scripts/version-extract.sh",
-    "ver:bump": "yarn workspace internals version patch",
+    "shipme": "         echo 'I am not a package, but I am still awesome'",
+    "build": "          echo 'I do not build, but I am still groovy'",
+    "ship:it": "        ./scripts/shipit.sh",
+    "ver:show": "       ./scripts/version-show.sh",
+    "ver:clobber": "    ./scripts/version-clobber.sh",
+    "ver:extract": "    ./scripts/version-extract.sh",
+    "ver:bump": "       yarn workspace internals version patch",
     "_1": " echo .",
     "test": "           yarn node --experimental-vm-modules                      $(yarn bin jest)",
     "test:plain": "     yarn node --experimental-vm-modules --enable-source-maps $(yarn bin jest)",
@@ -37,6 +38,7 @@
     "@freeword/all-byword": "workspace:*",
     "@freeword/all-flat": "workspace:*",
     "@freeword/meta": "workspace:*",
+    "@freeword/mungers-wiktionary": "workspace:*",
     "@jest/globals": "^30.0.4",
     "@jest/types": "^30.0.1",
     "@types/chai": "^5.2.2",

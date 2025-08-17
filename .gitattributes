@@ -10,3 +10,5 @@ repos/freeword-all-byword/db/freeword-all-byword-am.json filter=lfs diff=lfs mer
 repos/freeword-all-byword/db/freeword-all-byword-mz.json filter=lfs diff=lfs merge=lfs -text
 repos/freeword-all-flat/db/freeword-all-flat-am.json filter=lfs diff=lfs merge=lfs -text
 repos/freeword-all-flat/db/freeword-all-flat-mz.json filter=lfs diff=lfs merge=lfs -text
+raw/**/* filter=lfs diff=lfs merge=lfs -text
+raw/wiktionary/wiktionary_en_en-some.jsonl filter=lfs diff=lfs merge=lfs -text

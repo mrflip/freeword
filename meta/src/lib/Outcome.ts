@@ -1,4 +1,5 @@
-import type * as TY from '../types.ts'
+import      _                                /**/ from 'lodash'
+import type * as TY                               from '../types.ts'
 
 /**
  * Helper function to create bad outcomes with consistent structure
@@ -8,12 +9,7 @@ import type * as TY from '../types.ts'
  * @param tmi - Additional error extensions to add to the error
  */
 export function badOutcome<GT extends string = string>(preambleMsg: string, gist: GT, err?: Error | undefined, tmi?: TY.AnyBag | undefined): TY.BadOutcome<GT> {
-  const extError = (err ?? throwable(preambleMsg, gist, tmi)) as TY.ExtError
-  if (err) {
-    const origmsg = err.message
-    extError.message = `${preambleMsg}: ${origmsg}`
-    extError.extensions = { ...tmi, origmsg, gist }
-  }
+  const extError = throwable(preambleMsg, gist, tmi, err)
   const result = { ok: false, gist, err: extError } as TY.BadOutcome<GT>
   if (tmi) {
     // we're going to all this trouble so we may distinguish
@@ -26,9 +22,14 @@ export function badOutcome<GT extends string = string>(preambleMsg: string, gist
   }
   return result
 }
-export function throwable<GT extends string = string>(msg: string, gist: GT, tmi?: TY.AnyBag | undefined): TY.ExtError {
-  const extError      = new Error(msg) as TY.ExtError
+export function throwable<GT extends string = string>(preambleMsg: string, gist: GT, tmi?: TY.AnyBag | undefined, err?: Error | undefined): TY.ExtError {
+  const extError      = (err ?? (new Error(preambleMsg))) as TY.ExtError
   extError.extensions = { ...tmi, gist }
+  if (err) {
+    const { errno, code, syscall, path, message:origmsg } = err as any
+    extError.message = `${preambleMsg}: ${origmsg}`
+    _.merge(extError.extensions, _.omitBy({ errno, code, syscall, path, origmsg }, _.isUndefined))
+  }
   Error.captureStackTrace?.(extError, throwable)
   return extError
 }

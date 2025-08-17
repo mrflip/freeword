@@ -3,13 +3,12 @@ import      { expect }                            from 'chai'
 import      { promises as fs }                    from 'fs'
 import      path                                  from 'path'
 import      os                                    from 'os'
-// import   * as UF                               from '@/lib/UF'
 import type * as TY                               from '@freeword/meta'
-import      { Filer }                             from '@freeword/meta'
+import      { Filer, UF }                         from '@freeword/meta'
 
 const {
   _abspathForPathparts,  _abspathForPathname,  pathinfoFor, starlines,
-  dumptext, dumpjson, mkdirp,
+  dumptext, dumpjson, mkdirp, starjsonl,
 } = Filer
 
 describe('Filer', () => {
@@ -90,7 +89,7 @@ describe('Filer', () => {
       expect(() => _abspathForPathname('')).to.throw('Blank path is not a reasonable input')
     })
 
-    it('should throw for whitespace-only pathname', () => {
+    it('should throw for all-whitespace pathname', () => {
       expect(() => _abspathForPathname('   ')).to.throw('Blank path is not a reasonable input')
     })
 
@@ -267,15 +266,106 @@ describe('Filer', () => {
     })
 
     it('should handle file not found', async () => {
-      const generator = starlines('/nonexistent/file.txt')
+      let err: TY.ExtError = undefined!
       try {
+        const generator = starlines('/nonexistent/file.txt')
         for await (const line of generator) {
           expect.fail(`Should not yield any lines for non-existent file: ${line}`)
         }
-      } catch (err) {
-        expect(err).to.be.instanceOf(Error)
-        expect((err as Error).message).to.include('Issue opening file')
-      }
+      } catch (caught) { err = caught as TY.ExtError }
+      expect((err as Error).message).to.eql(`Path /nonexistent/file.txt is absent: ENOENT: no such file or directory, open '/nonexistent/file.txt'`)
+      expect(err).property('errno').to.eql(-2)
+      expect(err).property('path').to.eql('/nonexistent/file.txt')
+      expect(err).property('extensions').to.eql({
+        lineNumber: 0,
+        filepath:   '/nonexistent/file.txt',
+        args:       { anypath: '/nonexistent/file.txt' },
+        gist:       'fileNotFound',
+        errno:      -2,
+        code:       'ENOENT',
+        syscall:    'open',
+        path:       '/nonexistent/file.txt',
+        origmsg:    "ENOENT: no such file or directory, open '/nonexistent/file.txt'"
+      })
+    })
+  })
+  function fixturePath(filename: TY.Relpath) { return Filer.__relname(import.meta.url!, '../fixtures', filename) }
+  const expectedWu = [
+    { nick: 'RZA',              fullname: 'Robert Fitzgerald Diggs' },
+    { nick: 'GZA',              fullname: 'Gary Grice' },
+    { nick: 'ODB',              fullname: 'Ol\' Dirty Bastard' },
+    { nick: 'Method Man',       fullname: 'Clifford Smith' },
+    { nick: 'Ghostface Killah', fullname: 'Dennis Coles' },
+    { nick: 'Raekwon',          fullname: 'Corey Woods' },
+    { nick: 'Inspectah Deck',   fullname: 'Darryl McDaniels' },
+    { nick: 'U-God',            fullname: 'Lamont Jody Hawkins' },
+    { nick: 'Masta Killa',      fullname: 'Darryl Hill' },
+    { nick: 'Cappadonna',       fullname: 'Shawn Wigs' },
+  ]
+  const expectedWuKVEntries   = _.map(expectedWu, (wu, seq) => [wu.nick, wu, seq])
+  const expectedWuArrEntries  = _.map(expectedWu, (wu, seq) => [seq,     wu, seq])
+  describe('starjsonEntries', () => {
+    it('should handle empty file', async () => {
+      const lines: any[] = []
+      for await (const line of Filer.starjsonEntries(fixturePath('empty'))) { lines.push(line) }
+      expect(lines).to.deep.equal([])
+    })
+    it('should handle newline-separated JSON file', async () => {
+      const lines: any[] = []
+      for await (const line of Filer.starjsonEntries(fixturePath('goodjsonl.jsonl'))) { lines.push(line) }
+      expect(lines).to.deep.equal(expectedWuArrEntries)
+    })
+    it('should handle dual-mode JSON array file', async () => {
+      const lines: any[] = []
+      for await (const line of Filer.starjsonEntries(fixturePath('goodjsonl.l.json'))) { lines.push(line) }
+      expect(lines).to.deep.equal(expectedWuArrEntries)
+    })
+    it('should handle dual-mode JSON key-value file', async () => {
+      const lines: any[] = []
+      for await (const line of Filer.starjsonEntries(fixturePath('goodjsonkv.kv.json'))) { lines.push(line) }
+      expect(lines).to.deep.equal(expectedWuKVEntries)
+    })
+  })
+  describe('starjsonl', () => {
+    it('should handle empty file', async () => {
+      const lines: any[] = []
+      for await (const line of starjsonl(fixturePath('empty'))) { lines.push(line) }
+      expect(lines).to.deep.equal([])
+    })
+    it('should handle newline-separated JSON file', async () => {
+      const lines: any[] = []
+      for await (const line of starjsonl(fixturePath('goodjsonl.jsonl'))) { lines.push(line) }
+      expect(lines).to.deep.equal(expectedWu)
+    })
+    it('should handle dual-mode JSON array file', async () => {
+      const lines: any[] = []
+      for await (const line of starjsonl(fixturePath('goodjsonl.l.json'))) { lines.push(line) }
+      expect(lines).to.deep.equal(expectedWu)
+    })
+    it('should handle dual-mode JSON key-value file', async () => {
+      const lines: any[] = []
+      for await (const line of starjsonl(fixturePath('goodjsonkv.kv.json'))) { lines.push(line) }
+      expect(lines).to.deep.equal(expectedWu)
+    })
+    it('should handle parse errors', async () => {
+      let err: TY.ExtError = undefined!
+      let lines: any[] = []
+      const abspath = fixturePath('badjson')
+      try {
+        const generator = starjsonl(abspath)
+        for await (const line of generator) { lines.push(line) }
+      } catch (caught) { err = caught as TY.ExtError }
+      expect((err as Error).message).to.eql(
+        `Failed to parse JSON at line 3: Unterminated string in JSON at position 56 (line 1 column 57)`,
+      )
+      expect(err).property('extensions').to.eql({
+        line:        `{"nick": "ODB",              "fullname": "Ol' Dirty Bast`,
+        lineNumber:  3,
+        filepath:    abspath,
+        args:        { anypath: abspath },
+        gist:        'parseErr',
+        origmsg:     'Unterminated string in JSON at position 56 (line 1 column 57)',
+      })
     })
   })
 

@@ -13,7 +13,7 @@ const WordbitsMask     = BITS_SMALLEST_26
 // const BITS_SMALLEST_7  =          0b111_1111
 
 /** Which letters in A are missing from B?            | `A - B`     | Wordbits | Difference           | `A & ~B & WordbitMask`     | */
-export function aMinusB(aBits: TY.WordbitsT, bBits: TY.WordbitsT, mask = WordbitsMask):          TY.WordbitsT {
+export function aMinusB(aBits: TY.WordbitsT, bBits: TY.WordbitsT):          TY.WordbitsT {
   return (aBits & (~bBits)) & WordbitsMask
 }
 /** Which letters in A are missing from B?            | `A - B`     | Wordbits | Difference           | `A & ~B & WordbitMask`     | */

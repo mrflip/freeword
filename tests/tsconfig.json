@@ -3,10 +3,14 @@
   "display":  "Node 23",
   "exclude":  ["node_modules", "built", "**/built/**/*", "built/**/*", "**/.yarn/**/*", "**/aside/**/*"],
   "extends":  "../tsconfig-base.json",
+  "references": [
+    { "path":               "../meta/tsconfig.json"               },
+    { "path":               "../mungers/wiktionary/tsconfig.json" }
+  ],
   //
   "compilerOptions": {
     // where do we sit in the world?
-    "rootDir":                            "..",    // here
+    "rootDir":                            "..",
     "composite":                          false,   // and not referenced by others
     // when (never) and where (out of sight) to put the build artifacts
     "tsBuildInfoFile":                    "../.tsbuildinfo-freeword-tests",
@@ -16,10 +20,12 @@
     "isolatedModules":                    true,   /* ts-jest wants this */
     //
     "paths": {  /* make the tests work with the monorepo, so local package imports work */
-      "@freeword/meta":              ["../meta/src/index.ts"],
-      "@freeword/meta/*":            ["../meta/src/*"],
-      "@freeword/all-byword":        ["../repos/freeword-all-byword/index.ts"],
-      "@freeword/all-byword/*":      ["../repos/freeword-all-byword/*"]
+      "@freeword/meta":                  ["../meta/src/index.ts"],
+      "@freeword/meta/*":                ["../meta/src/*"],
+      "@freeword/all-byword":            ["../repos/freeword-all-byword/index.ts"],
+      "@freeword/all-byword/*":          ["../repos/freeword-all-byword/*"],
+      "@freeword/mungers-wiktionary":    ["../mungers/wiktionary/src/index.ts"],
+      "@freeword/mungers-wiktionary/*":  ["../mungers/wiktionary/src/*"]
     },
     /* specify one, you have to specify all; testGlobals makes ts-jest work with jest+chai mix */
     "types":                              ["./testGlobals.d.ts", "jest", "chai", "node", "sinon", "snowball-stemmers"],

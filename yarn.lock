@@ -423,7 +423,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@freeword/all-byword@workspace:repos/freeword-all-byword"
   dependencies:
-    "@freeword/meta": "npm:^1.0.19"
+    "@freeword/meta": "npm:^1.0.22"
   languageName: unknown
   linkType: soft
 
@@ -433,7 +433,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@freeword/meta@npm:^1.0.19, @freeword/meta@workspace:*, @freeword/meta@workspace:meta":
+"@freeword/meta@npm:^1.0.22, @freeword/meta@workspace:*, @freeword/meta@workspace:meta":
   version: 0.0.0-use.local
   resolution: "@freeword/meta@workspace:meta"
   dependencies:
@@ -463,6 +463,21 @@ __metadata:
     ts-jest: "npm:^29.4.0"
     ts-jest-resolver: "npm:^2.0.1"
     typescript: "npm:^5.8.3"
+    zod: "npm:^4.0.17"
+  languageName: unknown
+  linkType: soft
+
+"@freeword/mungers-wiktionary@workspace:*, @freeword/mungers-wiktionary@workspace:mungers/wiktionary":
+  version: 0.0.0-use.local
+  resolution: "@freeword/mungers-wiktionary@workspace:mungers/wiktionary"
+  dependencies:
+    "@freeword/meta": "workspace:*"
+    "@types/lodash": "npm:^4.17.18"
+    "@types/node": "npm:^24.0.14"
+    esm-seedrandom: "npm:3.0.5-esm.2"
+    lodash: "npm:^4.17.21"
+    typescript: "npm:^5.8.3"
+    zod: "npm:^4.0.17"
   languageName: unknown
   linkType: soft
 
@@ -2197,6 +2212,7 @@ __metadata:
     "@freeword/all-byword": "workspace:*"
     "@freeword/all-flat": "workspace:*"
     "@freeword/meta": "workspace:*"
+    "@freeword/mungers-wiktionary": "workspace:*"
     "@jest/globals": "npm:^30.0.4"
     "@jest/types": "npm:^30.0.1"
     "@types/chai": "npm:^5.2.2"
@@ -4256,5 +4272,12 @@ __metadata:
   version: 0.1.0
   resolution: "yocto-queue@npm:0.1.0"
   checksum: 10c0/dceb44c28578b31641e13695d200d34ec4ab3966a5729814d5445b194933c096b7ced71494ce53a0e8820685d1d010df8b2422e5bf2cdea7e469d97ffbea306f
+  languageName: node
+  linkType: hard
+
+"zod@npm:^4.0.17":
+  version: 4.0.17
+  resolution: "zod@npm:4.0.17"
+  checksum: 10c0/c56ef4cc02f8f52be8724c5a8b338266202d68477c7606bee9b7299818b75c9adc27f16f4b6704a372f3e7578bd016f389de19bfec766564b7c39d0d327c540a
   languageName: node
   linkType: hard

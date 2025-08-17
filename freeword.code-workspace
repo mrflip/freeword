@@ -1,25 +1,30 @@
 {
 	"folders": [
-		{
-			"name": "meta",
-			"path": "meta"
-		},
-		{
-			"name": "tests",
-			"path": "tests"
-		},
-		{
-			"name": "freeword-all-byword",
-			"path": "repos/freeword-all-byword"
-		},
-		{
-			"name": "freeword",
-			"path": "."
-		},
-		{
-			"path": "../lexiflip"
-		}
-	],
+    {
+      "name": "meta",
+      "path": "meta"
+    },
+    {
+      "name": "wiktionary",
+      "path": "mungers/wiktionary"
+    },
+    {
+      "name": "tests",
+      "path": "tests"
+    },
+    {
+      "name": "freeword-all-byword",
+      "path": "repos/freeword-all-byword"
+    },
+    {
+      "name": "freeword",
+      "path": "."
+    },
+    {
+      "name": "lexiflip",
+      "path": "../lexiflip"
+    }
+  ],
   "settings": {
     "typescript.tsdk": "freeword/.yarn/sdks/typescript/lib",
     "typescript.enablePromptUseWorkspaceTsdk": true,    "javascript.referencesCodeLens.showOnAllFunctions": false,

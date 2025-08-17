@@ -118,3 +118,6 @@ node_modules/
 **/.npmrc*
 **/built
 **/built/**
+
+rip/**/*.gz
+raw/**/*full*.gz

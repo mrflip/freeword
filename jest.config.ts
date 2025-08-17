@@ -13,7 +13,7 @@ const jestConfig: JestConfigWithTsJest = {
   testPathIgnorePatterns: ['<rootDir>/tmp/', '<rootDir>/node_modules/'],
   // extensionsToTreatAsEsm: ['.ts'],
 
-  roots:                ['meta/src', 'db', 'tests'],            // Directories Jest should search for files and tests
+  roots:                ['meta/src', 'mungers/wiktionary/src', 'db', 'tests'],            // Directories Jest should search for files and tests
   moduleFileExtensions: ['js', 'ts', 'json', 'node', 'eta'],      // reload on eta files too
   setupFilesAfterEnv:   ['./tests/setupFilesAfterEnv.ts'],        // A list of paths to modules that run some code to configure or set up the testing framework before each test
   snapshotResolver:      '<rootDir>/tests/snapshotResolver.cjs',  // don't pollute the code dirs with snapshot artifacts
@@ -26,10 +26,12 @@ const jestConfig: JestConfigWithTsJest = {
   //   '!**/*.d.ts',
   // ],
   moduleNameMapper: {
-    '^@freeword/meta$':                   '<rootDir>/meta',
-    '^@freeword/meta/(.*)$':              '<rootDir>/meta/$1',
-    '^@freeword/all-byword$':             '<rootDir>/repos/freeword-all-byword',
-    '^@freeword/all-byword/(.*)$':        '<rootDir>/repos/freeword-all-byword/$1',
+    '^@freeword/meta$':                    '<rootDir>/meta',
+    '^@freeword/meta/(.*)$':               '<rootDir>/meta/$1',
+    '^@freeword/all-byword$':              '<rootDir>/repos/freeword-all-byword',
+    '^@freeword/all-byword/(.*)$':         '<rootDir>/repos/freeword-all-byword/$1',
+    '^@freeword/mungers-wiktionary$':      '<rootDir>/mungers/wiktionary',
+    '^@freeword/mungers-wiktionary/(.*)$': '<rootDir>/mungers/wiktionary/$1',
     // Remove or comment out the old '@/...' mappings to src
     // '^@/db/(.*)$': '<rootDir>/db/$1',
     // '^@/(.*)$': '<rootDir>/src/$1',

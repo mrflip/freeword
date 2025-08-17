@@ -162,13 +162,13 @@ describe('Wordbits', () => {
   }) as any)
   describe('n-ary ops', () => {
     it('unions', () => {
-      expect(Wordbits.unions([SetOpBits.chimp, SetOpBits.imp, SetOpBits.chimps, SetOpBits.adios, SetOpBits.ado])).to.equal(Adchimpos)
-      expect(Wordbits.unions([SetOpBits.chimp, SetOpBits.imp, SetOpBits.chimps])).to.equal(SetOpBits.chimps)
+      expect(Wordbits.unions(SetOpBits.chimp, SetOpBits.imp, SetOpBits.chimps, SetOpBits.adios, SetOpBits.ado)).to.equal(Adchimpos)
+      expect(Wordbits.unions(SetOpBits.chimp, SetOpBits.imp, SetOpBits.chimps)).to.equal(SetOpBits.chimps)
     })
     it('intersections', () => {
-      expect(Wordbits.intersections([SetOpBits.chimp, SetOpBits.imp, SetOpBits.chimps, SetOpBits.adios, SetOpBits.ado])).to.equal(0)
-      expect(Wordbits.intersections([SetOpBits.chimp, SetOpBits.imp, SetOpBits.chimps, SetOpBits.ado])).to.equal(0)
-      expect(Wordbits.intersections([SetOpBits.chimp, SetOpBits.imp, SetOpBits.chimps])).to.equal(SetOpBits.imp)
+      expect(Wordbits.intersections(SetOpBits.chimp, SetOpBits.imp, SetOpBits.chimps, SetOpBits.adios, SetOpBits.ado)).to.equal(0)
+      expect(Wordbits.intersections(SetOpBits.chimp, SetOpBits.imp, SetOpBits.chimps, SetOpBits.ado)).to.equal(0)
+      expect(Wordbits.intersections(SetOpBits.chimp, SetOpBits.imp, SetOpBits.chimps)).to.equal(SetOpBits.imp)
     })
   })
   // console.log(UF.prettify({

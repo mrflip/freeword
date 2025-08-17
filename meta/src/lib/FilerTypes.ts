@@ -15,11 +15,15 @@ export interface PathinfoT {
   ok:       true
 }
 
+export type CoreFileGist  = 'badPath' | 'badInput' | 'blankPath' | 'parseErr' | 'pathErr' | 'fsErr'
+export type CoreReadGist  = | CoreFileGist | 'readErr'  | 'fileNotFound' | 'decompressErr' | 'consumeErr'
+export type CoreWriteGist = | CoreFileGist | 'writeErr'
 // Extend StorageResult gist for Filer/file actions
 export type FilerGist =
-  | 'ok' | 'fsErr' | 'pathErr' | 'writeErr' | 'readErr' | 'fileNotFound' | 'badPath' | 'badInput' | 'blankPath'
+  | 'ok'
+  | CoreReadGist | CoreWriteGist
   | 'callerErr'
-  | 'storageErr' | 'otherErr' | 'badStorekeyErr' | 'mistypeErr' | 'stringifyErr' | 'skipped' | 'parseErr' | 'noLocalStorageErr' | 'noBrowser' | 'ready'
+  | 'storageErr' | 'otherErr' | 'badStorekeyErr' | 'mistypeErr' | 'stringifyErr' | 'skipped' | 'noLocalStorageErr' | 'noBrowser' | 'ready'
 
 
 // Have a set of these that are, or extend, their StorageResult counterparts
@@ -32,10 +36,23 @@ export interface FilerResult<VT = any> extends Omit<Partial<PathinfoT>, 'ok'> {
   tmi?: Record<string, any>
 }
 
-export type Abspath = string
-export type Relpath = string
-export type Pathname = Relpath | Abspath
-export type Anypath = PathinfoDNA | Pathname
+/** An absolute pathstring (must reference the root directory, with symlinks resolved) */
+export type Abspath   = string
+/** A relative pathstring (may or may not be absolute) */
+export type Relpath   = string
+/** The bare basename of a path, without the extension or directory; this should be the filename with the elements following the last dot removed (after first removing any compression extension eg. `.gz`) */
+export type Barename  = string
+/** The extension of a filename, without the dot; this should have all letters following the last dot, including a compression extension eg. `.gz` */
+export type Fext      = string
+/** The basename of a path, including the extension, without the directory */
+export type Basename  = string
+/** A pathstring, absolute or relative */
+export type Pathname  = Relpath | Abspath
+/** A pathstring or a partial pathinfo */
+export type Anypath   = PathinfoDNA | Pathname
+
+/** URL string */
+export type URLStr = string
 
 // Explicit Filer result types that extend StorageResult counterparts
 export interface GoodFilerResult<VT = any> extends FilerResult<VT> {
@@ -55,8 +72,6 @@ export interface BadFilerResult<GT extends FilerGist = FilerGist> extends FilerR
   origmsg?: string
 }
 
-export type CoreReadGist  = 'readErr' | 'fileNotFound' | 'badPath' | 'badInput' | 'blankPath'
-export type CoreWriteGist = 'writeErr' | 'fsErr' | 'badPath' | 'badInput' | 'blankPath' | 'parseErr'
 export interface GoodFilerReadResult<VT = PathinfoT> extends GoodFilerPathedResult<VT> {}
 export interface BadFilerReadResult<GT extends CoreReadGist> extends BadFilerResult<GT> {}
 
@@ -68,6 +83,6 @@ export interface BadFilerMkdirResult extends BadFilerResult<'fsErr' | 'badPath' 
 
 // Union types for discriminated unions
 export type FilerOtherResult<VT = any, GT extends FilerGist = FilerGist> = GoodFilerResult<VT> | BadFilerResult<GT>
-export type FilerReadResult<VT = PathinfoT, GT extends CoreReadGist = CoreReadGist>  = GoodFilerReadResult<VT>  | BadFilerReadResult<GT>
-export type FilerWriteResult<VT = PathinfoT, GT extends CoreWriteGist = CoreWriteGist> = GoodFilerWriteResult<VT> | BadFilerWriteResult<GT>
+export type FilerReadResult<VT  = PathinfoT, GT extends CoreReadGist  = CoreReadGist,  AlsoVT extends object = {}> = GoodFilerReadResult<VT>  & AlsoVT | BadFilerReadResult<GT>
+export type FilerWriteResult<VT = PathinfoT, GT extends CoreWriteGist = CoreWriteGist, AlsoVT extends object = {}> = GoodFilerWriteResult<VT> & AlsoVT | BadFilerWriteResult<GT>
 export type FilerMkdirResult = GoodFilerMkdirResult | BadFilerMkdirResult

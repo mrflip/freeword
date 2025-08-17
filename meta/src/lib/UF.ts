@@ -5,11 +5,12 @@ import type * as TY                               from '../types.ts'
 import      { AtoZlos }                          from '../lexicon/LexiconConsts.ts'
 import      * as JSPrintf                         from 'sprintf-js'
 //
+export type *                                     from '../types.ts'
 export      *                                     from './Streaming.ts'
 export      *                                     from './Random.ts'
 export      *                                     from '../UtilityConsts.ts'
-export type *                                     from '../types.ts'
 export      *                                     from './Rot13.ts'
+export      { badOutcome, throwable }             from './Outcome.ts'
 
 export const { sprintf, vsprintf } = JSPrintf
 
@@ -82,7 +83,7 @@ export function decorate<OT extends Record<string, any>, VT extends Record<strin
  * @param   obj - The object to get the own properties of
  * @returns       The own properties of the object; empty object if nil
  */
-export function ownProps(obj: object): TY.Bag<TypedPropertyDescriptor<any>> {
+export function ownProps(obj: object | null | undefined): TY.Bag<TypedPropertyDescriptor<any>> {
   if (_.isNil(obj)) { return {} }
   return Object.getOwnPropertyDescriptors(obj)
 }
@@ -92,7 +93,7 @@ export function ownProps(obj: object): TY.Bag<TypedPropertyDescriptor<any>> {
  * @param   obj - The object to get the own property names of
  * @returns       The own property names of the object; empty array if nil
  */
-export function ownPropnames(obj: object): string[] {
+export function ownPropnames(obj: object | null | undefined): string[] {
   if (_.isNil(obj)) { return [] }
   return Object.getOwnPropertyNames(obj)
 }
@@ -102,7 +103,7 @@ export function ownPropnames(obj: object): string[] {
  * @param   obj - The object to get the prototype property names of
  * @returns       The prototype property names of the object; empty array if nil
  */
-export function protoPropnames(obj: object): string[] {
+export function protoPropnames(obj: object | null | undefined): string[] {
   if (_.isNil(obj)) { return [] }
   const proto = Object.getPrototypeOf(obj)
   return ownPropnames(proto)
@@ -295,12 +296,11 @@ export function sortOnNumkeys<VT extends object, KT extends keyof VT = keyof VT>
  * keys that stringify as integers will be reinserted as `x.0`:
  * @example { '-1.0': -1, '0.9': 0.9, '1.0': 1, '1.1': 1.1, '2.0': 2 }
  */
-export function bagsort<VT extends object, KT extends keyof VT = keyof VT>(bag: VT, sortfn: PairSortFn<VT, KT> = sortOnKeys, { mungeNumKeys = true }: { mungeNumKeys?: boolean } = {}): VT {
+export function bagsort<VT extends object, KT extends keyof VT = keyof VT>(bag: VT, sortfn: PairSortFn<VT, KT> = sortOnKeys, { mungeNumKeys = true, sortdirs }: { mungeNumKeys?: boolean, sortdirs?: ('asc' | 'desc')[] } = {}): VT {
   const result = {} as VT
-  const sorted = _.orderBy(_.entries(bag), sortfn) as [KT, VT[KT]][]
+  const sorted = _.orderBy(_.entries(bag), sortfn, sortdirs) as [KT, VT[KT]][]
   if (! mungeNumKeys) {
-    const pairs = _.orderBy(_.entries(bag), sortfn) as [KT, VT][]
-    return _.fromPairs(pairs) as VT
+    return _.fromPairs(sorted) as VT
   }
   for (const [key, val] of sorted) {
     const mungedKey = (Number.isInteger(Number(key))) ? (String(key) + '.0') : key
@@ -345,4 +345,11 @@ export function isNode(): boolean {
 export function isBrowser(): boolean {
   // if (isNode()) { return false }
   return (!! (import.meta as any).client)
+}
+
+export function scrubNil<VT>(vals: (VT | undefined)[]): NonNullable<VT>[]
+export function scrubNil<VT>(vals: VT): { [KT in keyof VT]: NonNullable<VT[KT]> }
+export function scrubNil<VT>(vals: (VT | undefined)[]): NonNullable<VT>[] {
+  if (_.isArray(vals)) { return _.reject(vals, _.isNil) as NonNullable<VT>[] }
+  return _.omitBy(vals, _.isNil) as any
 }

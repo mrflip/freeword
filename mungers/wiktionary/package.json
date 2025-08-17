@@ -1,0 +1,63 @@
+{
+  "name": "@freeword/mungers-wiktionary",
+  "version": "1.0.22",
+  "description": "Wiktionary data from Kaikki.org converted to freeword format",
+  "scripts": {
+    "shipme": "         npm publish --access public",
+    "build": "          yarn tsc   --build --verbose",
+    "_1": " echo .",
+    "test": "           ( cd ../.. ; yarn test )",
+    "test:plain": "     ( cd ../.. ; yarn test )",
+    "test:coverage": "  ( cd ../.. ; yarn test ) --coverage ",
+    "test:watch": "     ( cd ../.. ; yarn test ) --watch    ",
+    "twitch": "         ( cd ../.. ; yarn test ) --watch    ",
+    "_2": " echo .",
+    "_z": "echo ."
+  },
+  "dependencies": {
+    "@freeword/meta": "workspace:*",
+    "esm-seedrandom": "3.0.5-esm.2",
+    "lodash": "^4.17.21",
+    "zod": "^4.0.17"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.18",
+    "@types/node": "^24.0.14",
+    "typescript": "^5.8.3"
+  },
+  "keywords": [
+    "dictionary",
+    "wordforms",
+    "language",
+    "typescript",
+    "morphology",
+    "linguistics"
+  ],
+  "author": "Flip Kromer and the freeword team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrflip/freeword.git"
+  },
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./built/index.d.ts",
+      "import": "./built/index.js",
+      "default": "./built/index.js"
+    }
+  },
+  "files": [
+    "built",
+    "src",
+    "tsconfig*.json",
+    "VERSION.txt",
+    "README.md",
+    "package.json",
+    "index.ts"
+  ],
+  "packageManager": "yarn@4.9.2"
+}

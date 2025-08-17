@@ -4,8 +4,10 @@ import type { AnyBag, Bag }                       from '../UtilityTypes.ts'
 import type { LemmaDef }                          from './LemmaDef.ts'
 // == [Utility Alias Types] -- used for expressiveness, they're mostly primitive types
 
-/** a word of lower-cased letters (matching /^[a-z]+$/) */
+/** a word or term */
 export type Word         = string
+/** a word of lower-cased letters (matching /^[a-z]+[a-z0-9]*$/) */
+export type Label      = string
 /* A single lower-cased letter */
 export type Letter       = string
 /* Enum to strictly type lowercase a-z */
@@ -14,6 +16,9 @@ export type AtoZlo    = (typeof FW.AtoZlos)[number]
 export type AtoZup    = (typeof FW.AtoZups)[number]
 /** Enum to strictly type letter index 0-25 */
 export type AtoZnum   = (typeof FW.AtoZnums)[number]
+
+/** ISO 639-1 (two-letter) language code */
+export type Langcode     = string
 
 /** any object with a word property */
 export type Worded       = { word: string }
