@@ -3,7 +3,7 @@ import      { expect }                            from 'chai'
 import type * as TY                               from '@freeword/meta'
 import      { Wordbits, UF }                      from '@freeword/meta'
 import      { ExampleWords, type ExampleWord }                      from '../helpers/Fixtures.ts'
-import      { checkSnapshot }                     from '../helpers/TestHelpers.ts'
+import      { checkSnapshot }                     from '../TestHelpers.ts'
 const  { wordbitsForWord, prettyWordbits } = Wordbits
 
 function atozArr(str: string) { return str.split('') as TY.AtoZlo[] }

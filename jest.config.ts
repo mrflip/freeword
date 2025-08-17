@@ -27,6 +27,7 @@ const jestConfig: JestConfigWithTsJest = {
   // ],
   moduleNameMapper: {
     '^@freeword/meta$':                    '<rootDir>/meta',
+    '^@freeword/meta/checks$':             '<rootDir>/meta/src/checks.ts',
     '^@freeword/meta/(.*)$':               '<rootDir>/meta/$1',
     '^@freeword/all-byword$':              '<rootDir>/repos/freeword-all-byword',
     '^@freeword/all-byword/(.*)$':         '<rootDir>/repos/freeword-all-byword/$1',

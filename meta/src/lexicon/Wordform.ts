@@ -1,16 +1,11 @@
 import      _                                /**/ from 'lodash'
 import      { newStemmer as StemmerFactory }      from 'snowball-stemmers'
 import type * as TY                               from '../types.ts'
-import      * as UF                               from '../lib/UF.ts'
-import      * as Wordbits                       from '../lib/Wordbits.ts'
+import      * as UF                               from '../utils/UF.ts'
+import      { qt, dqt, qtc }                      from '../utils/StringUtils.ts'
+import      * as Wordbits                         from '../lib/Wordbits.ts'
 
 const Stemmer = StemmerFactory('english')
-function qt(val: string)    { return `'${val.replaceAll('\'', '\\\'')}'` }
-function dqt(val: string)   { return `"${val.replaceAll('"', '\\"')}"` }
-function qtc(val: string)   { return comma(qt(val)) }
-// function dqtc(val: string)  { return comma(dqt(val)) }
-// function dqtTc(val: string) { return dqt(val) + '\t,' }
-function comma(val: string) { return val + ',' }
 
 export class Wordform implements TY.WordformT {
   declare word:            TY.Word

@@ -861,3 +861,9 @@ export const ExtdLoglevelNums: Record<typeof ExtdLoglevelVals[number], number> =
   alert:        1,
   warning:      4,
 } as const satisfies Record<typeof ExtdLoglevelVals[number], number>
+
+
+export const BecameVals        = ['absent', 'present', 'unknown', 'partial', 'final'] as const
+export type  BecameT           = typeof BecameVals[number]
+export const BeforeVals        = ['absent', 'present', 'unknown', 'partial', 'final'] as const
+export type  BeforeT           = typeof BeforeVals[number]

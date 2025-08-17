@@ -121,3 +121,4 @@ node_modules/
 
 rip/**/*.gz
 raw/**/*full*.gz
+.tsbuildinfo*

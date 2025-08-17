@@ -1,5 +1,5 @@
 import      _                                /**/ from 'lodash'
-import      * as UF                               from '../lib/UF.ts'
+import      * as UF                               from '../utils/UF.ts'
 import type * as TY                               from '../types.ts'
 import      { starlines }                         from '../lib/Filer.ts'
 import type { Wordform }                          from './Wordform.ts'

@@ -1,6 +1,6 @@
 import      _                                /**/ from 'lodash'
-import type * as TY                               from './types/CoreTypes.ts'
 import      * as FW                               from '@freeword/meta'
+import type * as TY                               from './types/CoreTypes.ts'
 import      * as ZZ                               from 'zod'
 
 export class WiktionaryWordform extends FW.Wordform {
@@ -32,25 +32,28 @@ export class WiktionaryWordform extends FW.Wordform {
   declare translations:        object[]
 }
 
-export const { object:obj, array:arr, enum:oneof, record:bag, tuple } = ZZ
-export const idk        = ZZ.any()
-export const barestr    = ZZ.string()
-export const barenum    = ZZ.number()
-export const float      = ZZ.number()
-export const bool       = ZZ.boolean()
-export const bareint    = barenum.int().max(FW.Consts.SAFEINT.max).min(FW.Consts.SAFEINT.min)
+const { obj, arr, anybag, oneof, tuple, label, str, bigstr, bareint } = FW.CK
+
+// export const { object:obj, array:arr, enum:oneof, record:bag, tuple } = ZZ
+// export const idk        = ZZ.any()
+// export const barestr    = ZZ.string()
+// export const barenum    = ZZ.number()
+// export const float      = ZZ.number()
+// export const bool       = ZZ.boolean()
+// export const bareint    = barenum.int().max(FW.CO.SAFEINT.max).min(FW.CO.SAFEINT.min)
+// export const str        = barestr.trim().regex(FW.CO.STRINGISH.re, FW.CO.STRINGISH.msg)
+// export const bigstr     = str.max(250)
+// export const label      = barestr.trim().min(1).max(80).regex(FW.CO.LABEL.re, FW.CO.LABEL.msg)
+// export const anybag     = bag(label, idk)
 export const posint     = bareint.min(0)
-export const str        = barestr.trim().regex(FW.Consts.STRINGISH.re, FW.Consts.STRINGISH.msg)
-export const longstr    = str.max(120)
 export const midstr     = str.max(80)
 export const term       = midstr
-export const label      = barestr.trim().min(1).max(80).regex(FW.Consts.LABEL.re, FW.Consts.LABEL.msg)
+export const textline   = str.max(500)
 export const tags       = arr(label)
-export const anybag     = bag(label, idk)
 const source            = midstr
 
 export const wktWordform = obj({
-  form: str, tags, source, rawtags: tags.optional(), head_nr: posint.optional(),
+  form: str, tags, source, rawtags: tags.optional(), head_nr: bareint.max(30).min(0).optional(),
 })
 
 const EtymologyTemplateNames = [
@@ -58,12 +61,12 @@ const EtymologyTemplateNames = [
   'derived', 'borrowed', 'inherited', 'calque', 'cognate', 'noncognate',
   'root', 'doublet', 'blend', 'pie_word', 'coinage', 'named_after', 'glossary',
 ] as const
-const tname      = oneof([...EtymologyTemplateNames])
+const tname           = oneof([...EtymologyTemplateNames])
 export const wikidata = str.regex(/^[PQ]\d+$/)
 export const senseid  = midstr
 export const wikipedia       = arr(midstr)
 
-const expansion   = str
+const expansion   = midstr
 const langcode    = label
 const lc          = langcode
 const into_lang   = langcode
@@ -75,40 +78,40 @@ const root        = midstr;
 const prefix = midstr.regex(/-$/)
 const suffix = midstr.regex(/-$/)
 const parts  = arr(midstr)
-const gloss  = longstr
+const gloss  = bigstr
 const wikicategory = midstr.regex(/^s(([A-Z][a-z]*):?)+$/)
 const categories = arr(wikicategory)
 const highlights = arr(tuple([bareint, bareint]))
 
-const suffixTemplate           = obj({ tname, expansion,         root, suffix,  parts,                                 lc, ...args })
-const confixTemplate           = obj({ tname, expansion, prefix, root, suffix,  parts,                                 lc, ...args })
-const prefixTemplate           = obj({ tname, expansion, prefix, root,          parts,                                 lc, ...args })
-const affixTemplate            = obj({ tname, expansion,                        parts,                                 lc, ...args })
-const surfTemplate             = obj({ tname, expansion,                        parts,                                 lc, ...args })
-const compoundTemplate         = obj({ tname, expansion,                        parts,                                 lc, ...args })
-const clippingTemplate         = obj({ tname, expansion,                        from_term,                             lc, ...args })
-const derivedTemplate          = obj({ tname, expansion, into_lang,  from_lang, from_term,         alt: midstr, gloss, lc, ...args })
-const borrowedTemplate         = obj({ tname, expansion, into_lang,  from_lang, from_term,         alt: midstr, gloss, lc, ...args })
-const inheritedTemplate        = obj({ tname, expansion, into_lang,  from_lang, from_term,         alt: midstr, gloss, lc, ...args })
-const calqueTemplate           = obj({ tname, expansion, into_lang,  from_lang, from_term,         alt: midstr, gloss, lc, ...args })
-const cognateTemplate          = obj({ tname, expansion, into_lang,  from_lang, from_term,         alt: midstr, gloss,     ...args })
-const noncognateTemplate       = obj({ tname, expansion, into_lang,  from_lang, from_term,         alt: midstr, gloss,     ...args })
-const rootTemplate             = obj({ tname, expansion, into_lang,  from_lang, from_terms: parts, alt: midstr, gloss, lc, ...args })
-const doubletTemplate          = obj({ tname, expansion, into_lang,             from_terms: parts,                         ...args })
-const blendTemplate            = obj({ tname, expansion, into_lang,             from_terms: parts,                         ...args })
-const pie_wordTemplate         = obj({ tname, expansion, into_lang,  from_lang, from_term,                             lc, ...args })
-const taxlinkTemplate          = obj({ tname, expansion, taxon:  midstr,        level:  midstr,     alt:      midstr,  lc, ...args })
-const taxfmtTemplate           = obj({ tname, expansion, taxon:  midstr,        level:  midstr,     alt:      midstr,  lc, ...args })
-const mentionTemplate          = obj({ tname, expansion, anchor: midstr,        text:   longstr,    gloss:    gloss,   lc, ...args })
-const coinageTemplate          = obj({ tname, expansion,                        entity: midstr,                        lc, ...args })
-const named_afterTemplate      = obj({ tname, expansion,                        entity: midstr,                        lc, ...args })
-const glossaryTemplate         = obj({ tname, expansion, anchor: midstr,        text:   longstr,                           ...args })
-const etymonTemplate           = obj({ tname, expansion,                                                               lc, ...args })
-const etymidTemplate           = obj({ tname, expansion,                        etymid: midstr,                        lc, ...args })
-const onomatopoeicTemplate     = obj({ tname, expansion,                                                               lc, ...args })
-const qualifierTemplate        = obj({ tname, expansion, qualifier: midstr,     qualifiers: positionals,               lc, ...args })
-const unknownTemplate          = obj({ tname, expansion,                                                               lc, ...args })
-const uncertainTemplate        = obj({ tname, expansion,                                                               lc, ...args })
+const suffixTemplate           = obj({ tname, expansion,         root, suffix,  parts,                                   lc })
+const confixTemplate           = obj({ tname, expansion, prefix, root, suffix,  parts,                                   lc })
+const prefixTemplate           = obj({ tname, expansion, prefix, root,          parts,                                   lc })
+const affixTemplate            = obj({ tname, expansion,                        parts,                                   lc })
+const surfTemplate             = obj({ tname, expansion,                        parts,                                   lc })
+const compoundTemplate         = obj({ tname, expansion,                        parts,                                   lc })
+const clippingTemplate         = obj({ tname, expansion,                        from_term,                               lc })
+const derivedTemplate          = obj({ tname, expansion, into_lang,  from_lang, from_term,         alt:   midstr, gloss, lc })
+const borrowedTemplate         = obj({ tname, expansion, into_lang,  from_lang, from_term,         alt:   midstr, gloss, lc })
+const inheritedTemplate        = obj({ tname, expansion, into_lang,  from_lang, from_term,         alt:   midstr, gloss, lc })
+const calqueTemplate           = obj({ tname, expansion, into_lang,  from_lang, from_term,         alt:   midstr, gloss, lc })
+const cognateTemplate          = obj({ tname, expansion, into_lang,  from_lang, from_term,         alt:   midstr, gloss,    })
+const noncognateTemplate       = obj({ tname, expansion, into_lang,  from_lang, from_term,         alt:   midstr, gloss,    })
+const rootTemplate             = obj({ tname, expansion, into_lang,  from_lang, from_terms: parts, alt:   midstr, gloss, lc })
+const doubletTemplate          = obj({ tname, expansion, into_lang,             from_terms: parts,                          })
+const blendTemplate            = obj({ tname, expansion, into_lang,             from_terms: parts,                          })
+const pie_wordTemplate         = obj({ tname, expansion, into_lang,  from_lang, from_term,                               lc })
+const taxlinkTemplate          = obj({ tname, expansion, taxon:  midstr,        level:  midstr,    alt:   midstr,        lc })
+const taxfmtTemplate           = obj({ tname, expansion, taxon:  midstr,        level:  midstr,    alt:   midstr,        lc })
+const mentionTemplate          = obj({ tname, expansion, anchor: midstr,        text:   bigstr,                   gloss, lc })
+const coinageTemplate          = obj({ tname, expansion,                        entity: midstr,                          lc })
+const named_afterTemplate      = obj({ tname, expansion,                        entity: midstr,                          lc })
+const etymonTemplate           = obj({ tname, expansion,                                                                 lc })
+const etymidTemplate           = obj({ tname, expansion,                        etymid: midstr,                          lc })
+const onomatopoeicTemplate     = obj({ tname, expansion,                                                                 lc })
+const qualifierTemplate        = obj({ tname, expansion, qualifier: midstr,     qualifiers: positionals,                 lc })
+const unknownTemplate          = obj({ tname, expansion,                                                                 lc })
+const uncertainTemplate        = obj({ tname, expansion,                                                                 lc })
+const glossaryTemplate         = obj({ tname, expansion, anchor: midstr,        text:   bigstr                              })
 //
 const etymologyTemplate = ZZ.discriminatedUnion('tname', [
   suffixTemplate, confixTemplate, prefixTemplate, affixTemplate, surfTemplate, compoundTemplate, clippingTemplate,
@@ -124,22 +127,22 @@ export const etymology = obj({
 }).partial({ text: true, number: true, templates: true })
 
 export const wktExample = obj({
-  text:    longstr,
-  english: longstr,
-  roman:   longstr,
+  text:    textline,
+  english: bigstr,
+  roman:   bigstr,
   type:    label,
-  ref:     midstr,
+  ref:     bigstr,
   tags,
   highlights: obj({ text: highlights, english: highlights, roman: highlights }).partial(),
-})
+}).partial().required({ text: true })
 
 export const attestation = obj({ date: midstr, references: arr(midstr) })
-export const link = obj({ anchor: midstr, text: longstr })
+export const link = obj({ anchor: midstr, text: bigstr })
 
 export const nym = obj({
-  word: term, source: longstr, tags, english: longstr, raw_tags: tags, extra: midstr, alt: midstr,
+  word: term, source: bigstr, tags, english: bigstr, raw_tags: tags, extra: midstr, alt: midstr,
 }).partial().required({ word: true })
-export const coordinate_term = obj({ word: term, english: longstr.optional() })
+export const coordinate_term = obj({ word: term, english: bigstr.optional() })
 
 export const wktSense = obj({
   examples:         arr(wktExample),
@@ -168,7 +171,7 @@ export const wktSense = obj({
   form_of:          arr(obj({ word: term, extra: midstr })),
   related:          arr(obj({ word: term, tags, source })),
   wikipedia:        arr(wikipedia),
-})
+}).strict().partial()
 
 export const wktLemma = obj({
   word:           term,
@@ -182,7 +185,5 @@ export const wktLemma = obj({
   source,
 }).partial({ forms: true, etymology: true, categories: true, wikipedia: true, original_title: true, source: true })
 
-export type Zcasted<IT> = ZZ.infer<IT>
-export type Zsketch<IT> = ZZ.input<IT>
-export type WktSense = Zcasted<typeof wktSense>
-export type WktLemma = Zcasted<typeof wktLemma>
+export type WktSense = TY.Zcasted<typeof wktSense>
+export type WktLemma = TY.Zcasted<typeof wktLemma>

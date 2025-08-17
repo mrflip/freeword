@@ -2,6 +2,10 @@
   "$schema":                "https://json.schemastore.org/tsconfig",
   "extends":                "./tsconfig-base.json",
   // "include":                            ["src/**/*.ts", "db/**/*.ts", "src/**/*.js"],
+  "references": [
+    { "path": "./meta/tsconfig.json" },
+    { "path": "./mungers/wiktionary/tsconfig.json" },
+  ],
   "compilerOptions": {
     "tsBuildInfoFile":                    "./.tsbuildinfo-freeword-internals",
     "outDir":                             "./built/internals",  /* Specify the path to .tsbuildinfo incremental compilation file. */

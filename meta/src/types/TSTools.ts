@@ -65,6 +65,22 @@ export type OmitStatics<T, Replacement> =
     }
     : Omit<T, keyof Replacement>
 
+
+// /**
+//  * Omit the statics of a class, and replace them with the given replacement.
+//  * because TS is effed in the head and has a stupid type system for static methods
+//  * @param T - The class to omit the statics of.
+//  * @param Replacement - The replacement to use for the statics.
+//  * @returns The class with the statics omitted and replaced.
+//  */
+// export type OmitStatics<T, Replacement> =
+//   T extends { new(...args: infer CtorArgs): infer BaseInstanceT }
+//     ? Omit<T, keyof Replacement> & Replacement & {
+//       new(...args:  CtorArgs): BaseInstanceT
+//     }
+//     : Omit<T, keyof Replacement>
+
+
 // export type MergeUnion<T>  = { [K in keyof T]: T[K] } & {}
 // export type LooseMerge<T>  = { [K in keyof T as K extends keyof T ? K : never]: T extends Record<K, infer V> ? V : never }
 // export type AnyOf<T>       = MergeUnion<LooseMerge<T>>

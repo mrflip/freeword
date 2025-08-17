@@ -51,9 +51,6 @@ export type Pathname  = Relpath | Abspath
 /** A pathstring or a partial pathinfo */
 export type Anypath   = PathinfoDNA | Pathname
 
-/** URL string */
-export type URLStr = string
-
 // Explicit Filer result types that extend StorageResult counterparts
 export interface GoodFilerResult<VT = any> extends FilerResult<VT> {
   ok:    true

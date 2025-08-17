@@ -463,7 +463,7 @@ __metadata:
     ts-jest: "npm:^29.4.0"
     ts-jest-resolver: "npm:^2.0.1"
     typescript: "npm:^5.8.3"
-    zod: "npm:^4.0.17"
+    zod: "npm:^3.24.3"
   languageName: unknown
   linkType: soft
 
@@ -477,7 +477,7 @@ __metadata:
     esm-seedrandom: "npm:3.0.5-esm.2"
     lodash: "npm:^4.17.21"
     typescript: "npm:^5.8.3"
-    zod: "npm:^4.0.17"
+    zod: "npm:^3.24.3"
   languageName: unknown
   linkType: soft
 
@@ -4275,9 +4275,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^4.0.17":
-  version: 4.0.17
-  resolution: "zod@npm:4.0.17"
-  checksum: 10c0/c56ef4cc02f8f52be8724c5a8b338266202d68477c7606bee9b7299818b75c9adc27f16f4b6704a372f3e7578bd016f389de19bfec766564b7c39d0d327c540a
+"zod@npm:^3.24.3":
+  version: 3.25.76
+  resolution: "zod@npm:3.25.76"
+  checksum: 10c0/5718ec35e3c40b600316c5b4c5e4976f7fee68151bc8f8d90ec18a469be9571f072e1bbaace10f1e85cf8892ea12d90821b200e980ab46916a6166a4260a983c
   languageName: node
   linkType: hard

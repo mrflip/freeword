@@ -289,7 +289,7 @@ describe('Filer', () => {
       })
     })
   })
-  function fixturePath(filename: TY.Relpath) { return Filer.__relname(import.meta.url!, '../fixtures', filename) }
+  function filerFixturePath(filename: TY.Relpath) { return Filer.__relname(import.meta.url!, '../fixtures/Filer', filename) }
   const expectedWu = [
     { nick: 'RZA',              fullname: 'Robert Fitzgerald Diggs' },
     { nick: 'GZA',              fullname: 'Gary Grice' },
@@ -307,50 +307,50 @@ describe('Filer', () => {
   describe('starjsonEntries', () => {
     it('should handle empty file', async () => {
       const lines: any[] = []
-      for await (const line of Filer.starjsonEntries(fixturePath('empty'))) { lines.push(line) }
+      for await (const line of Filer.starjsonEntries(filerFixturePath('empty'))) { lines.push(line) }
       expect(lines).to.deep.equal([])
     })
     it('should handle newline-separated JSON file', async () => {
       const lines: any[] = []
-      for await (const line of Filer.starjsonEntries(fixturePath('goodjsonl.jsonl'))) { lines.push(line) }
+      for await (const line of Filer.starjsonEntries(filerFixturePath('goodjsonl.jsonl'))) { lines.push(line) }
       expect(lines).to.deep.equal(expectedWuArrEntries)
     })
     it('should handle dual-mode JSON array file', async () => {
       const lines: any[] = []
-      for await (const line of Filer.starjsonEntries(fixturePath('goodjsonl.l.json'))) { lines.push(line) }
+      for await (const line of Filer.starjsonEntries(filerFixturePath('goodjsonl.l.json'))) { lines.push(line) }
       expect(lines).to.deep.equal(expectedWuArrEntries)
     })
     it('should handle dual-mode JSON key-value file', async () => {
       const lines: any[] = []
-      for await (const line of Filer.starjsonEntries(fixturePath('goodjsonkv.kv.json'))) { lines.push(line) }
+      for await (const line of Filer.starjsonEntries(filerFixturePath('goodjsonkv.kv.json'))) { lines.push(line) }
       expect(lines).to.deep.equal(expectedWuKVEntries)
     })
   })
   describe('starjsonl', () => {
     it('should handle empty file', async () => {
       const lines: any[] = []
-      for await (const line of starjsonl(fixturePath('empty'))) { lines.push(line) }
+      for await (const line of starjsonl(filerFixturePath('empty'))) { lines.push(line) }
       expect(lines).to.deep.equal([])
     })
     it('should handle newline-separated JSON file', async () => {
       const lines: any[] = []
-      for await (const line of starjsonl(fixturePath('goodjsonl.jsonl'))) { lines.push(line) }
+      for await (const line of starjsonl(filerFixturePath('goodjsonl.jsonl'))) { lines.push(line) }
       expect(lines).to.deep.equal(expectedWu)
     })
     it('should handle dual-mode JSON array file', async () => {
       const lines: any[] = []
-      for await (const line of starjsonl(fixturePath('goodjsonl.l.json'))) { lines.push(line) }
+      for await (const line of starjsonl(filerFixturePath('goodjsonl.l.json'))) { lines.push(line) }
       expect(lines).to.deep.equal(expectedWu)
     })
     it('should handle dual-mode JSON key-value file', async () => {
       const lines: any[] = []
-      for await (const line of starjsonl(fixturePath('goodjsonkv.kv.json'))) { lines.push(line) }
+      for await (const line of starjsonl(filerFixturePath('goodjsonkv.kv.json'))) { lines.push(line) }
       expect(lines).to.deep.equal(expectedWu)
     })
     it('should handle parse errors', async () => {
       let err: TY.ExtError = undefined!
       let lines: any[] = []
-      const abspath = fixturePath('badjson')
+      const abspath = filerFixturePath('badjson')
       try {
         const generator = starjsonl(abspath)
         for await (const line of generator) { lines.push(line) }

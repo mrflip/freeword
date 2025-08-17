@@ -7,7 +7,7 @@
   // "include":                            ["src/**/*.ts", "db/**/*.ts", "src/**/*.js"],
   "compilerOptions": {
     "tsBuildInfoFile":                    "../../.tsbuildinfo-wiktionary",
-    "outDir":                             "./built",  /* Specify the path to .tsbuildinfo incremental compilation file. */
+    "outDir":                             "./built",
     "lib":                                ["esnext"],
     "rootDir":                            ".",
     "incremental":                        true,

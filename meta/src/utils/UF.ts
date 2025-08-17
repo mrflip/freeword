@@ -5,12 +5,14 @@ import type * as TY                               from '../types.ts'
 import      { AtoZlos }                          from '../lexicon/LexiconConsts.ts'
 import      * as JSPrintf                         from 'sprintf-js'
 //
+export      *                                     from './BaseUtils.ts'
 export type *                                     from '../types.ts'
-export      *                                     from './Streaming.ts'
-export      *                                     from './Random.ts'
+export      *                                     from '../lib/Streaming.ts'
+export      *                                     from '../lib/Random.ts'
 export      *                                     from '../UtilityConsts.ts'
-export      *                                     from './Rot13.ts'
-export      { badOutcome, throwable }             from './Outcome.ts'
+export      *                                     from '../lib/Rot13.ts'
+export      { badOutcome, throwable }             from './OutcomeUtils.ts'
+export      *                                     from './CollectionUtils.ts'
 
 export const { sprintf, vsprintf } = JSPrintf
 
@@ -29,128 +31,6 @@ export function alphabetLookupBag<VT>(seed: VT | ((ltr: TY.AtoZlo) => VT)): Reco
   return objectify(AtoZlos, () => (seed))
 }
 
-/** Assign a **non-enumerable**, writable, configurable property to an object
- * See also {@link setNormalProp} and {@link decorate}
- * @param   obj     - The object to decorate
- * @param   key     - The key to decorate the object with
- * @param   value   - The value to decorate the object with
- * @returns           The value
- */
-export function adorn<VT>(obj: object, key: string, value: VT): VT {
-  Object.defineProperty(obj, key, { value, enumerable: false, writable: false, configurable: true })
-  return value
-}
-/** Assign an enumerable, writable, configurable property to an object
- * See also {@link adorn} and {@link decorate}
- * @param   obj     - The object to decorate
- * @param   key     - The key to decorate the object with
- * @param   value   - The value to decorate the object with
- * @returns           The value
- */
-export function setNormalProp<VT>(obj: object, key: string, value: VT): VT {
-  Object.defineProperty(obj, key, { value, enumerable: true, writable: true, configurable: true })
-  return value
-}
-
-export function setNormalProps<OT extends Record<string, any>, VT extends Record<string, any>>(obj: OT, vals: VT): OT & VT {
-  Object.entries(vals).forEach(([key, value]) => {
-    Object.defineProperty(obj, key, { value, enumerable: true, writable: true, configurable: true })
-  })
-  return obj as OT & VT
-}
-
-export function setHiddenProps<OT extends Record<string, any>, VT extends Record<string, any>>(obj: OT, vals: VT): OT & VT {
-  Object.entries(vals).forEach(([key, value]) => {
-    Object.defineProperty(obj, key, { value, enumerable: false, writable: true, configurable: true })
-  })
-  return obj as OT & VT
-}
-/** Assign non-enumerable, writable, configurable properties to an object
- * See also {@link adorn} and {@link decorate}
- * @param   obj - The object to decorate
- * @param   vals - The values to decorate the object with
- * @returns The decorated object
- */
-export function decorate<OT extends Record<string, any>, VT extends Record<string, any>>(obj: OT, vals: VT): OT & VT {
-  Object.entries(vals).forEach(([key, value]) => {
-    Object.defineProperty(obj, key, { value, enumerable: false, writable: false, configurable: true })
-  })
-  return obj as OT & VT
-}
-
-/** Get the own properties of an object
- *
- * @param   obj - The object to get the own properties of
- * @returns       The own properties of the object; empty object if nil
- */
-export function ownProps(obj: object | null | undefined): TY.Bag<TypedPropertyDescriptor<any>> {
-  if (_.isNil(obj)) { return {} }
-  return Object.getOwnPropertyDescriptors(obj)
-}
-
-/** Get the own property names of an object
- *
- * @param   obj - The object to get the own property names of
- * @returns       The own property names of the object; empty array if nil
- */
-export function ownPropnames(obj: object | null | undefined): string[] {
-  if (_.isNil(obj)) { return [] }
-  return Object.getOwnPropertyNames(obj)
-}
-
-/** Get the property names of the **first parent prototype** of an object
- *
- * @param   obj - The object to get the prototype property names of
- * @returns       The prototype property names of the object; empty array if nil
- */
-export function protoPropnames(obj: object | null | undefined): string[] {
-  if (_.isNil(obj)) { return [] }
-  const proto = Object.getPrototypeOf(obj)
-  return ownPropnames(proto)
-}
-
-/** Get the property descriptor of a property of the **first parent prototype** of an object
- *
- * @param   obj       - The object to get the property descriptor of
- * @param   propname  - The name of the property to get the descriptor of
- * @returns           The property descriptor of the property; undefined if not found
- */
-export function protoProp<VT>(obj: object, propname: TY.Fieldname): TypedPropertyDescriptor<VT> | undefined {
-  return Object.getOwnPropertyDescriptor(Object.getPrototypeOf(obj), propname)
-}
-
-/** Get the property descriptor of a property of an object
- *
- * @param   obj       - The object to get the property descriptor of
- * @param   propname  - The name of the property to get the descriptor of
- * @returns           The property descriptor of the property; undefined if not found
- */
-export function ownProp<VT>(obj: object, propname: TY.Fieldname): TypedPropertyDescriptor<VT> | undefined {
-  return Object.getOwnPropertyDescriptor(obj, propname)
-}
-
-/** Get the first property descriptor found ascending the prototype chain
- * for a given property name
- *
- * @param   obj       - The object to get the property descriptor of
- * @param   propname  - The name of the property to get the descriptor of
- * @param   depth     - The depth of the prototype chain to search
- * @returns             The property descriptor of the property; undefined if not found
- */
-export function getProp<VT>(obj: object, propname: TY.Fieldname, depth: number = 0): TypedPropertyDescriptor<VT> | undefined {
-  if (depth < 0) { return undefined }
-  const val = Object.getOwnPropertyDescriptor(obj, propname)
-  if (val) { return val }
-  const proto = Object.getPrototypeOf(obj)
-  if  (! proto) { return undefined }
-  return getProp(proto, propname, depth - 1)
-}
-
-export function bagsize(bag: TY.AnyBag | any[]): number {
-  if (_.isArray(bag)) { return bag.length }
-  return _.keys(bag).length
-}
-
 export interface PrettifyFieldOpts {
   /** per line for arrays    */ chunkSize?: number | undefined
   /** width per arr item     */ colwd?:     number | undefined
@@ -162,6 +42,7 @@ export interface PrettifyFieldOpts {
 export interface PrettifyOpts extends PrettifyFieldOpts {
   /** omit the brackets?        */ naked?:        boolean | undefined,
   /** always align array slots? */ chunkArrays?:  boolean | undefined,
+  /** stringify tables?         */ stringify?:    boolean | undefined,
 }
 
 function indentPaddingFor(indent: string | number | undefined) {
@@ -177,11 +58,23 @@ function indentPaddingFor(indent: string | number | undefined) {
  * @param   opts - The options for pretty-printing
  * @returns       The pretty-printed array
  */
-export function prettifyInChunks(arr: readonly string[], { chunkSize = 20, colwd = 12, key, indent = 2 }: PrettifyOpts = {}) {
+export function prettifyStrings(arr: readonly string[], { chunkSize = 20, colwd = 12, key, indent = 2, naked = false }: PrettifyOpts = {}) {
   const indentPadding = indentPaddingFor(indent)
-  const lines = _.chunk(arr, chunkSize).map((chunk) => chunk.map((val) => _.padEnd(inspectify(val) + ',', colwd)).join(' '))
+  const lines = _.chunk(arr, chunkSize).map((chunk) => chunk.map((val) => _.padEnd(val + ',', colwd)).join(' '))
   const body = lines.join('\n' + indentPadding)
-  return (key ? kfy(key) : '') + '[\n    ' + body + '\n]'
+  const bracketed = naked ? body : '[\n    ' + body + '\n]'
+  return (key ? kfy(key) : '') + bracketed
+}
+/**
+ * Pretty-print an array of strings in chunks
+ *
+ * @param   arr - The array to pretty-print
+ * @param   opts - The options for pretty-printing
+ * @returns       The pretty-printed array
+ */
+export function prettifyInChunks(arr: readonly any[], { chunkSize = 20, colwd = 12, key, indent = 2, stringify = true }: PrettifyOpts = {}) {
+  const stringified = stringify ? _.map(arr, (val) => inspectify(val)) : arr
+  return prettifyStrings(stringified, { chunkSize, colwd, key, indent })
 }
 export function prettifyArray(arr: readonly any[], opts: PrettifyOpts = {}) {
   const inspected = inspectify(arr)
@@ -345,11 +238,4 @@ export function isNode(): boolean {
 export function isBrowser(): boolean {
   // if (isNode()) { return false }
   return (!! (import.meta as any).client)
-}
-
-export function scrubNil<VT>(vals: (VT | undefined)[]): NonNullable<VT>[]
-export function scrubNil<VT>(vals: VT): { [KT in keyof VT]: NonNullable<VT[KT]> }
-export function scrubNil<VT>(vals: (VT | undefined)[]): NonNullable<VT>[] {
-  if (_.isArray(vals)) { return _.reject(vals, _.isNil) as NonNullable<VT>[] }
-  return _.omitBy(vals, _.isNil) as any
 }

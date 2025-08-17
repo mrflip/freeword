@@ -5,10 +5,10 @@ import * as Zlib                                  from 'node:zlib'
 import NodeFS                                     from 'node:fs'
 import NodeFSP                                    from 'node:fs/promises'
 import PathUtils                                  from 'node:path'
-import   * as UF                                  from './UF.ts'
-import type * as TY                               from '../types.ts'
-import type * as FT                               from './FilerTypes.ts'
-import { throwable } from './Outcome.ts'
+import   * as UF                                  from '../utils/UF.ts'
+import type * as TY                               from '../types/index.ts'
+import type * as FT                               from '../types/FilerTypes.ts'
+import { throwable } from '../utils/OutcomeUtils.ts'
 
 /**
  * Helper function to create consistent bad outcomes

@@ -1,6 +1,6 @@
 import      _                                /**/ from 'lodash'
 import type * as TY from '../types.ts'
-import { throwable } from './Outcome.ts'
+import { throwable } from '../utils/OutcomeUtils.ts'
 
 export function   keyStar(obj: any[]):                                                 Generator<number, any, number | undefined>
 export function   keyStar<VT extends object, KT extends keyof VT = keyof VT>(obj: VT): Generator<KT,     any, KT     | undefined>

@@ -1,6 +1,6 @@
 import      _ from 'lodash'
 import      { prng_alea as SeededRNGFactory, type AleaPRNGenerator as PRNGenerator } from 'esm-seedrandom'
-import { throwable }                     from './Outcome.ts'
+import { throwable }                     from '../utils/OutcomeUtils.ts'
 import * as Consts                       from '../UtilityConsts.ts'
 import { MAX_UINT32 } from '../UtilityConsts.ts'
 

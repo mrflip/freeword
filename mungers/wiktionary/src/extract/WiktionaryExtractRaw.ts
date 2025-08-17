@@ -23,7 +23,7 @@ export class WiktionaryRaw extends WKT.WiktionaryWordform {
 
 export async function *loadRawWiktionary(size: 'full' | 'some' | 'most') {
   const wiktpath = Paths[size]; if (! wiktpath.ok) { throw wiktpath.err }
-  const tcounts = [] as Record<string, number>[]
+  // const tcounts = [] as Record<string, number>[]
   for await (const raw of Filer.starjsonl<Omit<WiktionaryRaw, 'langcode'>>(wiktpath)) {
     const {
       word, pos, lang_code:langcode, lang:_lang,
@@ -36,7 +36,7 @@ export async function *loadRawWiktionary(size: 'full' | 'some' | 'most') {
     } = raw
     const etymologyArr = _.map(etymology_templates, (rawTemplate) => expandTemplate(word, rawTemplate))
     const etymologies  = _.groupBy(etymologyArr, 'tname')
-    if (! _.isEmpty(etymologies)) { tcounts.push(_.countBy(etymologies, 'tname')) }
+    // if (! _.isEmpty(etymologies)) { tcounts.push(_.countBy(_.keys(etymologies))) }
     // yield { word, pos, langcode, ...wiktionaryRaw, templates } as WiktionaryWordform
     const wordform = {
       word, pos, langcode, // ...wiktionaryRaw,
@@ -47,13 +47,18 @@ export async function *loadRawWiktionary(size: 'full' | 'some' | 'most') {
     }
     yield wordform
   }
-  console.log(tcounts)
+  // console.log(tcounts)
 }
 
-function expandSense(rawSense: Record<string, any>): WKT.WktSense {
-  const { links:rawLinks, ...sense } = rawSense
+export interface RawSense extends Omit<WKT.WktSense, 'links'> {
+  links: TY.Optionalize<{ 0: string, 1: string }>[]
+}
+
+function expandSense(rawSense: RawSense): WKT.WktSense {
+  const { links:rawLinks, ...rest } = rawSense
   const links = _.map(rawLinks, ({ 0:anchor, 1:text = anchor }) => ({ anchor, text }))
-  return { ...sense, links }
+  const sense = WKT.wktSense.parse({ ...rest, links })
+  return sense
 }
 
 function expandTemplate(word: TY.Word, rawTemplate: Record<string, any>): Record<string, any> {
