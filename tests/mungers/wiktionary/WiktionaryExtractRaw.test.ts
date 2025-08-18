@@ -51,12 +51,13 @@ describe('mungers/wiktionary/ExtractRaw', () => {
   it('should extract raw Wiktionary data from Kaikki.org', async () => {
     const mergedShape = { _counts: {} } as ObjShape
     let count = 0
-    for await (const raw of WiktionaryMunger.loadRawWiktionary('most')) {
+    for await (const raw of WiktionaryMunger.loadRawWiktionary('some')) {
       const shape = classifyObj(raw, mergedShape)
-      // console.log(raw.templates)
+      // console.log(...(raw.senses || []))
       // _.merge(mergedShape, shape)
       if (count++ > 30000) { break }
     }
+    console.log(WiktionaryMunger.Bucket)
     console.log(mergedShape.senses)
-  })
+  }, 20_000)
 })
