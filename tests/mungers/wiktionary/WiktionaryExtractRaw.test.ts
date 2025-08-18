@@ -52,12 +52,16 @@ describe('mungers/wiktionary/ExtractRaw', () => {
     const mergedShape = { _counts: {} } as ObjShape
     let count = 0
     for await (const raw of WiktionaryMunger.loadRawWiktionary('some')) {
+      count += 1
+      // if (count <  80_000) { continue }
+      if (count > 100_000) { break }
       const shape = classifyObj(raw, mergedShape)
       // console.log(...(raw.senses || []))
+      console.log(_.omit(raw, 'senses'), ...(raw.senses || []))
       // _.merge(mergedShape, shape)
-      if (count++ > 30000) { break }
     }
     console.log(WiktionaryMunger.Bucket)
-    console.log(mergedShape.senses)
-  }, 20_000)
+    const { senses, ...shape } = mergedShape
+    console.log(shape, senses)
+  }, 50_000)
 })
