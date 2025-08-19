@@ -5,7 +5,7 @@ export const IAMA_TESTHELPERS = true
 
 export * as Examples from './fixtures/ExampleValues.ts'
 
-export function checkSnapshot(results: any[]) {
+export function checkSnapshot(results: any) {
   jestExpect(results).toMatchSnapshot()
   return true
 }

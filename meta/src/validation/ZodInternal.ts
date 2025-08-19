@@ -15,6 +15,9 @@ export type {
   ZodPipeline, ZodPromise, ZodRecord, ZodString, ZodTuple, ZodUnion, ZodReadonly, ZodTypeDef,
   RefinementCtx as ZodCtx, RawCreateParams as ZodTypeParams,
 }                                                 from 'zod'
+
+// turn the enum into a union of strings
+export type ZodTypenames = `${ZImp.ZodFirstPartyTypeKind}`
 export {
   ZodIssueCode, NEVER as FailedTransform, NEVER as FailedRefine,
 }                           from 'zod'

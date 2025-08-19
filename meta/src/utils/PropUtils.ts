@@ -140,10 +140,10 @@ export function scrubVoid<VT>(vals: (VT | undefined)[]): NonNullable<VT>[] {
 
 const BLANKS = new Set([null, undefined, ''])
 
-/** Returns true for null, undefined, empty string, {}, and [], empty map, empty set, empty buffer.
- * Boolean and Number values are never void: `false`, `0`, `-0`, `+-` and `Nan` are all non-void,
- * @param obj - The object to check
- * @returns true if the object is void, false otherwise
+/** Returns `true` for null, undefined, empty string, {}, and [], empty map, empty set, empty buffer. Returns **`false`** for zero 0, false, and NaN
+ *  Boolean and Number values are never void: `false`, `0`, `-0`, `+-` and `Nan` are all non-void,
+ *  @param obj - The object to check
+ *  @returns true if the object is void, false otherwise
  */
 export function isVoid(obj: any): boolean {
   if (_.isNumber(obj) || _.isBoolean(obj)) { return false  }                         // common-case non-void items

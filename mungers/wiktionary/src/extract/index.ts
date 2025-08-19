@@ -1,1 +1,1 @@
-export * from './WiktionaryExtractRaw.ts'
+export        * from './WiktionaryExtractRaw.ts'

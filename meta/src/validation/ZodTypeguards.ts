@@ -2,10 +2,11 @@ import _                           /**/ from 'lodash'
 import type {
   ZodAny, ZodArray, ZodBigInt, ZodBoolean, ZodDate, ZodEnum, ZodLiteral, ZodNever,
   ZodNullable,  ZodNumber, ZodPromise, ZodRecord, ZodString, ZodTuple, ZodTypeAny,
-  ZodOptional,  ZodReadonly, ZodPipeline, ZodBranded,
+  ZodOptional,  ZodReadonly, ZodPipeline, ZodBranded, ZodTypenames,
 }                                       from './ZodInternal.ts'
 import type { ArrNZ, StrArrNZ, Invert } from '../types/TSTools.ts'
 import      { inspectify }              from '../utils/stringify.ts'
+import      { scrubNil }                from '../utils/BaseUtils.ts'
 
 export function zcheckZodTypename(checker: ZodTypeAny): Zodname
 export function zcheckZodTypename(checker: any):        Zodname | undefined
@@ -131,20 +132,41 @@ export function zodnameForCheckername(checkername:   Primcheckname): Zodname
 export function zodnameForCheckername(checkername:   string):        Zodname       | undefined
 export function zodnameForCheckername(checkername:   string):        Zodname       | undefined { return CuteToZodNameLookup[checkername as Primcheckname] }
 
-export function summarizeCheckerDef(checker: ZodTypeAny) {
-  if (! checker?._def) { return '(prim)' }
+export interface CheckerSummary {
+  typeName:   ZodTypenames | '(prim)',
+  ofType?:    ZodTypenames | '(prim)' | '??' | undefined,
+  shape?:     Record<string, CheckerSummary>,
+  ofShape?:   Record<string, CheckerSummary>,
+  type?:      CheckerSummary,
+  innerType?: CheckerSummary,
+  catchall?:  CheckerSummary,
+  items?:     CheckerSummary[],
+  options?:   CheckerSummary[],
+}
+// interface CheckerSummaryT extends CheckerSummary { errorMap?: any }
+export function summarizeCheckerDef(checker: ZodTypeAny): CheckerSummary {
+  if (! checker?._def) { return { typeName: '(prim)' } }
   function brute(obj: any) { return inspectify(obj).slice(0, 100) }
-  const summ = { typeName: checker._def?.typeName, ...checker._def }
-  if (summ.type)     { summ.type     = summarizeCheckerDef(summ.type)     }
-  if (summ.catchall) { summ.catchall = summarizeCheckerDef(summ.catchall) }
-  if (summ.items)    { summ.items    = _.map(summ.checks,  (subcheck) => summarizeCheckerDef(subcheck)) }
-  if (summ.options)  { summ.options  = _.map(summ.options, (subcheck) => summarizeCheckerDef(subcheck)) }
-  if (summ.errorMap) { delete summ.errorMap }
-  if (summ.shape)    {
-    if (! _.isFunction(summ.shape)) { summ.shape = brute(summ.shape) }
-    summ.shape = _.mapValues(summ.shape(), (subcheck) =>  summarizeCheckerDef(subcheck))
+  if (checker._def?.typeName === 'ZodOptional' || checker._def?.typeName === 'ZodNullable') {
+    const  summ = { [checker._def?.typeName]: true, ...summarizeCheckerDef(checker._def.innerType) }
+    return summ
   }
-  return summ
+  const raw  = { ...checker._def }
+  const summ: CheckerSummary = { typeName: checker._def?.typeName, ..._.omit(raw, ['type', 'innerType', 'catchall', 'items', 'options', 'errorMap']) }
+  if (raw.type)              { summ.type      = summarizeCheckerDef(raw.type)     }
+  if (raw.innerType)         { summ.innerType = summarizeCheckerDef(raw.innerType) }
+  if (raw.catchall)          { summ.catchall  = summarizeCheckerDef(raw.catchall) }
+  if (raw.items)             { summ.items     = _.map(raw.items,  (subcheck) => summarizeCheckerDef(subcheck)) }
+  if (raw.options)           { summ.options   = _.map(raw.options, (subcheck) => summarizeCheckerDef(subcheck)) }
+  if (summ.type?.shape)      { const { shape, ...rest } = summ.type;      summ.ofShape = shape; summ.type      = rest }
+  if (summ.innerType?.shape) { const { shape, ...rest } = summ.innerType; summ.ofShape = shape; summ.innerType = rest }
+  if (summ.typeName === 'ZodArray') { summ.ofType = summ.type?.typeName ?? summ.innerType?.typeName ?? '??' }
+  if (raw.shape)     {
+    if (! _.isFunction(raw.shape)) { summ.shape = { like: brute(summ.shape) } as any; return summ }
+    summ.shape = _.mapValues(raw.shape(), (subcheck) =>  summarizeCheckerDef(subcheck))
+  }
+  const  { typeName, ofType, ...rest } = summ
+  return scrubNil({ typeName, ofType, ...rest })
 }
 
 export type ZodFancyRegistry<XT> = {
