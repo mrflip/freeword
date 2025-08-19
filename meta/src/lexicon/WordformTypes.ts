@@ -53,8 +53,10 @@ export type ConjStemkind = typeof FW.PosStemkinds['conj'][number]
 export type PronStemkind = typeof FW.PosStemkinds['pron'][number]
 /** Stemkind for articles */
 export type ArtStemkind = typeof FW.PosStemkinds['art'][number]
+/** Stemkind for other parts of speech */
+export type OtherStemkind = typeof FW.PosStemkinds['char' | 'advph' | 'prepph' | 'cont'][number]
 
-export type Stemkind = AdjStemkind | AdvStemkind | NounStemkind | VerbStemkind | IntjStemkind | PrepStemkind | ConjStemkind | PronStemkind | ArtStemkind
+export type Stemkind = AdjStemkind | AdvStemkind | NounStemkind | VerbStemkind | IntjStemkind | PrepStemkind | ConjStemkind | PronStemkind | ArtStemkind | OtherStemkind
 // --
 
 // == [Wordform related props types] -- See the Wordform class for active object

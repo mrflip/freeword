@@ -16,6 +16,7 @@
     "ver:clobber": "    ./scripts/version-clobber.sh",
     "ver:extract": "    ./scripts/version-extract.sh",
     "ver:bump": "       yarn workspace internals version patch",
+    "tsc:clean": "      ./scripts/tsclean.sh",
     "_1": " echo .",
     "test": "           yarn node --experimental-vm-modules                      $(yarn bin jest)",
     "test:plain": "     yarn node --experimental-vm-modules --enable-source-maps $(yarn bin jest)",

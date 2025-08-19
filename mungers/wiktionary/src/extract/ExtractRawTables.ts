@@ -18,8 +18,9 @@ export const templateNameAliases: Record<string, string> = {
   'surface analysis': 'surf',
   ncog: 'noncognate', noncog: 'noncognate',
   unk:   'unknown',
-  'named-after': 'named_after',
-  'PIE word': 'pie_word',
+  'named-after': 'namedfor',
+  'PIE word': 'pieword',
+  'compound+': 'compound',
   //
   'col-top': 'skip', 'sup': 'skip', smallcaps: 'skip', small: 'skip', lang: 'skip', lena: 'skip', langname: 'skip',
 }

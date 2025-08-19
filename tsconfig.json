@@ -1,6 +1,8 @@
 {
   "$schema":                "https://json.schemastore.org/tsconfig",
-  "extends":                "./tsconfig-base.json",
+  // "extends":                "./tsconfig-base.json",
+  "files":                  [],
+  "include":                [],
   // "include":                            ["src/**/*.ts", "db/**/*.ts", "src/**/*.js"],
   "references": [
     { "path": "./meta/tsconfig.json" },
@@ -11,7 +13,15 @@
     "outDir":                             "./built/internals",  /* Specify the path to .tsbuildinfo incremental compilation file. */
     "lib":                                ["esnext"],
     "incremental":                        true,
+    "composite":                          true,
     "noEmit":                             true, /* Disable emitting files from a compilation. */
+
+    "preserveSymlinks":                   true,
+    "target":                             "ESNext",
+    "module":                             "NodeNext",
+    "moduleResolution":                   "nodenext",
+    "esModuleInterop":                    true,
+
     "noErrorTruncation":                  false // true to see all errors
   }
 }

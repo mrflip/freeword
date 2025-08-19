@@ -4,7 +4,10 @@ import type * as TY                               from '../types.ts'
 export *                                          from '../UtilityConsts.ts'
 
 export const Poskinds     = [
-  'adj', 'adv', 'verb', 'noun', 'intj', 'prep', 'conj', 'pron', 'art',
+  'noun',     'verb',     'adj',      'adv',      'intj',      'num',
+  'symbol',   'name',     'prep',     'prefix',   'particle',  'art',      'advph',
+  'pron',     'phrase',   'det',      'conj',     'suffix',    'proverb',  'prepph',
+  'punct',    'infix',    'postp',    'interfix', 'char',      'cont',
 ] as const
 
 export const PosStemkinds = {
@@ -28,11 +31,28 @@ export const PosStemkinds = {
     'v_core',   'v_pl_es', 'v_pl_s',  'v_ing', 'v_ed', 'v_xt', 'v_pt',
     'v_irr', 'v_en',
   ],
-  intj: ['intj_core', 'intj_irr'],
-  prep:   ['prep_core', 'prep_irr'],
-  conj:   ['conj_core', 'conj_irr'],
-  pron:   ['pron_core', 'pron_irr'],
-  art:    ['art_core', 'art_irr'],
+  intj:     ['intj_core',     'intj_irr'],
+  prep:     ['prep_core',     'prep_irr'],
+  conj:     ['conj_core',     'conj_irr'],
+  pron:     ['pron_core',     'pron_irr'],
+  art:      ['art_core',      'art_irr'],
+  char:     ['char_core',     'char_irr'],
+  advph:    ['advph_core',    'advph_irr'],
+  prepph:   ['prepph_core',   'prepph_irr'],
+  cont:     ['cont_core',     'cont_irr'],
+  phrase:   ['phrase_core',   'phrase_irr'],
+  det:      ['det_core',      'det_irr'],
+  suffix:   ['suffix_core',   'suffix_irr'],
+  proverb:  ['proverb_core',  'proverb_irr'],
+  interfix: ['interfix_core', 'interfix_irr'],
+  symbol:   ['symbol_core',   'symbol_irr'],
+  num:      ['num_core',      'num_irr'],
+  name:     ['name_core',     'name_irr'],
+  prefix:   ['prefix_core',   'prefix_irr'],
+  particle: ['particle_core', 'particle_irr'],
+  postp:    ['postp_core',    'postp_irr'],
+  infix:    ['infix_core',    'infix_irr'],
+  punct:    ['punct_core',    'punct_irr'],
 } as const satisfies { readonly [poskind in TY.Poskind]: readonly string[] }
 
 export const Stemkinds: TY.Stemkind[] = Object.values(PosStemkinds).flat()
@@ -62,7 +82,7 @@ export const SuffixREForStemkind: Record<TY.Stemkind, RegExp> = {
   v_core:      /.$/, v_pl_es: /es$/,  v_pl_s: /s$/,   v_ing: /ing$/, v_ed: /ed$/,
   v_xt:        /xt$/, v_pt: /pt$/,
   v_irr:       /(.)$/, v_en: /en$/,
-  intj_core: /.$/,
+  intj_core:   /.$/,
   adj_irr:     /.$/,  adv_irr:     /.$/,  n_irr:       /.$/,  intj_irr:  /.$/,
   prep_core:   /.$/, prep_irr:    /.$/,
   conj_core:   /.$/, conj_irr:    /.$/,

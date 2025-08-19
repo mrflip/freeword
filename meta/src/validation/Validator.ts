@@ -15,7 +15,7 @@ import      {
   bigstr,         blobbish,       bool,           boolish,        boolstr,        brandcode,
   brandname,      byte,           camel,          ccmasked,       city,           colname,
   company,        country,        countryCode,    crDT,           crISO,          crTC,
-  crTS,           currency,       days,           deliveryHints,  distance,       dotfield,
+  crTS,           currency,       days,           dashlabel,      deliveryHints,  distance,       dotfield,
   duration,       duration2obj,   duration2str,   email,          emoji,          expiresDT,
   expiresISO,     expiresTC,      expiresTS,      extkey,         extkeyish,      exturi,
   family,         familyName,     ffmt,           fieldname,      firstName,      float,
@@ -61,7 +61,7 @@ type ZodBooleanish = ZodBoolean | ZodNullable<ZodBoolean> | ZodOptional<ZodBoole
 export const StrChecks = {
   addrpart,       alnum,          alnumbar,       asciish,        azalnum,        azalnumbar,
   bigstr,         blobbish,       brandcode,      brandname,      camel,          ccmasked,
-  city,           colname,        company,        crISO,          crTC,           deliveryHints,
+  city,           colname,        company,        crISO,          crTC,           dashlabel, deliveryHints,
   dotfield,       email,          emoji,          expiresISO,     expiresTC,      extkey,
   extkeyish,      exturi,         family,         familyName,     fieldname,      firstName,
   fmt,            fullname,       fullstr,        givenName,      guidv4,         guidv4TT,

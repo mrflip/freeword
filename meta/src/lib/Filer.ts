@@ -58,7 +58,7 @@ export function _abspathForPathparts(pathinfo: Pick<FT.PathinfoT, 'dirpath' | 'b
   const dirpathStr  = (typeof pathinfo.dirpath  === 'string') ?  pathinfo.dirpath.trim() : pathinfo.dirpath
   const barenameStr = (typeof pathinfo.barename === 'string') ? pathinfo.barename.trim() : pathinfo.barename
   if (! dirpathStr || ! barenameStr) { const outcome = badOutcome(new Error('Blank path provided'), 'blankPath', 'Blank path is not a reasonable input', { args: { pathinfo } }); throw outcome.err }
-  const filename = pathinfo.fext ? `${barenameStr}${pathinfo.fext}` : barenameStr
+  const filename = pathinfo.fext ? `${barenameStr}.${pathinfo.fext}` : barenameStr
   try {
     return PathUtils.resolve(dirpathStr, filename)
   } catch (err) {
@@ -101,10 +101,10 @@ export function pathinfoFor(anypath: FT.Anypath, ...pathsegs: TY.StringMaybe[]):
     const abspath = (typeof anypath === 'string') ? _abspathForPathname(anypath, ...pathsegs) : _abspathForPathparts(anypath, ...pathsegs)
     const dirpath  = PathUtils.dirname(abspath)
     const basename = PathUtils.basename(abspath)
-    const fext     = PathUtils.extname(basename)
-    const barename = fext ? basename.slice(0, (- fext.length)) : basename
+    const fext     = PathUtils.extname(basename).slice(1)
+    const barename = fext ? basename.slice(0, (-1 - fext.length)) : basename
     return {
-      ok:   true,
+      ok:        true,
       barename,
       fext,
       dirpath,
@@ -177,10 +177,10 @@ export async function* starlinesFiddly(anypath: FT.Anypath): AsyncGenerator<stri
   return { ...pathinfo, ok: true, gist: 'ok', val: pathinfo }
 }
 
-function _openRawFilestream(anypath: FT.Anypath): FT.FilerReadResult<Readable, FT.CoreReadGist> {
+function _openRawFilestream(anypath: FT.Anypath, { encoding = 'utf8' }: { encoding?: 'utf8' | 'utf16le' | 'binary' | null } = {}): FT.FilerReadResult<Readable, FT.CoreReadGist> {
   const pathinfo = pathinfoFor(anypath); if (! pathinfo.ok) { return pathinfo }
   try {
-    const contentsStream = NodeFS.createReadStream(pathinfo.abspath, { encoding: 'utf8' })
+    const contentsStream = NodeFS.createReadStream(pathinfo.abspath, { encoding: encoding ?? undefined })
     return { ...pathinfo, gist: 'ok', ok: true, val: contentsStream }
   } catch (rawerr) {
     const err = rawerr as NodeJS.ErrnoException
@@ -196,11 +196,13 @@ function _openRawFilestream(anypath: FT.Anypath): FT.FilerReadResult<Readable, F
  * @returns A Readable stream or a BadFilerResult
  */
 export function openFilestream(anypath: FT.Anypath): FT.FilerReadResult<Readable, FT.CoreReadGist> {
-  const contentsStream = _openRawFilestream(anypath); if (! contentsStream.ok) { return contentsStream }
-  if (contentsStream.fext === '.gz') {
+  const pathinfo = pathinfoFor(anypath); if (! pathinfo.ok) { return pathinfo }
+  const encoding = /^(gz|bz2|zip)$/.test(pathinfo.fext) ? null : 'utf8'
+  const contentsStream = _openRawFilestream(pathinfo, { encoding }); if (! contentsStream.ok) { return contentsStream }
+  if (contentsStream.fext === 'gz') {
     return { ...contentsStream, val: contentsStream.val.pipe(Zlib.createGunzip()) }
   }
-  if (contentsStream.fext === '.zip') {
+  if (contentsStream.fext === 'zip') {
     return { ...contentsStream, val: contentsStream.val.pipe(Zlib.createUnzip()) }
   }
   return contentsStream
@@ -230,7 +232,10 @@ export async function* starlines(anypath: FT.Anypath): AsyncGenerator<string, FT
     if (err.code === 'ENOENT') {
       throw throwable(`Path ${linestream.abspath} is absent`, 'fileNotFound', { lineNumber, filepath: anypath, args: { anypath } }, err)
     }
-    throw throwable(`File read error @${lineNumber}`, 'consumeErr', { lineNumber, filepath: anypath, args: { anypath } }, err)
+    if (err.code === 'Z_DATA_ERROR') {
+      throw throwable(`Decompression error ${anypath}:${lineNumber}`, 'compressErr', { lineNumber, filepath: anypath, args: { anypath } }, err)
+    }
+    throw throwable(`File read error ${anypath}:${lineNumber}`, 'consumeErr', { lineNumber, filepath: anypath, args: { anypath } }, err)
   } finally {
     if (linestream.val) { linestream.val.close() }
   }

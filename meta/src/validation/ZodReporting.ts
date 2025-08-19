@@ -96,8 +96,14 @@ export function makeCustomMessage(issue: ZodIssueOptionalMessage, subj: any, def
     // if (INSTANCE_OF_RE.test(message)) { return fixInstanceofMessage(message, issue, badprop, defaultError, opts) }
     // return message ?? defaultError
   }
+  if (code === ZIC.invalid_union_discriminator)   {
+    const tags = issue.options.join('/')
+    const tagfield = _.last(issue.path)
+    console.warn('invalid_union_discriminator', jsonify(issue), subj, opts, badprop, defaultError)
+    return `union tag ${tagfield} value '' should be one of ${tags}`
+  }
   //
-  console.warn('please add this case to ZodReporting.customMessage', jsonify(issue), badprop, defaultError)
+  console.warn('please add this case to ZodReporting.customMessage', jsonify(issue), subj, opts, badprop, defaultError)
   //
   if (code === ZIC.invalid_arguments)   { return defaultError }
   if (code === ZIC.invalid_return_type) { return defaultError }

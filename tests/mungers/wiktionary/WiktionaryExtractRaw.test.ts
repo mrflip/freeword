@@ -39,6 +39,9 @@ function classifyObj(raw: Record<string, any>, shape: ObjShape = { _counts: {} }
       subshape._counts = UF.bagsort(subshape._counts, _.last, { sortdirs: ['desc'] })
       return
     }
+    if (_.isUndefined(shape[key])) { return }
+    // @ts-expect-error
+    if (_.isString(shape[key])) { shape[key] = { oops: [] as any[], was: shape[key] }; return }
     ; (shape[key] as any).oops = [] as any[]
     ; (shape[key] as any).oops.push(val)
   })
@@ -51,17 +54,16 @@ describe('mungers/wiktionary/ExtractRaw', () => {
   it('should extract raw Wiktionary data from Kaikki.org', async () => {
     const mergedShape = { _counts: {} } as ObjShape
     let count = 0
-    for await (const raw of WiktionaryMunger.loadRawWiktionary('some')) {
+    for await (const raw of WiktionaryMunger.loadRawWiktionary('full')) {
+      // if (_.isEmpty(raw.descendants)) { continue }
       count += 1
-      // if (count <  80_000) { continue }
-      if (count > 100_000) { break }
-      const shape = classifyObj(raw, mergedShape)
-      // console.log(...(raw.senses || []))
-      console.log(_.omit(raw, 'senses'), ...(raw.senses || []))
-      // _.merge(mergedShape, shape)
+      // if (count < 80_000) { continue }
+      // if (count > 1000) { break }
+      if (count > 50_000) { break }
+      classifyObj(raw, mergedShape)
     }
-    console.log(WiktionaryMunger.Bucket)
-    const { senses, ...shape } = mergedShape
-    console.log(shape, senses)
+    console.log(UF.bagsort(WiktionaryMunger.Bucket))
+    const { senses, descendants, etymology, ...shape } = mergedShape as any
+    console.log(shape, descendants?.desctrees, ..._.entries(etymology?.templates || {}))
   }, 50_000)
 })

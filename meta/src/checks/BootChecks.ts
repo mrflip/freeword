@@ -31,7 +31,7 @@ export const idk            = notnil as ZodAny
 
 // Primitives
 export const bool           = Z.boolean()
-export const regexp        = Z.instanceof(RegExp)
+export const regexp         = Z.instanceof(RegExp)
 export const jsdate         = Z.date()
 export const num            = Z.number()
 export const safenum        = Z.number().min(CO.SAFEINT.min).max(CO.SAFEINT.max)

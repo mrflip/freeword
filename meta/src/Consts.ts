@@ -80,6 +80,7 @@ export const NO_LOWER_PLAIN_RE  = /^[A-Z0-9 !-@\{-~]*$/
 // 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcde
 //
 export const LABEL_RE           = /^[a-z][a-z0-9_]*$/
+export const DASHLABEL_RE       = /^[a-z][a-z0-9_\-]*$/
 export const ALNUM_RE           = /^[A-Za-z0-9]*$/
 export const AZALNUM_RE         = /^[a-zA-Z][a-zA-Z0-9]*$/i
 export const AZALNUMBAR_RE      = /^[a-zA-Z][a-zA-Z0-9_]*$/i
@@ -227,6 +228,7 @@ export const STR            = FULLSTR
 export const ALNUM          = { re: ALNUM_RE,                                           msg: "should have only plain letters/numbers" } as const
 export const ALNUMBAR       = { re: /^\w*$/,                                            msg: "should have only plain letters/_/numbers" } as const
 export const LABEL          = { re: LABEL_RE,       strcase: 'lower',  min: 2, max: 25, msg: "should have only plain lowercase letters/_/numbers with a letter first" } as const
+export const DASHLABEL      = { re: DASHLABEL_RE,   strcase: 'lower',  min: 2, max: 25, msg: "should have only plain lowercase letters/_/-/numbers with a letter first" } as const
 
 export const AZALNUM        = { re: AZALNUM_RE,                                         msg: "should have only plain letters/numbers with a letter first"       } as const
 export const UPAZALNUM      = { re: UPAZALNUM_RE,    strcase: 'upper',                  msg: "should have only plain letters/numbers with a letter first"       } as const

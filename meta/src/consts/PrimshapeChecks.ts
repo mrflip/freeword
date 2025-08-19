@@ -28,7 +28,7 @@ export const modern         = jsdate.min(new Date(CO.TS_EARLIEST)).max(new Date(
 export const trimmed        = str.trim().regex(CO.STRINGISH.re, CO.STRINGISH.msg)
 export const lower          = str.trim().regex(CO.LOWER.re,     CO.LOWER.msg).describe('plain lowercase')
 //
-export const textish        = str.trim().regex(CO.TEXTISH.re, CO.TEXTISH.msg).max(CO.NOTESTR.max)
+export const textish        = str.trim().regex(CO.TEXTISH.re, CO.TEXTISH.msg)
 export const blobbish       = str.regex(CO.TEXTISH.re, CO.TEXTISH.msg).max(CO.BLOBBISH.max)
 // --
 

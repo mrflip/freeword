@@ -20,5 +20,6 @@ export const asciish        = str.trim().regex(CO.ASCIISH.re,      CO.ASCIISH.ms
 export const stringish      = str.regex(CO.STRINGISH.re,          CO.STRINGISH.msg).describe('standard characters')
 //
 export const label          = lower.min(1).max(CO.LABEL.max).regex(CO.LABEL.re, CO.LABEL.msg).describe('simple label')
+export const dashlabel      = lower.min(1).max(CO.DASHLABEL.max).regex(CO.DASHLABEL.re, CO.DASHLABEL.msg).describe('simple dash-separated label')
 export const handleish      = lower.min(1).max(CO.HANDLEISH.max).regex(CO.HANDLEISH.re, CO.HANDLEISH.msg).describe('record handle')
 //
