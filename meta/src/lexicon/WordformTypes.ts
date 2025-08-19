@@ -54,8 +54,8 @@ export type PronStemkind = typeof FW.PosStemkinds['pron'][number]
 /** Stemkind for articles */
 export type ArtStemkind = typeof FW.PosStemkinds['art'][number]
 /** Stemkind for other parts of speech */
-export type OtherStemkind = typeof FW.PosStemkinds['char' | 'advph' | 'prepph' | 'cont'][number]
-
+export type OtherStemkind = typeof FW.PosStemkinds['char' | 'advph' | 'prepph' | 'cont' | 'phrase' | 'det' | 'suffix' | 'proverb' | 'interfix' | 'symbol' | 'num' | 'name' | 'prefix' | 'particle' | 'postp' | 'infix' | 'punct'][number]
+//
 export type Stemkind = AdjStemkind | AdvStemkind | NounStemkind | VerbStemkind | IntjStemkind | PrepStemkind | ConjStemkind | PronStemkind | ArtStemkind | OtherStemkind
 // --
 

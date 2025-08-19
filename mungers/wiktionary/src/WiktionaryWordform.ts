@@ -37,7 +37,7 @@ export class WiktionaryWordform extends FW.Wordform implements WktLemma {
 }
 
 const { obj, arr, oneof, tuple, cases, coerce, str, bareint, anything, bool, literal, stringish, textish, urlstr } = FW.CK
-const poskind = oneof(FW.Poskinds); const poskind1 = poskind; const poskind2 = poskind
+const poskind = oneof(FW.Poskinds)
 const BOOLISH_TRUE_SET  = new Set([true,  1, 'true',  'True',  'TRUE',  '1', 'Yes', 'yes', 'YES', 'Y', 'y', '2', '3', '12', 'on'])
 const BOOLISH_FALSE_SET = new Set([false, 0, 'false', 'False', 'FALSE', '0', 'No',  'no',  'NO',  'N', 'n'])
 const BOOLISH_ALLOW_SET = new Set([...BOOLISH_TRUE_SET, ...BOOLISH_FALSE_SET])
@@ -82,8 +82,10 @@ const positionals    = arr(line1k)
 const root           = longstr
 const prefix         = midstr
 const suffix         = midstr
-const parts          = arr(longstr)
-const relterms       = parts
+
+const etympart       = obj({ relterm: line1k, langcode: langcode, senseid, gloss: line1k, poskind: longstr, gender: midstr, alt: midstr, translit: longstr, qualifier: longstr, lit: longstr,  }).partial().strict()
+const parts          = arr(etympart)
+const relterms       = arr(longstr)
 const gloss          = line1k ; const gloss1 = gloss; const gloss2 = gloss
 const wikicategory   = longstr
 const categories     = arr(wikicategory).default([])
@@ -91,9 +93,9 @@ const highlights     = arr(tuple([bareint, bareint]))
 
 const WktTemplateNames = [
   'suffix',     'confix',     'prefix',     'affix',      'surf',       'compound',   'clipping',   'derived',
-  'borrowed',   'inherited',  'calque',     'cognate',    'noncognate', 'root',       'doublet',    'blend',
+  'borrowed',   'inherited',  'calque',     'partcalque', 'cognate',    'noncognate', 'root',       'doublet',    'blend',
   'pieword',    'taxlink',    'taxfmt',     'mention',    'coinage',    'namedfor',   'etymon',     'etymid',
-  'qualifier',  'unknown',    'glossary',   'uncertain',  'other',      'onomatopoeic',
+  'qualifier',  'unknown',    'glossary',   'uncertain',  'other',      'abbrevof',   'abbrev',     'onomatopoeic',
 ] as const
 export type WktTemplateName = (typeof WktTemplateNames)[number]
 const genericTemplate = obj({
@@ -110,57 +112,65 @@ const genericTemplate = obj({
   /** Root morpheme                */ root,
   /** Suffix morpheme              */ suffix,
   /** Morpheme parts               */ parts,
-  /** Alternative text             */ alt:        midstr, /** Alt text for part 1 */ alt1:     midstr,    /** Alt text for part 2 */ alt2:    midstr,
-  /** Gloss                        */ gloss,              /** Gloss    for part 1 */ gloss1,              /** Gloss    for part 2 */ gloss2,
-  /** Part of speech               */ poskind,            /** Poskind  for part 1 */ poskind1: midstr,    /** Poskind  for part 2 */ poskind2: midstr,
-  /** Gender of Object term        */ gender:     midstr, /** Gender   for part 1 */ gender1:  midstr,    /** Gender   for part 2 */ gender2: midstr,
+  /** Alternative text             */ alt:        midstr,
+  /** Gloss                        */ gloss,
+  /** Part of speech               */ poskind:    longstr,
+  /** Gender of Object term        */ gender:     midstr,
   /** Taxonomy                     */ taxon:      midstr,
   /** Taxonomy level               */ level:      midstr,
   /** Link Target                  */ target:     midstr,
   /** Link Text                    */ text:       line1k,
   /** ??                           */ tree:       text4k,
-  /** ??                           */ translit:   midstr,
-  /** ??                           */ lit:        midstr,
+  /** transliteration              */ translit:   midstr,
+  /** transcript                   */ transcript: midstr,
+  /** literal meaning              */ lit:        midstr,
+  /** Additional text to show      */ addl:       midstr,
+  /** Script of text               */ scriptcode: midstr,
   /** ??                           */ qualifier:  midstr,
   /** ??                           */ qualifiers: positionals,
+  /** Category                     */ cat:        wikicategory,
+  /** Title                        */ title:      longstr,
 }).partial()
-const suffixTemplate       = genericTemplate.pick({ expansion: true, root:      true,             suffix: true, parts: true,                                                                         tname: true,                }).extend({ /** Template name */ tname: literal('suffix')       }).passthrough()
-const confixTemplate       = genericTemplate.pick({ expansion: true, prefix:    true, root: true, suffix: true, parts: true,                                                                         tname: true, langcode: true }).extend({ /** Template name */ tname: literal('confix')       }).passthrough()
-const prefixTemplate       = genericTemplate.pick({ expansion: true, prefix:    true, root: true,               parts: true,                                                                         tname: true, langcode: true }).extend({ /** Template name */ tname: literal('prefix')       }).passthrough()
-const affixTemplate        = genericTemplate.pick({ expansion: true, parts:     true,                                                                                                                tname: true, langcode: true }).extend({ /** Template name */ tname: literal('affix')        }).passthrough()
-const surfTemplate         = genericTemplate.pick({ expansion: true, parts:     true,                                                                                                                tname: true, langcode: true }).extend({ /** Template name */ tname: literal('surf')         }).passthrough()
-const compoundTemplate     = genericTemplate.pick({ expansion: true, parts:     true, alt1:      true, gloss1: true, gloss2: true, lit: true, poskind1: true, poskind2: true,                        tname: true, langcode: true }).extend({ /** Template name */ tname: literal('compound')     }).passthrough()
-const derivedTemplate      = genericTemplate.pick({ expansion: true, relterm:   true, rellang:   true, alt:    true, gloss:  true,                                                                   tname: true, langcode: true }).extend({ /** Template name */ tname: literal('derived')      }).passthrough()
-const clippingTemplate     = genericTemplate.pick({ expansion: true, relterm:   true,                                                                                                                tname: true, langcode: true }).extend({ /** Template name */ tname: literal('clipping')     }).passthrough()
-const borrowedTemplate     = genericTemplate.pick({ expansion: true, relterm:   true, rellang:   true, alt:    true, gloss:  true,                                                                   tname: true, langcode: true }).extend({ /** Template name */ tname: literal('borrowed')     }).passthrough()
-const inheritedTemplate    = genericTemplate.pick({ expansion: true, relterm:   true, rellang:   true, alt:    true, gloss:  true,                                                                   tname: true, langcode: true }).extend({ /** Template name */ tname: literal('inherited')    }).passthrough()
-const calqueTemplate       = genericTemplate.pick({ expansion: true, relterm:   true, rellang:   true, alt:    true, gloss:  true,                                                                   tname: true, langcode: true }).extend({ /** Template name */ tname: literal('calque')       }).passthrough()
-const cognateTemplate      = genericTemplate.pick({ expansion: true, relterm:   true, rellang:   true, alt:    true, gloss:  true, translit: true,                                                   tname: true, langcode: true }).extend({ /** Template name */ tname: literal('cognate')      }).passthrough()
-const noncognateTemplate   = genericTemplate.pick({ expansion: true, relterm:   true, rellang:   true, alt:    true, gloss:  true,                                                                   tname: true, langcode: true }).extend({ /** Template name */ tname: literal('noncognate')   }).passthrough()
-const rootTemplate         = genericTemplate.pick({ expansion: true, relterms:  true, rellang:   true, alt:    true, gloss:  true,                                                                   tname: true, langcode: true }).extend({ /** Template name */ tname: literal('root')         }).passthrough()
-const doubletTemplate      = genericTemplate.pick({ expansion: true, relterms:  true,                                                                                                                tname: true, langcode: true }).extend({ /** Template name */ tname: literal('doublet')      }).passthrough()
-const blendTemplate        = genericTemplate.pick({ expansion: true, relterms:  true,                                                                                                                tname: true,                }).extend({ /** Template name */ tname: literal('blend')        }).passthrough()
-const piewordTemplate      = genericTemplate.pick({ expansion: true, relterm:   true, rellang:   true,                                                                                               tname: true, langcode: true }).extend({ /** Template name */ tname: literal('pieword')      }).passthrough()
-const taxlinkTemplate      = genericTemplate.pick({ expansion: true, taxon:     true, level:     true, alt:   true,                                                                                  tname: true, langcode: true }).extend({ /** Template name */ tname: literal('taxlink')      }).passthrough()
-const taxfmtTemplate       = genericTemplate.pick({ expansion: true, taxon:     true, level:     true, alt:   true,                                                                                  tname: true, langcode: true }).extend({ /** Template name */ tname: literal('taxfmt')       }).passthrough()
-const mentionTemplate      = genericTemplate.pick({ expansion: true, target:    true, text:      true, gloss: true,                                                                                  tname: true, langcode: true }).extend({ /** Template name */ tname: literal('mention')      }).passthrough()
-const glossaryTemplate     = genericTemplate.pick({ expansion: true, target:    true, text:      true,                                                                                               tname: true,                }).extend({ /** Template name */ tname: literal('glossary')     }).passthrough()
-const coinageTemplate      = genericTemplate.pick({ expansion: true, entity:    true,                                                                                                                tname: true, langcode: true }).extend({ /** Template name */ tname: literal('coinage')      }).passthrough()
-const namedforTemplate     = genericTemplate.pick({ expansion: true, entity:    true,                                                                                                                tname: true, langcode: true }).extend({ /** Template name */ tname: literal('namedfor')     }).passthrough()
-const etymonTemplate       = genericTemplate.pick({ expansion: true, senseid:   true, tree: true, translit: true, lit: true, alt1: true, gloss1: true, gloss2: true, poskind1: true, poskind2: true, tname: true, langcode: true }).extend({ /** Template name */ tname: literal('etymon')       }).passthrough()
-const etymidTemplate       = genericTemplate.pick({ expansion: true, etymid:    true,                                                                                                                tname: true, langcode: true }).extend({ /** Template name */ tname: literal('etymid')       }).passthrough()
-const onomatopoeicTemplate = genericTemplate.pick({ expansion: true,                                                                                                                                 tname: true, langcode: true }).extend({ /** Template name */ tname: literal('onomatopoeic') }).passthrough()
-const qualifierTemplate    = genericTemplate.pick({ expansion: true, qualifier: true, qualifiers: true,                                                                                              tname: true, langcode: true }).extend({ /** Template name */ tname: literal('qualifier')    }).passthrough()
-const unknownTemplate      = genericTemplate.pick({ expansion: true,                                                                                                                                 tname: true, langcode: true }).extend({ /** Template name */ tname: literal('unknown')      }).passthrough()
-const uncertainTemplate    = genericTemplate.pick({ expansion: true,                                                                                                                                 tname: true, langcode: true }).extend({ /** Template name */ tname: literal('uncertain')    }).passthrough()
-const otherTemplate        = genericTemplate.pick({ expansion: true,                                                                                                                                 tname: true,                }).extend({ /** Template name */ tname: literal('other')        }).passthrough()
+const suffixTemplate       = genericTemplate.pick({ expansion: true, root:      true,             suffix: true, parts: true,                                                                                                                  tname: true, langcode: true }).extend({ /** Template name */ tname: literal('suffix')       }).passthrough()
+const confixTemplate       = genericTemplate.pick({ expansion: true, prefix:    true, root: true, suffix: true, parts: true,                                                                                                                  tname: true, langcode: true }).extend({ /** Template name */ tname: literal('confix')       }).passthrough()
+const prefixTemplate       = genericTemplate.pick({ expansion: true, prefix:    true, root: true,               parts: true,                                                                                                                  tname: true, langcode: true }).extend({ /** Template name */ tname: literal('prefix')       }).passthrough()
+const affixTemplate        = genericTemplate.pick({ expansion: true, parts:     true,                                                                                                                                                         tname: true, langcode: true }).extend({ /** Template name */ tname: literal('affix')        }).passthrough()
+const surfTemplate         = genericTemplate.pick({ expansion: true, parts:     true,                                                                                                                                                         tname: true, langcode: true }).extend({ /** Template name */ tname: literal('surf')         }).passthrough()
+const compoundTemplate     = genericTemplate.pick({ expansion: true, parts:     true,                                                            lit: true,                                                                                   tname: true, langcode: true }).extend({ /** Template name */ tname: literal('compound')     }).passthrough()
+const derivedTemplate      = genericTemplate.pick({ expansion: true, relterm:   true, rellang:   true, alt:    true, gloss:  true, gender: true, lit: true, poskind: true, scriptcode: true, translit: true,                                  tname: true, langcode: true }).extend({ /** Template name */ tname: literal('derived')      }).passthrough()
+const borrowedTemplate     = genericTemplate.pick({ expansion: true, relterm:   true, rellang:   true, alt:    true, gloss:  true, gender: true, lit: true, poskind: true, scriptcode: true, translit: true, senseid: true, transcript: true, tname: true, langcode: true }).extend({ /** Template name */ tname: literal('borrowed')     }).passthrough()
+const inheritedTemplate    = genericTemplate.pick({ expansion: true, relterm:   true, rellang:   true, alt:    true, gloss:  true, gender: true, lit: true, poskind: true, scriptcode: true, translit: true, senseid: true, transcript: true, tname: true, langcode: true }).extend({ /** Template name */ tname: literal('inherited')    }).passthrough()
+const calqueTemplate       = genericTemplate.pick({ expansion: true, relterm:   true, rellang:   true, alt:    true, gloss:  true, gender: true, lit: true, poskind: true, scriptcode: true, translit: true,                                  tname: true, langcode: true }).extend({ /** Template name */ tname: literal('calque')       }).passthrough()
+const partcalqueTemplate   = genericTemplate.pick({ expansion: true, relterm:   true, rellang:   true, alt:    true, gloss:  true, gender: true, lit: true, poskind: true, scriptcode: true, translit: true,                                  tname: true, langcode: true }).extend({ /** Template name */ tname: literal('partcalque')   }).passthrough()
+const cognateTemplate      = genericTemplate.pick({ expansion: true, relterm:   true, rellang:   true, alt:    true, gloss:  true,               lit: true, poskind: true,                   translit: true,                                  tname: true, langcode: true }).extend({ /** Template name */ tname: literal('cognate')      }).passthrough()
+const rootTemplate         = genericTemplate.pick({ expansion: true, relterms:  true, rellang:   true, alt:    true, gloss:  true,                                                                           senseid: true,                   tname: true, langcode: true }).extend({ /** Template name */ tname: literal('root')         }).passthrough()
+const noncognateTemplate   = genericTemplate.pick({ expansion: true, relterm:   true, rellang:   true, alt:    true, gloss:  true,                 lit: true,                                                                                 tname: true, langcode: true }).extend({ /** Template name */ tname: literal('noncognate')   }).passthrough()
+const clippingTemplate     = genericTemplate.pick({ expansion: true, relterm:   true,                                                                                                                                                         tname: true, langcode: true }).extend({ /** Template name */ tname: literal('clipping')     }).passthrough()
+const doubletTemplate      = genericTemplate.pick({ expansion: true, relterms:  true,                                                                                                                                                         tname: true, langcode: true }).extend({ /** Template name */ tname: literal('doublet')      }).passthrough()
+const blendTemplate        = genericTemplate.pick({ expansion: true, relterms:  true,                                                                                                                                                         tname: true,                }).extend({ /** Template name */ tname: literal('blend')        }).passthrough()
+const piewordTemplate      = genericTemplate.pick({ expansion: true, relterm:   true, rellang:   true,                                                                                                                                        tname: true, langcode: true }).extend({ /** Template name */ tname: literal('pieword')      }).passthrough()
+const taxlinkTemplate      = genericTemplate.pick({ expansion: true, taxon:     true, level:     true, alt:   true,                                                                                                                           tname: true, langcode: true }).extend({ /** Template name */ tname: literal('taxlink')      }).passthrough()
+const taxfmtTemplate       = genericTemplate.pick({ expansion: true, taxon:     true, level:     true, alt:   true,                                                                                                                           tname: true, langcode: true }).extend({ /** Template name */ tname: literal('taxfmt')       }).passthrough()
+const mentionTemplate      = genericTemplate.pick({ expansion: true, target:    true, text:      true, gloss: true,    lit: true,                                                                                                             tname: true, langcode: true }).extend({ /** Template name */ tname: literal('mention')      }).passthrough()
+const glossaryTemplate     = genericTemplate.pick({ expansion: true, target:    true, text:      true,                                                                                                                                        tname: true,                }).extend({ /** Template name */ tname: literal('glossary')     }).passthrough()
+const coinageTemplate      = genericTemplate.pick({ expansion: true, entity:    true,                                                                                                                                                         tname: true, langcode: true }).extend({ /** Template name */ tname: literal('coinage')      }).passthrough()
+const namedforTemplate     = genericTemplate.pick({ expansion: true, entity:    true,                                                                                                                                                         tname: true, langcode: true }).extend({ /** Template name */ tname: literal('namedfor')     }).passthrough()
+const etymonTemplate       = genericTemplate.pick({ expansion: true, senseid:   true, tree: true, translit: true, lit: true,                                                                                                                  tname: true, langcode: true }).extend({ /** Template name */ tname: literal('etymon')       }).passthrough()
+const etymidTemplate       = genericTemplate.pick({ expansion: true, etymid:    true,                                                                                                                                                         tname: true, langcode: true }).extend({ /** Template name */ tname: literal('etymid')       }).passthrough()
+const onomatopoeicTemplate = genericTemplate.pick({ expansion: true, title:     true,                                                                                                                                                         tname: true, langcode: true }).extend({ /** Template name */ tname: literal('onomatopoeic') }).passthrough()
+const qualifierTemplate    = genericTemplate.pick({ expansion: true, qualifier: true, qualifiers: true,                                                                                                                                       tname: true, langcode: true }).extend({ /** Template name */ tname: literal('qualifier')    }).passthrough()
+const abbrevofTemplate     = genericTemplate.pick({ expansion: true, entity:    true, relterm: true, alt: true, gloss: true, scriptcode: true, senseid: true, translit: true, transcript: true, addl: true, cat: true,                        tname: true, langcode: true }).extend({ /** Template name */ tname: literal('abbrevof')     }).passthrough()
+const abbrevTemplate       = genericTemplate.pick({ expansion: true, entity:    true, relterm: true, alt: true, gloss: true, scriptcode: true, senseid: true, translit: true, transcript: true, addl: true, cat: true,                        tname: true, langcode: true }).extend({ /** Template name */ tname: literal('abbrev')        }).passthrough()
+const unknownTemplate      = genericTemplate.pick({ expansion: true,                                                                                                                                                                          tname: true, langcode: true }).extend({ /** Template name */ tname: literal('unknown')      }).passthrough()
+const uncertainTemplate    = genericTemplate.pick({ expansion: true,                                                                                                                                                                          tname: true, langcode: true }).extend({ /** Template name */ tname: literal('uncertain')    }).passthrough()
+const otherTemplate        = genericTemplate.pick({ expansion: true,                                                                                                                                                                          tname: true,                }).extend({ /** Template name */ tname: literal('other')        }).passthrough()
 
-interface SuffixTemplate  extends TY.Bake<TY.Zcasted<typeof suffixTemplate>>  {}
-interface CompoundTemplate extends TY.Bake<TY.Zcasted<typeof compoundTemplate>> {}
-interface GenericTemplate extends TY.Bake<TY.Zcasted<typeof genericTemplate>> {}
-const yy: GenericTemplate = {} as any; const zz = yy?.rellang
-// const yy2: CompoundTemplate = {} as any; const zz2 = yy2?.parts
-const yy2: SuffixTemplate = {} as any; const zz2 = yy2?.suffix
+// interface SuffixTemplate  extends TY.Bake<TY.Zcasted<typeof suffixTemplate>>  {}
+// interface CompoundTemplate extends TY.Bake<TY.Zcasted<typeof compoundTemplate>> {}
+// interface GenericTemplate extends TY.Bake<TY.Zcasted<typeof genericTemplate>> {}
+// const yy: GenericTemplate = {} as any; const zz = yy?.rellang
+// // const yy2: CompoundTemplate = {} as any; const zz2 = yy2?.parts
+// const yy2: SuffixTemplate = {} as any; const zz2 = yy2?.suffix
 
 // const suffixTemplate       = obj({ tname: literal('suffix'),        expansion,         root, suffix,  parts,                    langcode                                                                                                         }).partial().required({ tname: true  })
 // const confixTemplate       = obj({ tname: literal('confix'),        expansion, prefix, root, suffix,  parts,                    langcode                                                                                                         }).partial().required({ tname: true  })
@@ -197,7 +207,7 @@ const etymologyTemplate = cases('tname', [
   suffixTemplate, confixTemplate, prefixTemplate, affixTemplate, surfTemplate, compoundTemplate, clippingTemplate,
   derivedTemplate, borrowedTemplate, inheritedTemplate, calqueTemplate, cognateTemplate, noncognateTemplate,
   rootTemplate, doubletTemplate, blendTemplate, piewordTemplate, coinageTemplate, namedforTemplate,
-  taxlinkTemplate, taxfmtTemplate, mentionTemplate,
+  taxlinkTemplate, taxfmtTemplate, mentionTemplate, abbrevofTemplate, abbrevTemplate,
   glossaryTemplate, etymonTemplate, etymidTemplate, onomatopoeicTemplate, qualifierTemplate, unknownTemplate,
   uncertainTemplate, otherTemplate,
 ])
@@ -214,6 +224,7 @@ const etymologyBag = obj({
   borrowed:     arr(borrowedTemplate),
   inherited:    arr(inheritedTemplate),
   calque:       arr(calqueTemplate),
+  partcalque:   arr(partcalqueTemplate),
   cognate:      arr(cognateTemplate),
   noncognate:   arr(noncognateTemplate),
   root:         arr(rootTemplate),
@@ -233,6 +244,8 @@ const etymologyBag = obj({
   glossary:     arr(glossaryTemplate),
   uncertain:    arr(uncertainTemplate),
   other:        arr(otherTemplate),
+  abbrev:       arr(abbrevTemplate),
+  abbrevof:     arr(abbrevofTemplate),
 } satisfies Record<WktTemplateName, FW.ZodTypeAny>).partial().strict()
 
 export const etymologyBagShape = _.mapValues(etymologyBag._def.shape(), (val) => FW.CK.summarizeCheckerDef(val._def.innerType)) as Record<WktTemplateName, FW.CK.CheckerSummary>
@@ -256,7 +269,7 @@ export const wktExample = obj({
 
 export const attestation  = obj({ date:      longstr, refs: arr(obj({ refn: longstr, text: longstr }).strict().partial()) }).partial({ refs: true }).strict()
 export const link         = obj({ target:    longstr, text: longstr }).strict()
-export const hyphenation  = obj({ parts:     arr(midstr), tags }).strict()
+export const hyphenation  = obj({ segs:      arr(midstr), tags }).strict()
 export const abbreviation = obj({ abbrev:    longstr, sense: line1k.optional() }).strict()
 const anyurl  = midstr.regex(/^[^\/]+$/).or(urlstr)
 const oggurl = anyurl.pipe(coerce.string().regex(/^[\("]?\w+.*\.(ogg|oga)$/))
@@ -296,12 +309,14 @@ export const descterm = obj({
   /** Label for the term             */ label:        midstr,
   /** Arbitrary qualifier            */ qualifier:    line1k,
   /** Borrowed                       */ bor:          loosebool,
+  /** Orthographic borrowing         */ obor:         loosebool,
   /** Learned borrowing              */ learned:      loosebool,
   /** Semi-learned borrowing         */ semilearned:  loosebool,
   /** Calque                         */ calque:       loosebool,
   /** Partial calque                 */ partcalque:   loosebool,
   /** Semantic loan                  */ semloan:      loosebool,
   /** Provenance is uncertain.       */ uncertain:    loosebool,
+  /** Inherited                      */ inh:          loosebool,
   /** Derived via morpheme (affix) or analogical leveling. (orig called "der")
    *                                 */ morph:        loosebool,
 }).partial().required({ relterm: true, langcode: true }).strict()
@@ -317,7 +332,7 @@ export const wktSense = obj({
   senseid:          arr(senseid),
   glosses:          arr(gloss),
   raw_glosses:      arr(gloss),
-  wikipedia:        arr(anyurl),
+  wikipedia:        arr(midstr),
   qualifier:        longstr,
   topics:           arr(midstr),
   head_nr:          posint,
@@ -349,7 +364,7 @@ export const wktLemma = obj({
   categories,
   forms:            arr(wktWordform),
   etymology,
-  wikipedia:        arr(anyurl),
+  wikipedia:        arr(longstr),
   origtitle:        midstr.optional(),
   source,
   //

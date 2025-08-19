@@ -37,20 +37,22 @@ interface RawDescendant   extends Omit<WKT.WktDescendant,   'tree'>            {
 interface RawAbbreviation extends Omit<WKT.WktAbbreviation, 'abbrev'>          { word: string }
 interface RawNym          extends Omit<WKT.WktNym,          'relterm'>         { word?: string }
 interface RawAttestation  extends Omit<WKT.WktAttestation,  'refs' >           { references: WKT.WktAttestation["refs"] }
-interface RawHyphenation  extends WKT.WktHyphenation                           {}
+interface RawHyphenation  extends Omit<WKT.WktHyphenation,  'segs'>            { parts: string[] }
 interface RawForm         extends WKT.WktForm                                  {}
 interface RawLink         extends Omit<WKT.WktLink,         'target' | 'text'> { 0: string, 1: string }
 interface RawSoundlink    extends Omit<WKT.WktSoundlink,    'audurl' | 'oggurl' | 'mp3url'> { audio: string, ogg_url: string, mp3_url: string }
 
 /** Adapt wiktionary part of speech labels to our poskinds */
 const WktPoskindFixes: Record<string, TY.Poskind> = {
-  adv_phrase: 'advph', prep_phrase: 'prepph', contraction: 'cont', article: 'art', character: 'char',
+  adv_phrase: 'advph', prep_phrase: 'prepph', contraction: 'cont', article: 'art', character: 'char', adjective: 'adj',
+  reduplication: 'noun',
+  v: 'verb', n: 'noun', npl: 'noun', pl: 'noun',
 }
 /** corrects informal langcodes */
 const LangcodeFixes = {
   'ML.': 'la-x-mid', 'NL.': 'la-x-neo', 'LL.': 'la-x-late', 'EL.': 'la-x-med', 'VL.': 'la-x-vul', 'CL.': 'la-x-eccl',
-  'cmn-wadegiles': 'cmn-Latn-wadegiles', 'cmn-pinyin': 'cmn-Latn-pinyin', 'zh-postal': 'zh-Latn-pinyin',
-  'cmn-tongyong': 'cmn-Latn-tongyong',
+  'cmn-wadegiles': 'cmn-Latn-wadegiles', 'cmn-pinyin': 'cmn-Latn-pinyin', 'zh-postal': 'zh-Latn-pinyin', 'zh-hans': 'zh-Latn-hans',
+  'cmn-tongyong': 'cmn-Latn-tongyong', 'pmo.': 'pmo', 'mo.': 'mo',
 }
 function lutFixer<VT>(lut: Record<string, VT>, val: VT): NonNullable<VT> {
   return (lut[val as keyof typeof lut] ?? val) as NonNullable<VT>
@@ -70,11 +72,11 @@ export async function *loadRawWiktionary(size: 'full' | 'some' | 'most') {
     const headword     = scrubString(rawWord, raw)!
     const poskind      = lutFixer(WktPoskindFixes, posRaw) as TY.Poskind
     const nyms         = extractNyms({ hypernyms, hyponyms, synonyms, antonyms, meronyms, holonyms, troponyms, coordterms, derived, related }, headword)
-    const etymologyArr = _.compact(_.map(etymology_templates, (rawTemplate) => extractTemplate(rawTemplate, headword)))
+    const etymologyArr = _.compact(_.map(etymology_templates, (rawTemplate) => extractTemplate(rawTemplate, { headword })))
     const etymologies  = _.groupBy(etymologyArr, 'tname')
     const wordform: WKT.WktLemma = UF.scrubVoid({
       headword, poskind, langcode,
-      wikipedia:          scrubStrings(wikipedia, headword),
+      wikipedia:          scrubStrings(wikipedia, { headword }),
       abbreviations:      _.compact(_.map(abbreviations, (rawAbbreviation) => extractAbbreviation(rawAbbreviation as RawAbbreviation, headword))),
       senses:    UF.arrNZ(_.compact(_.map(senses,        (rawSense)        => extractSense(rawSense               as RawSense,        headword)))),
       hyphenations:       _.compact(_.map(hyphenations,  (rawHyphenation)  => extractHyphenation(rawHyphenation,                      headword))),
@@ -83,12 +85,12 @@ export async function *loadRawWiktionary(size: 'full' | 'some' | 'most') {
       descendants:        _.compact(_.map(descendants,   (rawDescendant)   => extractDescendant(rawDescendant     as RawDescendant,   headword))),
       instances:          _.compact(_.map(instances,     (rawInstance)     => extractInstance(rawInstance         as RawInstance,     headword))),
       forms:              _.compact(_.map(forms,         (rawForm)         => extractForm(rawForm                 as RawForm,         headword))),
-      categories:         scrubStrings(categories, headword),
+      categories:         scrubStrings(categories, { headword }),
       ...nyms,
     })
     if (! _.isEmpty(_maintemplates)) { _.each(_maintemplates, (template) => bumpUnknownKeys(template, 'head_templates')) }
     if (etymology_text || _.isFinite(etymology_number) || (! _.isEmpty(etymology_templates))) {
-      wordform.etymology = UF.scrubNil({ text: scrubText(etymology_text, headword), number: etymology_number, templates: etymologies })
+      wordform.etymology = UF.scrubNil({ text: scrubText(etymology_text, { headword }), number: etymology_number, templates: etymologies })
     }
     // bump(wordform, 'wordform', 'poskind')
     const report = WKT.wktLemma.report(wordform)
@@ -120,24 +122,25 @@ function extractHyphenation(raw: RawHyphenation, headword: TY.Word): WKT.WktHyph
   const tmi = { ...raw, headword }
   const { parts:_p, tags, ...rest } = raw
   bumpUnknownKeys(rest, 'hyphenation')
-  if (_.isEmpty(raw.parts)) { console.warn('Hyphenation without parts', tmi); return undefined }
-  return UF.scrubVoid({ parts: scrubStrings(raw.parts, tmi)!, tags: scrubStrings(tags, tmi) })
+  if (_.isEmpty(raw.parts)) { return undefined }
+  return UF.scrubVoid({ segs: scrubStrings(raw.parts, tmi)!, tags: scrubStrings(tags, tmi) })
 }
 function extractAbbreviation(raw: RawAbbreviation, headword: TY.Word): WKT.WktAbbreviation | undefined {
   const { word:rawAbbrev, sense:rawSense, ...rest } = raw
   bumpUnknownKeys(rest, 'abbreviation')
-  return UF.scrubVoid({ abbrev: scrubString(rawAbbrev, headword)!, sense: scrubString(rawSense, headword)! })
+  return UF.scrubVoid({ abbrev: scrubString(rawAbbrev, { headword })!, sense: scrubString(rawSense, { headword })! })
 }
 function extractInstance(raw: RawInstance, headword: TY.Word): WKT.WktInstance | undefined {
   const { word:rawWord, tags, source, extra, ...rest } = raw
   bumpUnknownKeys(rest, 'instances')
   return UF.scrubVoid({
-    relterm: scrubString(rawWord, headword)!, tags: scrubStrings(tags, headword), source: scrubString(source, headword), extra: scrubString(extra, headword),
+    relterm: scrubString(rawWord, { headword })!, tags: scrubStrings(tags, { headword }), source: scrubString(source, { headword }), extra: scrubString(extra, { headword }),
   })
 }
 
 const TemplateFieldnameFixes: Record<string, string> = {
-  t:           'gloss',    g:       'gender',     pos:      'poskind',     id:          'senseid',     sc:          'scriptcode',
+  gloss:       'gloss',    t:       'gloss',      g:       'gender',     pos:      'poskind',
+  id:          'senseid',  sc:      'scriptcode',
   tr:          'translit', ts:      'transcript', lit:      'lit',         lb:          'label',       qq:          'qualifier',   q:   'qualifier',
   bor:         'bor',      lbor:    'learned',    slb:      'semilearned', otherforms:  'otherforms',  tree:        'tree',
   cal:         'calque',   clq:     'calque',     calq:     'calque',      pclq:        'partcalque',  pcalq:       'partcalque',  publisher:   'publisher',
@@ -146,14 +149,19 @@ const TemplateFieldnameFixes: Record<string, string> = {
   date:        'date',     died:    'died',       flavor:   'flavor',      head:        'head',
   in:          'in',       isbn:    'isbn',       location: 'location',    nat:         'nat',
   nationality: 'nat',      nobycat: 'nobycat',    occ:      'occ',         occupation:  'occ',
-  passage:     'passage',  short:   'short',      sort:     'sort',        title:       'title',
-  type:        'type',     uc:      'uc',         wplink:   'wplink',      year:        'year',
-  nolb:        'skip',     sclb:    'skip',       alts:     'skip',        noalts:      'skip',
-  nocap:       'skip',     notext:  'skip',       nocat:    'skip',
+  passage:     'passage',  short:   'short',      sort:     'sort',        title:       'title',     calque: 'calque',
+  type:        'type',     uc:      'uc',         wplink:   'wplink',      year:        'year',      sl:    'sl',   wp: 'wp',
+  nolb:        'skip',     sclb:    'skip',       alts:     'skip',        noalts:      'skip',      nobox: 'skip', noderived: 'noderived',
+  nocap:       'skip',     notext:  'skip',       nocat:    'skip',        sourceconj:  'skip',      text: 'text',
+  inh:         'inh',      exnihilo: 'exnihilo',  group:    'group',       name:        'name',      ref:  'ref',
+  obor:        'obor',     by:       'by',
 }
+const partsFieldnames = [
+  'alt', 'gloss', 'poskind', 'senseid', 'gender', 'langcode', 'translit', 'qualifier', 'lit',
+]
 const TemplateFieldnameTargets = _.invert(TemplateFieldnameFixes)
 const PositionalFieldnameRE = /^(\d+)$/
-const NumberedFieldnameRE = /^(\w+)(\d+)$/
+const NumberedFieldnameRE   = /^(\w+)(\d+)$/
 /** make fieldnames consistent: maps eg tr1 → translit1 or w -> wikipedia */
 function fixTemplateFieldnames(bag: TY.AnyBag, _tmi: any) {
   const result = {} as TY.AnyBag
@@ -169,13 +177,17 @@ function fixTemplateFieldnames(bag: TY.AnyBag, _tmi: any) {
   }
   return result
 }
-function remapTemplateFields(raw: TY.AnyBag, tmi: any, { mainkey = 'relterm', offset = 1 }: { mainkey?: string, offset?: number } = {}): TY.AnyBag {
+type RemapTemplateFieldsOpts = { mainkey?: string, offset?: number, onlyPositionals?: boolean, stripPositionals?: boolean, validate?: boolean }
+function remapTemplateFields<VT extends object>(raw: TY.AnyBag, tmi: any, { mainkey = 'relterm', offset = 1, onlyPositionals = false, stripPositionals = true, validate = true }: RemapTemplateFieldsOpts = {}): { parts: VT[], all: VT } {
   const parts = [] as TY.AnyBag[]
-  const all   = {} as TY.AnyBag
-  for (const [rawkey, value] of Object.entries(raw)) {
+  const { occ, occ1, occ2, occ3, occ4, occ5, cat, cat1, cat2, cat3, cat4, cat5, ...rest } = raw
+  const occs = _.compact(_.flatMap([occ, occ1, occ2, occ3, occ4, occ5], (str) => (str?.split(/,\s*/g) || [])))
+  const cats = _.compact(_.flatMap([cat, cat1, cat2, cat3, cat4, cat5], (str) => (str?.split(/,\s*/g) || [])))
+  const all  = UF.scrubVoid({ occ:  occs.join(', '), cat: cats.join(', '), occs, cats }) as TY.AnyBag
+  for (const [rawkey, value] of Object.entries(rest)) {
     if ((rawkey === '1') && (offset === 1)) { all.langcode = value; continue }
     if (PositionalFieldnameRE.test(rawkey)) {
-      const seq = Number(rawkey) - offset - 1; parts[seq] ||= {}; parts[seq][mainkey] = value; continue
+      const seq = Number(rawkey) - offset - 1; parts[seq] ||= {}; parts[seq][mainkey] = scrubString(value, tmi); continue
     }
     const mm = NumberedFieldnameRE.exec(rawkey)
     if (mm) {
@@ -183,27 +195,33 @@ function remapTemplateFields(raw: TY.AnyBag, tmi: any, { mainkey = 'relterm', of
       if   (key === 'skip')                   { continue }
       if   (! TemplateFieldnameFixes[mm[1]!]) { console.warn(`Unknown template fieldname`, mm[1], key, tmi); continue }
       const seq = Number(mm[2]) - offset - 1; parts[seq] ||= {}
+      if ((onlyPositionals) && (! partsFieldnames.includes(key))) { console.warn(`Unknown numbered fieldname`, rawkey, key, tmi); continue }
       parts[seq][key] = value
+      if (key === 'poskind') { parts[seq][key] = lutFixer(WktPoskindFixes, value) }
       continue
     }
     if (! (TemplateFieldnameFixes[rawkey] || TemplateFieldnameTargets[rawkey])) { console.warn(`Unknown template fieldname`, rawkey, tmi); continue }
     const key = lutFixer(TemplateFieldnameFixes, rawkey)
     if (key === 'skip') { continue }
     all[key] = value
+    if (key === 'poskind') { all[key] = lutFixer(WktPoskindFixes, value) }
   }
-  _.each(parts, (part, seq) => { if (! part) { console.warn(`[[remapTemplateFields]] gap in part ${seq}`, parts, seq, tmi); parts[seq] = {} } })
-  _.each(all, (value, key) => {
+  _.each(parts, (part, seq) => { if (validate && (! part)) { console.warn(`[[remapTemplateFields]] gap in part ${seq}`, parts, seq, tmi) }; parts[seq] ||= {} })
+  _.each(all, (value, key) => { // stamp fields that apply to all parts onto each part, then delete from all
+    if (onlyPositionals && (! partsFieldnames.includes(key))) { return }
     for (const part of parts) { part[key] ||= value }
+    if (stripPositionals)     { delete all[key] }
   })
-  _.each(parts, (part) => { if (part.langcode) { part.langcode = scrubLangcode(part.langcode, tmi) } })
-  return _.filter(_.map(parts, (part) => UF.scrubVoid(part)), (part) => (part[mainkey]))
+  _.each(parts, (part) => { if (part.langcode) { part.langcode = scrubLangcode(part.langcode, tmi, validate) } })
+  const resultParts = _.filter(_.map(parts, (part) => UF.scrubVoid(part)), (part) => (part[mainkey]))
+  return { parts: resultParts as VT[], all: all as VT }
 }
 
 function extractDesctree(raw: TY.AnyBag, headword: TY.Word): WKT.WktDesctree | undefined {
   // bump(raw, 'descendants-template', 'name')
   if (! /^(desc|desctree)$/.test(raw.name)) { return undefined }
   const { name, expansion, args, ...rest } = raw; bumpUnknownKeys(rest, 'descendant')
-  const rawparts = remapTemplateFields(args, raw, { mainkey: 'relterm', offset: 1 }) as WKT.WktDescterm[]
+  const { parts:rawparts } = remapTemplateFields<WKT.WktDescterm>(args, raw, { mainkey: 'relterm', offset: 1 })
   const partsReports = _.reject(_.map(rawparts, (part) => WKT.descterm.report(part)), 'ok')
   if (! _.isEmpty(partsReports)) {
     console.warn('[[extractDesctree]]', headword, name, expansion, args, rest, ...(rawparts || []), ...(partsReports || []));
@@ -217,7 +235,7 @@ function extractDescendant(raw: RawDescendant, headword: TY.Word): WKT.WktDescen
   bumpUnknownKeys(rest, 'descendants')
   const desctrees = _.compact(_.map(templates, (template) => extractDesctree(template, headword)))
   // if (raw.templates.length >= 1) { console.log('[[extractDescendant]]', headword, text, depth, rest, '\n', ...(raw.templates || []), '\n', ...(desctrees || [])) }
-  const result: WKT.WktDescendant = { text: scrubString(text, headword)!, depth, desctrees }
+  const result: WKT.WktDescendant = { text: scrubString(text, { headword })!, depth, desctrees }
   return UF.scrubVoid(result)
 }
 function extractLink(raw: RawLink, _headword: TY.Word): WKT.WktLink | undefined {
@@ -235,10 +253,10 @@ function extractLink(raw: RawLink, _headword: TY.Word): WKT.WktLink | undefined 
 function extractSound(raw: RawSoundlink, headword: TY.Word): WKT.WktSoundlink | undefined {
   const { ipa, rhymes, homophone, note, other, enpr, text, audio:audurl, ogg_url:oggurl, mp3_url:mp3url, tags, topics, ...rest } = raw
   bumpUnknownKeys(rest, 'soundlink')
-  const stringFields = _.mapValues({ ipa, rhymes, homophone, enpr, note, other, text }, (str) => scrubString(str, headword))
+  const stringFields = _.mapValues({ ipa, rhymes, homophone, enpr, note, other, text }, (str) => scrubString(str, { headword }))
   const urlFields    = _.mapValues({ audurl, oggurl, mp3url }, (url) => scrubSimpleURL(url, headword))
   return UF.scrubVoid({
-    ...stringFields, ...urlFields, tags: scrubStrings(tags, headword), topics: scrubStrings(topics, headword),
+    ...stringFields, ...urlFields, tags: scrubStrings(tags, { headword }), topics: scrubStrings(topics, { headword }),
   })
 }
 function scrubSimpleURL(raw: TY.StringMaybe, tmi: any): string | undefined {
@@ -303,10 +321,10 @@ function extractSense(rawSense: RawSense, headword: TY.Word): WKT.WktSense {
 type RawExample = WKT.WktExample & { bold_text_offsets: [number, number][], bold_english_offsets: [number, number][], bold_roman_offsets: [number, number][], literal_meaning: string }
 function extractExample(raw: RawExample, headword: TY.Word): WKT.WktExample | undefined {
   const { text:rawText, type:rawType, ref:rawRef, bold_text_offsets, bold_english_offsets, bold_roman_offsets, literal_meaning,...rest } = raw
-  const ref     = scrubString(rawRef,      headword)
-  const english = scrubString(raw.english, headword)
-  const roman   = scrubString(raw.roman,   headword)
-  const text    = scrubText(rawText || english || ref, headword)
+  const ref     = scrubString(rawRef,      { headword })
+  const english = scrubString(raw.english, { headword })
+  const roman   = scrubString(raw.roman,   { headword })
+  const text    = scrubText(rawText || english || ref, { headword })
   if (! text) { return undefined }
   const highlights: WKT.WktExample['highlights'] = {}
   if (bold_text_offsets)    { highlights.text    = bold_text_offsets }
@@ -335,15 +353,17 @@ function extractNym(rawNym: RawNym, tmi: any): WKT.WktNym | undefined {
   return UF.scrubVoid({ relterm, ...stringFields, ...stringArrays, urls })
 }
 
-function scrubLangcode(raw: string, tmi: any): string {
+function scrubLangcode(raw: string, tmi: any, validate = true): string {
   const str      = lutFixer(LangcodeFixes, scrubString(raw, tmi))!
+  if (! validate) { return str }
   const report   = WKT.langcode.report(str, tmi)
   if (str && (! report.ok)) { console.warn('Unknown language code', tmi, str, report) }
   return str
 }
-function extractTemplate(rawTemplate: Record<string, any>, tmiIn: any): Record<string, any> | undefined {
+function extractTemplate(rawTemplate: Record<string, any>, tmiIn: TY.AnyBag): Record<string, any> | undefined {
   const tmi = { ...tmiIn, ...rawTemplate }
-  const result = _.omitBy(_extractTemplate(rawTemplate, tmi), _.isUndefined)
+  const { minargs, ...result } = _.omitBy(_extractTemplate(rawTemplate, tmi), _.isUndefined)
+  bumpUnknownKeys(minargs, 'etemp-minargs')
   if    (! result?.tname)  { return undefined }
   const { gloss, relterm, rellang, langcode, ...rest } = result; _.noop(rest)
   if (result.gloss)     { result.gloss     = scrubString(result.gloss,      tmi) }
@@ -353,58 +373,71 @@ function extractTemplate(rawTemplate: Record<string, any>, tmiIn: any): Record<s
   return UF.scrubVoid(result)
 }
 
+const stringFields = ['alt', 'gloss', 'poskind', 'senseid', 'gender', 'langcode', 'translit', 'qualifier', 'lit']
+const DERIVED_RE = /^(derived|borrowed|inherited|calque|partcalque)$/
+function _extractTemplate(rawTemplate: Record<string, any>, tmi: TY.AnyBag): Record<string, any> | undefined {
 
-const DERIVED_RE = /^(derived|borrowed|inherited|calque)$/
-function _extractTemplate(rawTemplate: Record<string, any>, word: TY.Word): Record<string, any> | undefined {
   const { name:_n, expansion:rawExpansion, args: { 1:langcode, 1:p1, 2:p2, 3:p3, 4:p4, 5:p5, 6:p6, 7:p7, 8:p8, 9:p9, 10:p10, 11:p11, 12:p12, 13:p13, 14:p14, 15:p15, 16:p16, 17:p17, 18:p18, 19:p19, 20:p20, t, ...rawargs } } = rawTemplate
   const args = fixTemplateFieldnames(rawargs, rawTemplate)
-  const expansion = scrubString(rawExpansion, word)
-  const { alt, gloss } = rawTemplate
+  _.each(stringFields, (key) => { if (args[key]) { args[key] = scrubString(args[key], tmi) } })
+  const expansion = scrubString(rawExpansion, tmi)
+  // const { alt, gloss } = rawTemplate
+  function alt(pn: string)   { return pn ??      rawTemplate.alt }
+  function gl(pn?: string)   { return pn ?? t ?? rawTemplate.gloss ?? rawTemplate.gloss1 }
   const origlang = 'en'
-  const positionals = _.reject([p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20].map((str) => scrubString(str, word)), _.isUndefined)
-  const tname = (templateNameAliases[rawTemplate.name] ?? rawTemplate.name) as WKT.WktTemplateName
-  // if (/^(\+(?:suf|confix|af|pre|com\+?|con|univ))$/.test(lng)) { return undefined }
+  const positionals = _.reject([p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20].map((str) => scrubString(str, tmi)), _.isUndefined)
+  const tname = (templateNameAliases[rawTemplate.name] ?? rawTemplate.name) as (WKT.WktTemplateName | 'skip')
+  if (! _.invert(templateNameAliases)[tname]) { bumpBucketCount('etemp-unknown', rawTemplate.name); return undefined }
+  if (tname === 'skip') { bumpBucketCount('etemp-skip', rawTemplate.name); return undefined }
   //
   if (rawTemplate.name === 'uder') { args.flavor = 'undefined derivation' }
   if (rawTemplate.name === 'ubor') { args.flavor = 'unadapted borrowing' }
   if (rawTemplate.name === 'lbor') { args.flavor = 'learned borrowing' }
-  const otherwise = { tname, expansion, ...rawTemplate.args, ...args } as Record<string, any>
+  const p2on = positionals.slice(0)
   const p3on = positionals.slice(1)
-  const { senseid, tree, translit, lit, alt1, gloss1, gloss2, poskind1, poskind2 } = args
-  // console.log('[[extractTemplate]]', UF.scrubVoid({ senseid, tree, translit, lit, alt1, gloss1, gloss2, poskind1, poskind2 }))
+  const pie = 'ine-pro'
+  function getParts(offset: number,  opts: RemapTemplateFieldsOpts = {}) { const { parts } = remapTemplateFields(rawTemplate.args, { tname, p1, p2, ...tmi }, { mainkey: 'relterm', offset, onlyPositionals: true, stripPositionals: false,                      ...opts }); return parts }
+  function getOthers(offset: number, opts: RemapTemplateFieldsOpts = {}) { const { all   } = remapTemplateFields(rawTemplate.args, { tname, p1, p2, ...tmi }, { mainkey: 'relterm', offset, onlyPositionals: true, stripPositionals: false, validate: false, ...opts }); return all }
+  const { senseid, translit, transcript, scriptcode, cat, tree, lit, poskind:rawPoskind, ...minargs } = args; _.noop(minargs)
+  const poskind = lutFixer(WktPoskindFixes, scrubString(rawPoskind, tmi))
   _.each(args, (_val, key) => { if (TemplateFieldnameTargets[key.replace(/(\d+)$/, '')]) { return }; bump(args, 'etemp-arg', key, 'arg') })
-  _.each(args, (_val, key) => {
+  _.each(getOthers(1), (_val, key) => {
     if (WKT.etymologyBagShape[tname]?.ofShape?.[key]) { return }
+    if (key === 'langcode') { return }
     bump(args, 'etemp-' + tname + '-arg', key, 'arg')
   })
-  // const parts = remapTemplateFields(args, rawTemplate, { mainkey: 'relterm', offset: 1 }) as WKT.WktDescterm[]
-  //
-  if (DERIVED_RE.test(tname))                    { return { tname, expansion, rellang: p2,  relterm: p3,    alt: alt ?? p4, gloss: gloss ?? t ?? p5, langcode,           ...args } }
-  if (tname === 'cognate')                       { return { tname, expansion, rellang: p1,  relterm: p2,    alt: alt ?? p3, gloss: gloss ?? t ?? p4, langcode: origlang, ...args } }
-  if (tname === 'noncognate')                    { return { tname, expansion, rellang: p1,  relterm: p2,    alt: alt ?? p3, gloss: gloss ?? t ?? p4, langcode: origlang, ...args } }
-  if (tname === 'root')                          { return { tname, expansion, rellang: p2,  relterms: p3on, alt: alt ?? p4, gloss: gloss ?? t ?? p5, langcode,           ...args } }
-  if (/\+/.test(langcode) && (tname === 'surf')) { return { tname, expansion,               relterm: p3,           parts: p3on,                      langcode: p2,       ...args } }
-  if (/^(affix|surf)$/.test(tname))              { return { tname, expansion,                                      parts: positionals,               langcode,           ...args } }
-  if (tname === 'suffix')                        { return { tname, expansion,             root:   p2, suffix: p3,  parts: positionals,               langcode,           ...args } }
-  if (tname === 'prefix')                        { return { tname, expansion, prefix: p2, root:   p3,              parts: positionals,               langcode,           ...args } }
-  if (tname === 'confix')                        { return { tname, expansion, prefix: p2, root:   p3, suffix: p4,  parts: positionals,               langcode,           ...args } }
-  if (tname === 'compound')                      { return { tname, expansion,                                      parts: positionals,               langcode,           ...args } }
-  if (tname === 'clipping')                      { return { tname, expansion,                                      relterm: p2,                      langcode,           ...args } }
-  if (tname === 'doublet')                       { return { tname, expansion,                     relterms: positionals,                             langcode,           ...args } }
-  if (tname === 'blend')                         { return { tname, expansion,                     relterms: positionals,                             langcode,           ...args } }
-  if (tname === 'pieword')                       { return { tname, expansion, rellang: 'ine-pro', relterm: p2,                                       langcode,           ...args } }
-  if (tname === 'coinage')                       { return { tname, expansion,                entity:   p2,                                           langcode,           ...args } }
-  if (tname === 'namedfor')                      { return { tname, expansion,                entity:   p2,                                           langcode,           ...args } }
-  if (tname === 'mention')                       { return { tname, expansion, target:    p2, text:   p3 || p2, gloss: rawTemplate.gloss ?? t ?? p4,  langcode,           ...args } }
-  if (tname === 'glossary')                      { return { tname, expansion, target:    p1, text:   p2 || p1,                                                           ...args } }
-  if (tname === 'etymon')                        { return { tname, expansion,                                                                        langcode,           ...args, senseid, tree, translit, lit, alt1, gloss1, gloss2, poskind1, poskind2 } }
-  if (tname === 'etymid')                        { return { tname, expansion,                etymid:   p2,                                           langcode,           ...args } }
-  if (tname === 'onomatopoeic')                  { return { tname, expansion,                                                                        langcode,           ...args } }
-  if (tname === 'qualifier')                     { return { tname, expansion,            p1, qualifier: p2, qualifiers: positionals,                                     ...args } }
-  if (/^(taxlink|taxfmt)$/.test(tname))          { return { tname, expansion, taxon:     p1, level:    p2, alt:      p3,                                                 ...args } }
-  if (tname === 'unknown')                       { return { tname, expansion,                                                                                            ...args } }
-  if (tname === 'uncertain')                     { return { tname, expansion,                                                                                            ...args } }
-  return { ...otherwise, tname: 'other' }
+  if (/\+/.test(langcode) && (tname === 'surf')) { return { tname, expansion, ...args,                relterm:  p3, relterms: p3on, parts: getParts(2, { validate: false }),                    langcode: p2,        } }
+  if (/^(affix|surf)$/.test(tname))              { return { tname, expansion, ...args,                                              parts: getParts(1),  senseid,                gloss:  gl(),   langcode,            } }
+  if (tname === 'suffix')                        { return { tname, expansion, ...args,             root:   p2, suffix: p3,          parts: getParts(1),                                          langcode,            } }
+  if (tname === 'prefix')                        { return { tname, expansion, ...args, prefix: p2, root:   p3,                      parts: getParts(1),                                          langcode,            } }
+  if (tname === 'confix')                        { return { tname, expansion, ...args, prefix: p2, root:   p3, suffix: p4,          parts: getParts(1),                                          langcode,            } }
+  if (tname === 'compound')                      { return { tname, expansion, ...args,                                              parts: getParts(1),                                          langcode,            } }
+  if (tname === 'doublet')                       { return { tname, expansion, ...args,                              relterms: p2on,                                                              langcode,            } }
+  if (tname === 'blend')                         { return { tname, expansion, ...args,                              relterms: p2on,                                                              langcode,            } }
+  if (tname === 'root')                          { return { tname, expansion, ...args, rellang: p2,                 relterms: p3on,                                 alt: alt(p4), gloss: gl(p5), langcode,            } }
+  if (DERIVED_RE.test(tname))                    { return { tname, expansion, ...args, rellang: p2,   relterm:  p3, lit, poskind, scriptcode,                       alt: alt(p4), gloss: gl(p5), langcode,            } }
+  if (tname === 'cognate')                       { return { tname, expansion, ...args, rellang: p1,   relterm:  p2,                                                 alt: alt(p3), gloss: gl(p4), langcode: origlang,  } }
+  if (tname === 'noncognate')                    { return { tname, expansion, ...args, rellang: p1,   relterm:  p2,                                                 alt: alt(p3), gloss: gl(p4), langcode: origlang,  } }
+  if (tname === 'abbrev')                        { return { tname, expansion, ...args, rellang: p1,   relterm:  p2, senseid, translit, transcript, scriptcode, cat, alt: alt(p3), gloss: gl(p4), langcode: origlang,  } }
+  if (tname === 'abbrevof')                      { return { tname, expansion, ...args, rellang: p1,   relterm:  p2, senseid, translit, transcript, scriptcode, cat, alt: alt(p3), gloss: gl(p4), langcode: origlang,  } }
+  if (tname === 'clipping')                      { return { tname, expansion, ...args,                relterm:  p2,                                                                              langcode,            } }
+  if (tname === 'pieword')                       { return { tname, expansion, ...args, rellang: pie,  relterm:  p2,                                                                              langcode,            } }
+  if (tname === 'coinage')                       { return { tname, expansion, ...args,                entity:   p2,                                                                              langcode,            } }
+  if (tname === 'namedfor')                      { return { tname, expansion, ...args,                entity:   p2,                                                                              langcode,            } }
+  if (tname === 'mention')                       { return { tname, expansion, ...args, target:    p2, text:   p3 || p2,                                                           gloss: gl(p4), langcode,            } }
+  if (tname === 'glossary')                      { return { tname, expansion, ...args, target:    p1, text:   p2 || p1,                                                                                               } }
+  if (tname === 'qualifier')                     { return { tname, expansion, ...args,                qualifier: p1, qualifiers: [p1, ...positionals],                                                                } }
+  if (/^(taxlink|taxfmt)$/.test(tname))          { return { tname, expansion, ...args, taxon:     p1, level:     p2, alt:      p3,                                                                                    } }
+  if (tname === 'etymid')                        { return { tname, expansion, ...args,                etymid:    p2, senseid, tree, translit, lit,                                                langcode,           } }
+  if (tname === 'onomatopoeic')                  { return { tname, expansion, ...args,                                                                                                            langcode,           } }
+  if (tname === 'etymon')                        { return { tname, expansion, ...args,                                                                                                            langcode,           } }
+  if (tname === 'unknown')                       { return { tname, expansion, ...args,                                                                                                                                } }
+  if (tname === 'uncertain')                     { return { tname, expansion, ...args,                                                                                                                                } }
+  if (tname === 'other')                         { return { tname, expansion, origname: rawTemplate.name, ...fixTemplateFieldnames(rawTemplate.args, rawTemplate) } }
+  // console.warn('Unknown template', rawTemplate.name, tname, rawTemplate)
+  bumpBucketCount('etemp-unknown', rawTemplate.name)
+  return undefined
+  // return { ...otherwise, tname: 'other', [tname]: true }
 }
 
 export const Bucket = { counts: {} } as TY.Bag<TY.Bag<number>>
@@ -424,16 +457,19 @@ function bumpUnknownKeys(obj: TY.AnyBag, bucket: string) {
 function bumpCount(bucket: string) {
   Bucket.counts ||= {}; Bucket.counts[bucket] ||= 0; Bucket.counts[bucket]++
 }
+function bumpBucketCount(bucket: string, key: string) {
+  Bucket[bucket] ||= {}; Bucket[bucket][key] ||= 0; Bucket[bucket][key]++
+}
 
-function scrubString(raw: TY.StringMaybe, tmi: any): string | undefined {
+function scrubString(raw: TY.StringMaybe, tmi: TY.AnyBag): string | undefined {
   return scrubText(raw, tmi)?.replaceAll(/[\t\n]+/g, ' ')
 }
-function scrubStrings(raw: TY.StringMaybe[] | undefined, tmi: any): string[] | undefined {
+function scrubStrings(raw: TY.StringMaybe[] | undefined, tmi: TY.AnyBag): string[] | undefined {
   if (! raw) { return raw }
   if (! _.isArray(raw)) { console.warn('scrubStrings: not an array', raw, tmi); return undefined }
   return _.compact(_.map(raw, (str) => scrubString(str, tmi)))
 }
-function scrubText(raw: TY.StringMaybe, tmi: any): string | undefined {
+function scrubText(raw: TY.StringMaybe, tmi: TY.AnyBag): string | undefined {
   if (! raw) { return raw ?? undefined }
   if (! _.isString(raw)) { console.warn('scrubText: not a string', raw, tmi); return undefined }
   // const result = raw.replaceAll(/[\p{Cc}\x90-\x9F]+/gu, ' ')
