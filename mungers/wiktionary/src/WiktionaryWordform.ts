@@ -1,7 +1,6 @@
 import      _                                /**/ from 'lodash'
 import      * as FW                               from '@freeword/meta'
 import type * as TY                               from './types/CoreTypes.ts'
-// import      * as ZZ                               from 'zod'
 
 export class WiktionaryWordform extends FW.Wordform implements WktLemma {
   //
@@ -37,7 +36,7 @@ export class WiktionaryWordform extends FW.Wordform implements WktLemma {
 }
 
 const { obj, arr, oneof, tuple, cases, coerce, str, bareint, anything, bool, literal, stringish, textish, urlstr } = FW.CK
-const poskind = oneof(FW.Poskinds)
+const poskind = oneof(FW.ExtPoskinds)
 const BOOLISH_TRUE_SET  = new Set([true,  1, 'true',  'True',  'TRUE',  '1', 'Yes', 'yes', 'YES', 'Y', 'y', '2', '3', '12', 'on'])
 const BOOLISH_FALSE_SET = new Set([false, 0, 'false', 'False', 'FALSE', '0', 'No',  'no',  'NO',  'N', 'n'])
 const BOOLISH_ALLOW_SET = new Set([...BOOLISH_TRUE_SET, ...BOOLISH_FALSE_SET])
@@ -54,7 +53,7 @@ export const posint     = bareint.min(0)
 export const midstr     = stringish.max(200)
 export const longstr    = stringish.max(510)
 export const term       = midstr
-export const line1k     = stringish.max(1000)
+export const line1k     = stringish.max(1500)
 export const line4k     = stringish.max(4000)
 export const text4k     = textish.max(4000)
 export const loosetag   = midstr.min(1)
@@ -63,7 +62,7 @@ export const depth      = bareint.min(0).max(100)
 const source            = midstr
 
 export const wktWordform = obj({
-  form: term, tags, source, raw_tags: tags, head_nr: bareint.max(30).min(0),
+  form: longstr, tags, source, raw_tags: tags, head_nr: bareint.max(30).min(0),
 }).partial().strict()
 
 export const EtymologyTemplateNames = [
@@ -71,7 +70,7 @@ export const EtymologyTemplateNames = [
   'derived', 'borrowed', 'inherited', 'calque', 'cognate', 'noncognate',
   'root', 'doublet', 'blend', 'pieword', 'coinage', 'namedfor', 'glossary',
 ] as const
-export const langcode = str.regex(/^([a-z]{2,3}(-[a-zA-Z]{2,3})?(-[a-zA-Z]{2,3})?|(cmn|zh)-Latn-\w+|la-x-(neo|mid|late|med|eccl|vul))(?:, ?(?:[a-z]{2,3}))*$/)
+export const langcode = str.regex(/^([a-z]{2,3}(-[a-zA-Z]{2,3})?(-[a-zA-Z]{2,3})?|(cmn|zh)-Latn-\w+|zh-hans|la-x-(neo|mid|late|med|eccl|vul))(?:, ?(?:[a-z]{2,3}))*$/)
 
 const wikidata       = str.regex(/^[PQ]\d+$/).max(25)
 const senseid        = longstr
@@ -83,10 +82,10 @@ const root           = longstr
 const prefix         = midstr
 const suffix         = midstr
 
-const etympart       = obj({ relterm: line1k, langcode: langcode, senseid, gloss: line1k, poskind: longstr, gender: midstr, alt: midstr, translit: longstr, qualifier: longstr, lit: longstr,  }).partial().strict()
+const etympart       = obj({ relterm: line1k, langcode: langcode, senseid, gloss: line1k, poskind: longstr, gender: midstr, alt: longstr, translit: longstr, qualifier: longstr, lit: longstr,  }).partial().strict()
 const parts          = arr(etympart)
 const relterms       = arr(longstr)
-const gloss          = line1k ; const gloss1 = gloss; const gloss2 = gloss
+const gloss          = line1k
 const wikicategory   = longstr
 const categories     = arr(wikicategory).default([])
 const highlights     = arr(tuple([bareint, bareint]))
@@ -112,7 +111,7 @@ const genericTemplate = obj({
   /** Root morpheme                */ root,
   /** Suffix morpheme              */ suffix,
   /** Morpheme parts               */ parts,
-  /** Alternative text             */ alt:        midstr,
+  /** Alternative text             */ alt:        longstr,
   /** Gloss                        */ gloss,
   /** Part of speech               */ poskind:    longstr,
   /** Gender of Object term        */ gender:     midstr,
@@ -165,44 +164,6 @@ const unknownTemplate      = genericTemplate.pick({ expansion: true,            
 const uncertainTemplate    = genericTemplate.pick({ expansion: true,                                                                                                                                                                          tname: true, langcode: true }).extend({ /** Template name */ tname: literal('uncertain')    }).passthrough()
 const otherTemplate        = genericTemplate.pick({ expansion: true,                                                                                                                                                                          tname: true,                }).extend({ /** Template name */ tname: literal('other')        }).passthrough()
 
-// interface SuffixTemplate  extends TY.Bake<TY.Zcasted<typeof suffixTemplate>>  {}
-// interface CompoundTemplate extends TY.Bake<TY.Zcasted<typeof compoundTemplate>> {}
-// interface GenericTemplate extends TY.Bake<TY.Zcasted<typeof genericTemplate>> {}
-// const yy: GenericTemplate = {} as any; const zz = yy?.rellang
-// // const yy2: CompoundTemplate = {} as any; const zz2 = yy2?.parts
-// const yy2: SuffixTemplate = {} as any; const zz2 = yy2?.suffix
-
-// const suffixTemplate       = obj({ tname: literal('suffix'),        expansion,         root, suffix,  parts,                    langcode                                                                                                         }).partial().required({ tname: true  })
-// const confixTemplate       = obj({ tname: literal('confix'),        expansion, prefix, root, suffix,  parts,                    langcode                                                                                                         }).partial().required({ tname: true  })
-// const prefixTemplate       = obj({ tname: literal('prefix'),        expansion, prefix, root,          parts,                    langcode                                                                                                         }).partial().required({ tname: true  })
-// const affixTemplate        = obj({ tname: literal('affix'),         expansion,                        parts,                    langcode                                                                                                         }).partial().required({ tname: true  })
-// const surfTemplate         = obj({ tname: literal('surf'),          expansion,                        parts,                    langcode                                                                                                         }).partial().required({ tname: true  })
-// const compoundTemplate     = obj({ tname: literal('compound'),      expansion,                        parts,                    langcode, alt1: line1k, gloss1: gloss, gloss2: gloss, lit: bool, poskind1, poskind2                              }).partial().required({ tname: true  })
-// const derivedTemplate      = obj({ tname: literal('derived'),       expansion, rellang, relterm,  alt: longstr, gloss,          langcode                                                                                                         }).partial().required({ tname: true  })
-// const clippingTemplate     = obj({ tname: literal('clipping'),      expansion,          relterm,                                langcode                                                                                                         }).partial().required({ tname: true  })
-// const borrowedTemplate     = obj({ tname: literal('borrowed'),      expansion, rellang, relterm,  alt: midstr,  gloss,          langcode                                                                                                         }).partial().required({ tname: true  })
-// const inheritedTemplate    = obj({ tname: literal('inherited'),     expansion, rellang, relterm,  alt: midstr,  gloss,          langcode                                                                                                         }).partial().required({ tname: true  })
-// const calqueTemplate       = obj({ tname: literal('calque'),        expansion, rellang, relterm,  alt: midstr,  gloss,          langcode                                                                                                         }).partial().required({ tname: true  })
-// const cognateTemplate      = obj({ tname: literal('cognate'),       expansion, rellang, relterm,  alt: midstr,  gloss,                                                                                                                           }).partial().required({ tname: true  })
-// const noncognateTemplate   = obj({ tname: literal('noncognate'),    expansion, rellang, relterm,  alt: midstr,  gloss,                                                                                                                           }).partial().required({ tname: true  })
-// const rootTemplate         = obj({ tname: literal('root'),          expansion, rellang, relterms, alt: midstr,  gloss,          langcode                                                                                                         }).partial().required({ tname: true  })
-// const doubletTemplate      = obj({ tname: literal('doublet'),       expansion,          relterms,                                                                                                                                                }).partial().required({ tname: true  })
-// const blendTemplate        = obj({ tname: literal('blend'),         expansion,          relterms,                                                                                                                                                }).partial().required({ tname: true  })
-// const piewordTemplate      = obj({ tname: literal('pieword'),       expansion, rellang, relterm,                                langcode                                                                                                         }).partial().required({ tname: true  })
-// const taxlinkTemplate      = obj({ tname: literal('taxlink'),       expansion, taxon:  midstr, level:  midstr,  alt: midstr,    langcode                                                                                                         }).partial().required({ tname: true  })
-// const taxfmtTemplate       = obj({ tname: literal('taxfmt'),        expansion, taxon:  midstr, level:  midstr,  alt: midstr,    langcode                                                                                                         }).partial().required({ tname: true  })
-// const mentionTemplate      = obj({ tname: literal('mention'),       expansion, target: midstr, text:   longstr, gloss,          langcode                                                                                                         }).partial().required({ tname: true, target: true, text: true })
-// const glossaryTemplate     = obj({ tname: literal('glossary'),      expansion, target: midstr, text:   longstr                                                                                                                                   }).partial().required({ tname: true  })
-// const coinageTemplate      = obj({ tname: literal('coinage'),       expansion,                         entity: midstr,          langcode                                                                                                         }).partial().required({ tname: true  })
-// const namedforTemplate     = obj({ tname: literal('namedfor'),      expansion,                         entity: midstr,          langcode                                                                                                         }).partial().required({ tname: true  })
-// const etymonTemplate       = obj({ tname: literal('etymon'),        expansion,                                                  langcode, senseid, tree: text4k, translit: midstr, lit: midstr, alt1: midstr, gloss1, gloss2, poskind1, poskind2 }).partial().required({ tname: true  }).strict()
-// const etymidTemplate       = obj({ tname: literal('etymid'),        expansion,                         etymid: midstr,          langcode                                                                                                         }).partial().required({ tname: true  })
-// const onomatopoeicTemplate = obj({ tname: literal('onomatopoeic'),  expansion,                                                  langcode                                                                                                         }).partial().required({ tname: true  })
-// const qualifierTemplate    = obj({ tname: literal('qualifier'),     expansion, qualifier: midstr,      qualifiers: positionals, langcode                                                                                                         }).partial().required({ tname: true  })
-// const unknownTemplate      = obj({ tname: literal('unknown'),       expansion,                                                  langcode                                                                                                         }).partial().required({ tname: true  })
-// const uncertainTemplate    = obj({ tname: literal('uncertain'),     expansion,                                                  langcode                                                                                                         }).partial().required({ tname: true  })
-// const otherTemplate        = obj({ tname: literal('other'),         expansion,                                                                                                                                                                   }).partial().required({ tname: true  }).passthrough()
-//
 const etymologyTemplate = cases('tname', [
   suffixTemplate, confixTemplate, prefixTemplate, affixTemplate, surfTemplate, compoundTemplate, clippingTemplate,
   derivedTemplate, borrowedTemplate, inheritedTemplate, calqueTemplate, cognateTemplate, noncognateTemplate,
@@ -247,9 +208,7 @@ const etymologyBag = obj({
   abbrev:       arr(abbrevTemplate),
   abbrevof:     arr(abbrevofTemplate),
 } satisfies Record<WktTemplateName, FW.ZodTypeAny>).partial().strict()
-
 export const etymologyBagShape = _.mapValues(etymologyBag._def.shape(), (val) => FW.CK.summarizeCheckerDef(val._def.innerType)) as Record<WktTemplateName, FW.CK.CheckerSummary>
-// console.log('[[etymologyBag]]', ..._.flatten(_.entries(etymologyBagShape)))
 
 export const etymology = obj({
   text: text4k, number: bareint, templates: etymologyBag,
@@ -263,7 +222,7 @@ export const wktExample = obj({
   type:    oneof(['example', 'quotation']),
   tags,
   raw_tags: tags,
-  highlights: obj({ text: highlights, english: highlights, roman: highlights }).partial(),
+  highlights: obj({ text: highlights, english: highlights, roman: highlights, literal: highlights }).partial(),
   // literal_meaning: longstr, // skipped
 }).partial().required({ text: true }).strict()
 
@@ -281,18 +240,17 @@ export const soundlink    = obj({
 }).partial().strict()
 export const translation  = obj({
   relterm: longstr, rellang, note: line1k, taxonomic: midstr,
-  sense: line4k, english: longstr, roman: longstr, alt: midstr,
+  sense: line4k, english: longstr, roman: longstr, alt: longstr,
   tags, raw_tags: tags, topics: arr(midstr),
  }).partial().strict()
 export const nym = obj({
-  relterm: longstr, sense: longstr, english: longstr, roman: longstr, alt: midstr,
+  relterm: longstr, sense: longstr, english: longstr, roman: longstr, alt: longstr,
   tags, raw_tags: tags, topics: arr(midstr),
   urls: arr(anyurl), source: longstr, taxonomic: midstr, qualifier: longstr, extra: longstr,
 }).partial().required({ relterm: true }).strict()
 export const instance  = obj({
   relterm: line1k, source: line1k, tags, extra: longstr,
 }).partial({ extra: true, source: true }).strict()
-// export const derived = obj({ relterm: longstr, english: longstr, taxonomic: midstr }).partial().required({ relterm: true }) // .strict()
 
 export const descterm = obj({
   /** Descendant term.               */ relterm:      midstr,

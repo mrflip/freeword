@@ -56,13 +56,10 @@ describe('mungers/wiktionary/ExtractRaw extractin raw Wiktionary data from Kaikk
   it('should process all records successfully', async () => {
     const mergedShape = {} as ObjShape; const mergedCounts = {} as ObjCounts
     let count = 0
-    const startCount = 80_000; const maxRecords = 100_000;
-    for await (const raw of WiktionaryMunger.loadRawWiktionary('full')) {
-      // if (_.isEmpty(raw.descendants)) { continue }
+    const startCount = 850_000; const maxRecords = 250_000;
+    for await (const raw of WiktionaryMunger.loadRawWiktionary('full', startCount, maxRecords)) {
       count += 1
       // if (count > 10) { break }
-      if (count < startCount) { continue }
-      if (count > (maxRecords + startCount)) { break }
       classifyObj(raw, mergedShape, mergedCounts)
     }
     console.log('extraction stats', UF.bagsort(WiktionaryMunger.Bucket))
@@ -77,7 +74,7 @@ describe('mungers/wiktionary/ExtractRaw extractin raw Wiktionary data from Kaikk
     logFlatly('sensesCounts',      sensesCounts)
     logFlatly('descendantsCounts', descendantsCounts)
     logFlatly('etymologyCounts',   etymologyCounts)
-  }, 200_000)
+  }, 400_000)
 
   it('should be stable', async () => {
     const mergedShape = {} as ObjShape; const mergedCounts = {} as ObjCounts

@@ -1,4 +1,4 @@
-import      _, { type Dictionary }                                /**/ from 'lodash'
+import        _                             /**/ from 'lodash'
 import       { expect }                           from 'chai'
 import       { Wordforms }                        from '@freeword/all-byword'
 import       * as FW                              from '@freeword/meta'
@@ -49,8 +49,19 @@ describe('Wordforms', () => {
         prep: 'prep_',
         conj: 'conj_',
         pron: 'pron_',
-        art: 'art_'
-      }
+        art: 'art_',
+        name: 'name_',
+        num: 'num_',
+        char: 'char_',
+        punct: 'punct_',
+        symbol: 'symbol_',
+        pcle: 'pcle_',
+        postp: 'postp_',
+        det: 'det_',
+        prtpl: 'prtpl_',
+        ctcn: 'ctcn_',
+        xthere: 'xthere_',
+      } as const satisfies Record<TY.Poskind, string>
 
       const sampleWords = Object.keys(Wordforms).slice(0, 100)
 

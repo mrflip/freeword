@@ -164,6 +164,7 @@ exports[`mungers/wiktionary/ExtractRaw extractin raw Wiktionary data from Kaikki
           "_array": "array",
           "gloss": "string",
           "langcode": "string",
+          "lit": "string",
           "poskind": "string",
           "relterm": "string",
         },
@@ -394,7 +395,7 @@ exports[`mungers/wiktionary/ExtractRaw extractin raw Wiktionary data from Kaikki
   },
   "hyphenations": {
     "_array": "array",
-    "parts": {
+    "segs": {
       "_array": "array",
       "of": "string",
     },
@@ -792,6 +793,7 @@ exports[`mungers/wiktionary/ExtractRaw extractin raw Wiktionary data from Kaikki
           "_self": 4,
           "gloss": 4,
           "langcode": 10,
+          "lit": 2,
           "poskind": 1,
           "relterm": 10,
         },
@@ -1016,7 +1018,7 @@ exports[`mungers/wiktionary/ExtractRaw extractin raw Wiktionary data from Kaikki
   },
   "hyphenations": {
     "_self": 67,
-    "parts": {
+    "segs": {
       "_self": 74,
     },
     "tags": {

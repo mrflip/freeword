@@ -161,7 +161,7 @@ export function summarizeCheckerDef(checker: ZodTypeAny): CheckerSummary {
   if (summ.type?.shape)      { const { shape, ...rest } = summ.type;      summ.ofShape = shape; summ.type      = rest }
   if (summ.innerType?.shape) { const { shape, ...rest } = summ.innerType; summ.ofShape = shape; summ.innerType = rest }
   if (summ.typeName === 'ZodArray') { summ.ofType = summ.type?.typeName ?? summ.innerType?.typeName ?? '??' }
-  if (raw.shape)     {
+  if (raw.shape) {
     if (! _.isFunction(raw.shape)) { summ.shape = { like: brute(summ.shape) } as any; return summ }
     summ.shape = _.mapValues(raw.shape(), (subcheck) =>  summarizeCheckerDef(subcheck))
   }

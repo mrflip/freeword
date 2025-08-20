@@ -26,7 +26,7 @@ describe('@freeword/all-byword package structure', () => {
   })
 
   it('should have meta exports', () => {
-    expect(FreewordAllByword).to.have.property('Poskinds').eql(["adj", "adv", "verb", "noun", "intj", "prep", "conj", "pron", "art"])
+    expect(FreewordAllByword).to.have.property('Poskinds').eql(['adj', 'adv', 'verb', 'art', 'conj', 'intj', 'pcle', 'noun', 'postp', 'prep', 'pron', 'name', 'num', 'char', 'punct', 'symbol', 'det', 'prtpl', 'ctcn', 'xthere'])
     expect(FreewordAllByword).to.have.property('PosStemkinds').property('adv').to.eql(["adv_core", "adv_ily", "adv_ly", "adv_irr", "adv_ier", "adv_iest", "adv_er", "adv_est"])
   })
 

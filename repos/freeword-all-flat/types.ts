@@ -42,7 +42,7 @@ export type WordformFlat = [
 ]
 
 /** Part of speech */
-export type Poskind     = 'adj' | 'adv' | 'verb' | 'noun' | 'intj' | 'prep' | 'conj' | 'pron' | 'art'
+export type Poskind     = 'adj' | 'adv' | 'verb' | 'noun' | 'intj' | 'prep' | 'conj' | 'pron' | 'art' | 'char' | 'ctcn' | 'det' | 'symbol' | 'num' | 'name' | 'pcle' | 'postp' | 'punct' | 'prtpl' | 'xthere' | 'other'
 /** Stemming processes for adjectives */
 export type AdjStemkind =
   | 'adj_core'  | 'adj_ier'    | 'adj_iest'    | 'adj_er'    | 'adj_est'   | 'adj_ic'    | 'adj_ish'
@@ -62,27 +62,36 @@ export type NounStemkind =
 
 /** Stemming processes for verbs */
 export type VerbStemkind = 'v_core' | 'v_pl_es' | 'v_pl_s' | 'v_ing' | 'v_ed' | 'v_xt' | 'v_pt' | 'v_irr' | 'v_en'
-/** Stemming processes for interjections */
-export type IntjStemkind = 'intj_core' | 'intj_irr'
-/** Stemming processes for prepositions */
-export type PrepStemkind = 'prep_core' | 'prep_irr'
-/** Stemming processes for conjunctions */
-export type ConjStemkind = 'conj_core' | 'conj_irr'
-/** Stemming processes for pronouns */
-export type PronStemkind = 'pron_core' | 'pron_irr'
-/** Stemming processes for articles */
-export type ArtStemkind  = 'art_core' | 'art_irr'
+/** Stemming processes for other parts of speech */
+export type OtherStemkind =
+| 'intj_core'  | 'intj_irr'  | 'prep_core'  | 'prep_irr'  | 'conj_core'   | 'conj_irr'   | 'pron_core'   | 'pron_irr'  | 'art_core' | 'art_irr'
+| 'char_core'  | 'char_irr'  | 'ctcn_core'  | 'ctcn_irr'  | 'det_core'    | 'det_irr'    | 'symbol_core' | 'symbol_irr'
+| 'num_core'   | 'num_irr'   | 'name_core'  | 'name_irr'  | 'pcle_core'   | 'pcle_irr'   | 'postp_core'  | 'postp_irr'
+| 'punct_core' | 'punct_irr' | 'prtpl_core' | 'prtpl_irr' | 'xthere_core' | 'xthere_irr' | 'other_core'  | 'other_irr'
+
 /** process that describes a stemming: eg 'adv_ily' for `happ|ily` ever after */
-export type Stemkind = AdjStemkind | AdvStemkind | NounStemkind | VerbStemkind | IntjStemkind | PrepStemkind | ConjStemkind | PronStemkind | ArtStemkind
+export type Stemkind = AdjStemkind | AdvStemkind | NounStemkind | VerbStemkind | OtherStemkind
 /** Utility type for the valid stemkinds for each part of speech */
 export type StemkindTForPosT = {
-  adj:  AdjStemkind
-  adv:  AdvStemkind
-  noun: NounStemkind
-  verb: VerbStemkind
-  intj: IntjStemkind
-  prep: PrepStemkind
-  conj: ConjStemkind
-  pron: PronStemkind
-  art:  ArtStemkind
+  adj:     AdjStemkind,
+  adv:     AdvStemkind,
+  noun:    NounStemkind,
+  verb:    VerbStemkind,
+  intj:    OtherStemkind,
+  prep:    OtherStemkind,
+  conj:    OtherStemkind,
+  pron:    OtherStemkind,
+  art:     OtherStemkind,
+  char:    OtherStemkind,
+  ctcn:    OtherStemkind,
+  det:     OtherStemkind,
+  symbol:  OtherStemkind,
+  num:     OtherStemkind,
+  name:    OtherStemkind,
+  pcle:    OtherStemkind,
+  postp:   OtherStemkind,
+  punct:   OtherStemkind,
+  prtpl:   OtherStemkind,
+  xthere:  OtherStemkind,
+  other:   OtherStemkind,
 }

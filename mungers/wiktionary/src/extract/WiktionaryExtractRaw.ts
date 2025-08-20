@@ -2,7 +2,8 @@ import      _                                /**/ from 'lodash'
 import      { Filer, UF, CK }                     from '@freeword/meta'
 import type * as TY                               from './internal.ts'
 import      * as WKT                              from '../WiktionaryWordform.ts'
-import      { templateNameAliases } from './ExtractRawTables.ts'
+import      { templateNameAliases, WktPoskindMap } from './ExtractRawTables.ts'
+import type { ParseParams } from 'zod'
 
 const RAWDIR = Filer.__relname(import.meta.url, '../../raw')
 const Paths = {
@@ -11,7 +12,8 @@ const Paths = {
   most: Filer.pathinfoFor(RAWDIR, 'wiktionary_en_en-most.jsonl'),    //       300 records
 }
 
-export interface WiktionaryRaw extends Omit<WKT.WiktionaryWordform, 'translations' | 'hyphenations' | 'abbreviations' | 'origtitle'> {
+export interface WiktionaryRaw extends Omit<WKT.WiktionaryWordform, 'translations' | 'hyphenations' | 'abbreviations' | 'origtitle' | 'senses'> {
+  senses:               RawSense[]
   lang:                 string
   lang_code:            string
   rawpos:               string
@@ -25,12 +27,14 @@ export interface WiktionaryRaw extends Omit<WKT.WiktionaryWordform, 'translation
   head_templates:       Record<string, any>[]
   original_title:       string
 }
-export interface RawSense extends Omit<WKT.WktSense, 'links' | 'altof' | 'formof'> {
+export interface RawSense extends Omit<WKT.WktSense, 'links' | 'altof' | 'formof' | 'attestations' | 'examples'> {
+  examples:             RawExample[]
   links:                RawLink[]
   coordinate_terms:     RawNym[]
   alt_of:               RawInstance[] // alt_of: RawRelated[]
   form_of:              RawInstance[] // form_of: RawRelated[]
   info_templates:       Record<string, any>[]
+  attestations:         RawAttestation[]
 }
 interface RawInstance     extends Omit<WKT.WktInstance,     'relterm'>         { word?: string }
 interface RawDescendant   extends Omit<WKT.WktDescendant,   'tree'>            { templates: Record<string, TY.AnyBag>[] }
@@ -41,26 +45,50 @@ interface RawHyphenation  extends Omit<WKT.WktHyphenation,  'segs'>            {
 interface RawForm         extends WKT.WktForm                                  {}
 interface RawLink         extends Omit<WKT.WktLink,         'target' | 'text'> { 0: string, 1: string }
 interface RawSoundlink    extends Omit<WKT.WktSoundlink,    'audurl' | 'oggurl' | 'mp3url'> { audio: string, ogg_url: string, mp3_url: string }
+type RawExample = WKT.WktExample & { bold_text_offsets: [number, number][], bold_english_offsets: [number, number][], bold_roman_offsets: [number, number][], literal_meaning: string, bold_literal_offsets: [number, number][] }
 
-/** Adapt wiktionary part of speech labels to our poskinds */
-const WktPoskindFixes: Record<string, TY.Poskind> = {
-  adv_phrase: 'advph', prep_phrase: 'prepph', contraction: 'cont', article: 'art', character: 'char', adjective: 'adj',
-  reduplication: 'noun',
-  v: 'verb', n: 'noun', npl: 'noun', pl: 'noun',
-}
 /** corrects informal langcodes */
 const LangcodeFixes = {
   'ML.': 'la-x-mid', 'NL.': 'la-x-neo', 'LL.': 'la-x-late', 'EL.': 'la-x-med', 'VL.': 'la-x-vul', 'CL.': 'la-x-eccl',
-  'cmn-wadegiles': 'cmn-Latn-wadegiles', 'cmn-pinyin': 'cmn-Latn-pinyin', 'zh-postal': 'zh-Latn-pinyin', 'zh-hans': 'zh-Latn-hans',
-  'cmn-tongyong': 'cmn-Latn-tongyong', 'pmo.': 'pmo', 'mo.': 'mo',
+  'cmn-wadegiles': 'cmn-Latn-wadegiles', 'cmn-pinyin': 'cmn-Latn-pinyin', 'zh-postal': 'zh-Latn-pinyin',
+  'zh-hans': 'zh-Latn-hans',
+  'cmn-tongyong':  'cmn-Latn-tongyong', 'pmo.': 'pmo', 'mo.': 'mo',
 }
+const TemplateFieldnameFixes: Record<string, string> = {
+  gloss:       'gloss',    t:       'gloss',      g:       'gender',     pos:      'poskind',
+  id:          'senseid',  sc:      'scriptcode',
+  tr:          'translit', ts:      'transcript', lit:      'lit',         lb:          'label',       qq:          'qualifier',   q:    'qualifier',
+  bor:         'bor',      lbor:    'learned',    slb:      'semilearned', otherforms:  'otherforms',  tree:        'tree',
+  cal:         'calque',   clq:     'calque',     calq:     'calque',      calque:      'calque',
+  pclq:        'partcalque',  pcalq:       'partcalque',  pcal:        'partcalque',
+  publisher:   'publisher',
+  sml:         'semloan',  der:     'morph',      unc:      'uncertain',   lang:        'langcode',   w: 'wplink',
+  alt:         'alt',      author:  'author',     born:     'born',        brackets:    'brackets',
+  date:        'date',     died:    'died',       flavor:   'flavor',      head:        'head',
+  in:          'in',       isbn:    'isbn',       location: 'location',    nat:         'nat',
+  nationality: 'nat',      nobycat: 'nobycat',    occ:      'occ',         occupation:  'occ',
+  passage:     'passage',  short:   'short',      sort:     'sort',        title:       'title',     taxfmt: 'taxfmt',
+  type:        'type',     uc:      'uc',         wplink:   'wplink',      year:        'year',      sl:    'sl',   wp: 'wp',
+  nolb:        'skip',     sclb:    'skip',       alts:     'skip',        noalts:      'skip',      nobox: 'skip', noderived: 'noderived',
+  nocap:       'skip',     notext:  'skip',       nocat:    'skip',        sourceconj:  'skip',      text: 'text',
+  inh:         'inh',      exnihilo: 'exnihilo',  group:    'group',       name:         'name',      ref:  'ref',
+  obor:        'obor',     by:       'by',        nomul:     'skip',       nodot:        'skip',
+}
+const partsFieldnames = [
+  'alt', 'gloss', 'poskind', 'senseid', 'gender', 'langcode', 'translit', 'qualifier', 'lit',
+]
+const TemplateFieldnameTargets = _.invert(TemplateFieldnameFixes)
 function lutFixer<VT>(lut: Record<string, VT>, val: VT): NonNullable<VT> {
   return (lut[val as keyof typeof lut] ?? val) as NonNullable<VT>
 }
 
-export async function *loadRawWiktionary(size: 'full' | 'some' | 'most') {
+export async function *loadRawWiktionary(size: 'full' | 'some' | 'most', startCount: number = 0, maxRecords: number = 1e10) {
   const wiktpath = Paths[size]; if (! wiktpath.ok) { throw wiktpath.err }
+  let count = 0
   for await (const raw of Filer.starjsonl<Omit<WiktionaryRaw, 'langcode'>>(wiktpath)) {
+    count += 1
+    if (count <  startCount)                { continue }
+    if (count >= (maxRecords + startCount)) { break }
     const {
       word:rawWord, original_title:origtitle, pos:posRaw, lang_code:langcode, lang:_lang, senses, categories, forms, wikipedia,
       etymology_templates, etymology_number, etymology_text,
@@ -70,11 +98,11 @@ export async function *loadRawWiktionary(size: 'full' | 'some' | 'most') {
     bumpCount('lemma')
     bumpUnknownKeys(rest, 'main_wordform')
     const headword     = scrubString(rawWord, raw)!
-    const poskind      = lutFixer(WktPoskindFixes, posRaw) as TY.Poskind
+    const poskind      = lutFixer(WktPoskindMap, posRaw) as TY.Poskind
     const nyms         = extractNyms({ hypernyms, hyponyms, synonyms, antonyms, meronyms, holonyms, troponyms, coordterms, derived, related }, headword)
     const etymologyArr = _.compact(_.map(etymology_templates, (rawTemplate) => extractTemplate(rawTemplate, { headword })))
     const etymologies  = _.groupBy(etymologyArr, 'tname')
-    const wordform: WKT.WktLemma = UF.scrubVoid({
+    const lemma: WKT.WktLemma = UF.scrubVoid({
       headword, poskind, langcode,
       wikipedia:          scrubStrings(wikipedia, { headword }),
       abbreviations:      _.compact(_.map(abbreviations, (rawAbbreviation) => extractAbbreviation(rawAbbreviation as RawAbbreviation, headword))),
@@ -90,14 +118,18 @@ export async function *loadRawWiktionary(size: 'full' | 'some' | 'most') {
     })
     if (! _.isEmpty(_maintemplates)) { _.each(_maintemplates, (template) => bumpUnknownKeys(template, 'head_templates')) }
     if (etymology_text || _.isFinite(etymology_number) || (! _.isEmpty(etymology_templates))) {
-      wordform.etymology = UF.scrubNil({ text: scrubText(etymology_text, { headword }), number: etymology_number, templates: etymologies })
+      lemma.etymology = UF.scrubNil({ text: scrubText(etymology_text, { headword }), number: etymology_number, templates: etymologies })
     }
     // bump(wordform, 'wordform', 'poskind')
-    const report = WKT.wktLemma.report(wordform)
-    if (! report.ok) { console.warn('Wordform is not valid', headword, report); yield wordform; continue }
-    yield WKT.wktLemma.cast(wordform)
+    const report = WKT.wktLemma.report(lemma)
+    if (! report.ok) {
+      console.log('Wordform is not valid', headword, report.messages, report.badprops)
+      _.each(_.keys(report.badprops), (key) => _.unset(lemma, key))
+      const report2 = WKT.wktLemma.report(lemma); if (! report2.ok) { console.warn('Lemma is still not valid', headword, report2); continue }
+    }
+    yield WKT.wktLemma.cast(lemma)
   }
-  // console.log(tcounts)
+  console.info('[[loadRawWiktionary]] loaded', count, 'records')
 }
 
 function extractForm(raw: RawForm, headword: TY.Word): WKT.WktForm | undefined {
@@ -138,28 +170,6 @@ function extractInstance(raw: RawInstance, headword: TY.Word): WKT.WktInstance |
   })
 }
 
-const TemplateFieldnameFixes: Record<string, string> = {
-  gloss:       'gloss',    t:       'gloss',      g:       'gender',     pos:      'poskind',
-  id:          'senseid',  sc:      'scriptcode',
-  tr:          'translit', ts:      'transcript', lit:      'lit',         lb:          'label',       qq:          'qualifier',   q:   'qualifier',
-  bor:         'bor',      lbor:    'learned',    slb:      'semilearned', otherforms:  'otherforms',  tree:        'tree',
-  cal:         'calque',   clq:     'calque',     calq:     'calque',      pclq:        'partcalque',  pcalq:       'partcalque',  publisher:   'publisher',
-  sml:         'semloan',  der:     'morph',      unc:      'uncertain',   lang:        'langcode',   w: 'wplink',
-  alt:         'alt',      author:  'author',     born:     'born',        brackets:    'brackets',
-  date:        'date',     died:    'died',       flavor:   'flavor',      head:        'head',
-  in:          'in',       isbn:    'isbn',       location: 'location',    nat:         'nat',
-  nationality: 'nat',      nobycat: 'nobycat',    occ:      'occ',         occupation:  'occ',
-  passage:     'passage',  short:   'short',      sort:     'sort',        title:       'title',     calque: 'calque',
-  type:        'type',     uc:      'uc',         wplink:   'wplink',      year:        'year',      sl:    'sl',   wp: 'wp',
-  nolb:        'skip',     sclb:    'skip',       alts:     'skip',        noalts:      'skip',      nobox: 'skip', noderived: 'noderived',
-  nocap:       'skip',     notext:  'skip',       nocat:    'skip',        sourceconj:  'skip',      text: 'text',
-  inh:         'inh',      exnihilo: 'exnihilo',  group:    'group',       name:        'name',      ref:  'ref',
-  obor:        'obor',     by:       'by',
-}
-const partsFieldnames = [
-  'alt', 'gloss', 'poskind', 'senseid', 'gender', 'langcode', 'translit', 'qualifier', 'lit',
-]
-const TemplateFieldnameTargets = _.invert(TemplateFieldnameFixes)
 const PositionalFieldnameRE = /^(\d+)$/
 const NumberedFieldnameRE   = /^(\w+)(\d+)$/
 /** make fieldnames consistent: maps eg tr1 → translit1 or w -> wikipedia */
@@ -180,8 +190,8 @@ function fixTemplateFieldnames(bag: TY.AnyBag, _tmi: any) {
 type RemapTemplateFieldsOpts = { mainkey?: string, offset?: number, onlyPositionals?: boolean, stripPositionals?: boolean, validate?: boolean }
 function remapTemplateFields<VT extends object>(raw: TY.AnyBag, tmi: any, { mainkey = 'relterm', offset = 1, onlyPositionals = false, stripPositionals = true, validate = true }: RemapTemplateFieldsOpts = {}): { parts: VT[], all: VT } {
   const parts = [] as TY.AnyBag[]
-  const { occ, occ1, occ2, occ3, occ4, occ5, cat, cat1, cat2, cat3, cat4, cat5, ...rest } = raw
-  const occs = _.compact(_.flatMap([occ, occ1, occ2, occ3, occ4, occ5], (str) => (str?.split(/,\s*/g) || [])))
+  const { occ, occ1, occ2, occ3, occ4, occ5, cat, cat1, cat2, cat3, cat4, cat5, occupation2, occupation3, occupation4, occupation5, ...rest } = raw
+  const occs = _.compact(_.flatMap([occ, occ1, occ2, occ3, occ4, occ5, occupation2, occupation3, occupation4, occupation5], (str) => (str?.split(/,\s*/g) || [])))
   const cats = _.compact(_.flatMap([cat, cat1, cat2, cat3, cat4, cat5], (str) => (str?.split(/,\s*/g) || [])))
   const all  = UF.scrubVoid({ occ:  occs.join(', '), cat: cats.join(', '), occs, cats }) as TY.AnyBag
   for (const [rawkey, value] of Object.entries(rest)) {
@@ -193,18 +203,19 @@ function remapTemplateFields<VT extends object>(raw: TY.AnyBag, tmi: any, { main
     if (mm) {
       const key = lutFixer(TemplateFieldnameFixes, mm[1])
       if   (key === 'skip')                   { continue }
-      if   (! TemplateFieldnameFixes[mm[1]!]) { console.warn(`Unknown template fieldname`, mm[1], key, tmi); continue }
+      // if   (! TemplateFieldnameFixes[mm[1]!]) { console.warn(`Unknown template fieldname`, mm[1], key, tmi); continue }
+      if   (! TemplateFieldnameFixes[mm[1]!]) { bumpBucketCount('template-fieldname-unknown', mm[1]!); continue }
       const seq = Number(mm[2]) - offset - 1; parts[seq] ||= {}
       if ((onlyPositionals) && (! partsFieldnames.includes(key))) { console.warn(`Unknown numbered fieldname`, rawkey, key, tmi); continue }
       parts[seq][key] = value
-      if (key === 'poskind') { parts[seq][key] = lutFixer(WktPoskindFixes, value) }
+      if (key === 'poskind') { parts[seq][key] = lutFixer(WktPoskindMap, value) }
       continue
     }
     if (! (TemplateFieldnameFixes[rawkey] || TemplateFieldnameTargets[rawkey])) { console.warn(`Unknown template fieldname`, rawkey, tmi); continue }
     const key = lutFixer(TemplateFieldnameFixes, rawkey)
     if (key === 'skip') { continue }
     all[key] = value
-    if (key === 'poskind') { all[key] = lutFixer(WktPoskindFixes, value) }
+    if (key === 'poskind') { all[key] = lutFixer(WktPoskindMap, value) }
   }
   _.each(parts, (part, seq) => { if (validate && (! part)) { console.warn(`[[remapTemplateFields]] gap in part ${seq}`, parts, seq, tmi) }; parts[seq] ||= {} })
   _.each(all, (value, key) => { // stamp fields that apply to all parts onto each part, then delete from all
@@ -312,15 +323,14 @@ function extractSense(rawSense: RawSense, headword: TY.Word): WKT.WktSense {
   const stringArrFields2 = _.mapValues({ categories, raw_glosses, tags, topics, raw_tags }, (str, fn) => scrubStrings(str, { headword, fn }))
   _.each(examples, (example) => { if (! example.text) { console.warn('example without text', headword, example) } })
   //
-  const sense = UF.scrubVoid({ ...stringArrFields1, ...rest, ...stringFields, links, ...nyms, altof, formof, attestations, examples, ...stringArrFields2 })
+  const sense = UF.scrubVoid({ ...stringArrFields1, ...stringFields, links, ...nyms, altof, formof, attestations, examples, ...stringArrFields2 })
   const report = WKT.wktSense.report(sense); if (! report.ok) { console.warn('Sense is not valid', headword, sense, report) }
   //
   return sense
 }
 
-type RawExample = WKT.WktExample & { bold_text_offsets: [number, number][], bold_english_offsets: [number, number][], bold_roman_offsets: [number, number][], literal_meaning: string }
 function extractExample(raw: RawExample, headword: TY.Word): WKT.WktExample | undefined {
-  const { text:rawText, type:rawType, ref:rawRef, bold_text_offsets, bold_english_offsets, bold_roman_offsets, literal_meaning,...rest } = raw
+  const { text:rawText, type:rawType, ref:rawRef, bold_text_offsets, bold_english_offsets, bold_roman_offsets, bold_literal_offsets, literal_meaning,...rest } = raw
   const ref     = scrubString(rawRef,      { headword })
   const english = scrubString(raw.english, { headword })
   const roman   = scrubString(raw.roman,   { headword })
@@ -330,6 +340,7 @@ function extractExample(raw: RawExample, headword: TY.Word): WKT.WktExample | un
   if (bold_text_offsets)    { highlights.text    = bold_text_offsets }
   if (bold_english_offsets) { highlights.english = bold_english_offsets }
   if (bold_roman_offsets)   { highlights.roman   = bold_roman_offsets }
+  if (bold_literal_offsets) { highlights.literal = bold_literal_offsets }
   const type = ((rawType as any) === 'quote' ? 'quotation' : rawType)
   const result = UF.scrubVoid({ text, ref, ...rest, english, roman, highlights, type })
   // bump(result, 'example', 'type')
@@ -337,16 +348,17 @@ function extractExample(raw: RawExample, headword: TY.Word): WKT.WktExample | un
   return result
 }
 function extractNyms<VT extends Record<string, WKT.WktNym[] | undefined>>(rawNyms: Record<string, RawNym[] | undefined>, headword: TY.Word): VT {
-  return UF.scrubVoid(_.mapValues(rawNyms, (rawNyms) => _.compact(_.map(rawNyms, (rawNym) => extractNym(rawNym as RawNym, headword))))) as VT
+  return UF.scrubVoid(_.mapValues(rawNyms, (rawNyms, fieldname) => _.compact(_.map(rawNyms, (rawNym) => extractNym(rawNym as RawNym, { headword, fieldname }))))) as VT
 }
-function extractNym(rawNym: RawNym, tmi: any): WKT.WktNym | undefined {
+function extractNym(rawNym: RawNym, tmi: TY.AnyBag): WKT.WktNym | undefined {
   const {
     word:rawWord, sense, english, roman, alt, source, extra,
     tags, raw_tags, topics, urls:rawUrls, taxonomic, qualifier, ...rest
   } = rawNym
   bumpUnknownKeys(rest, 'nym')
   const relterm = scrubString(rawWord, tmi)?.slice(0, 120)
-  if (! relterm) { console.warn('Nym without relterm', rawNym, tmi, relterm, rawWord); return undefined }
+  // if (! relterm) { console.warn('Nym without relterm', rawNym, tmi, relterm, rawWord); return undefined }
+  if (! relterm) { bumpBucketCount('nym-blank', tmi.fieldname ?? 'nym'); return undefined }
   const stringFields = _.mapValues({ sense, english, roman, alt, source, extra, taxonomic, qualifier }, (str, fn)  => scrubString(str,   { ...tmi, fn }))
   const stringArrays = _.mapValues({ tags, raw_tags, topics },                                          (strs, fn) => scrubStrings(strs, { ...tmi, fn }))
   const urls         = _.compact(_.map(rawUrls, (url) => scrubSimpleURL(url, tmi)))
@@ -372,7 +384,6 @@ function extractTemplate(rawTemplate: Record<string, any>, tmiIn: TY.AnyBag): Re
   if (result.langcode)  { result.langcode  = scrubLangcode(result.langcode, tmi) }
   return UF.scrubVoid(result)
 }
-
 const stringFields = ['alt', 'gloss', 'poskind', 'senseid', 'gender', 'langcode', 'translit', 'qualifier', 'lit']
 const DERIVED_RE = /^(derived|borrowed|inherited|calque|partcalque)$/
 function _extractTemplate(rawTemplate: Record<string, any>, tmi: TY.AnyBag): Record<string, any> | undefined {
@@ -399,7 +410,7 @@ function _extractTemplate(rawTemplate: Record<string, any>, tmi: TY.AnyBag): Rec
   function getParts(offset: number,  opts: RemapTemplateFieldsOpts = {}) { const { parts } = remapTemplateFields(rawTemplate.args, { tname, p1, p2, ...tmi }, { mainkey: 'relterm', offset, onlyPositionals: true, stripPositionals: false,                      ...opts }); return parts }
   function getOthers(offset: number, opts: RemapTemplateFieldsOpts = {}) { const { all   } = remapTemplateFields(rawTemplate.args, { tname, p1, p2, ...tmi }, { mainkey: 'relterm', offset, onlyPositionals: true, stripPositionals: false, validate: false, ...opts }); return all }
   const { senseid, translit, transcript, scriptcode, cat, tree, lit, poskind:rawPoskind, ...minargs } = args; _.noop(minargs)
-  const poskind = lutFixer(WktPoskindFixes, scrubString(rawPoskind, tmi))
+  const poskind = lutFixer(WktPoskindMap, scrubString(rawPoskind, tmi))
   _.each(args, (_val, key) => { if (TemplateFieldnameTargets[key.replace(/(\d+)$/, '')]) { return }; bump(args, 'etemp-arg', key, 'arg') })
   _.each(getOthers(1), (_val, key) => {
     if (WKT.etymologyBagShape[tname]?.ofShape?.[key]) { return }

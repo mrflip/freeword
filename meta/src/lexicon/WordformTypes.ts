@@ -33,7 +33,10 @@ export type Shingle    = string
 
 // == [Part of speech and stem enums]
 
+/** Core part of speech */
 export type Poskind = (typeof FW.Poskinds)[number]
+/** Extended part of speech */
+export type ExtPoskind = (typeof FW.ExtPoskinds)[number]
 
 /** Stemkind for adjectives */
 export type AdjStemkind = typeof FW.PosStemkinds['adj'][number]
@@ -54,7 +57,7 @@ export type PronStemkind = typeof FW.PosStemkinds['pron'][number]
 /** Stemkind for articles */
 export type ArtStemkind = typeof FW.PosStemkinds['art'][number]
 /** Stemkind for other parts of speech */
-export type OtherStemkind = typeof FW.PosStemkinds['char' | 'advph' | 'prepph' | 'cont' | 'phrase' | 'det' | 'suffix' | 'proverb' | 'interfix' | 'symbol' | 'num' | 'name' | 'prefix' | 'particle' | 'postp' | 'infix' | 'punct'][number]
+export type OtherStemkind = typeof FW.PosStemkinds['char' | 'ctcn' | 'det' | 'symbol' | 'num' | 'name' | 'pcle' | 'postp' | 'punct' | 'prtpl' | 'xthere'][number]
 //
 export type Stemkind = AdjStemkind | AdvStemkind | NounStemkind | VerbStemkind | IntjStemkind | PrepStemkind | ConjStemkind | PronStemkind | ArtStemkind | OtherStemkind
 // --
