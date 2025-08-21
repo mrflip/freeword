@@ -11,11 +11,10 @@ export const templateNameAliases: Record<string, WktTemplateName | 'skip'> = {
   suf:       'suffix',      'suf+':   'suffix',
   pre:       'prefix',      'pre+':   'prefix',
   dbt:       'doublet',     'dbt+':   'doublet',
-  m:         'mention',     'm+':     'mention',     q:      'qualifier',  pcal:  'partcalque', 'partial calque': 'partcalque',
-  coin:      'coinage',      con:     'confix',     cal:    'calque',     onom:  'onomatopoeic', glos: 'glossary', lg: 'glossary',
+  m:         'mention',     'm+':     'mention',     q:      'qualifier',  pcal:  'pcalque', 'partial calque': 'pcalque',
+  coin:      'coinage',      con:     'confix',     cal:    'calque',     onom:  'onomato', glos: 'glossary', lg: 'glossary',
   ncog:      'noncognate',   noncog:  'noncognate', unk:   'unknown', unc: 'uncertain',
-  abbrev:    'abbrev',       abbr:    'abbrev',
-  'abbr of': 'abbrevof',     'abbreviation of':      'abbrevof',
+  abbrev:    'abbrev',       'abbr of': 'abbrevof',     'abbreviation of':      'abbrevof',
   'surface analysis':     'surf',
   'named-after':          'namedfor',
   'PIE word':             'pieword',
@@ -36,11 +35,12 @@ export const templateNameAliases: Record<string, WktTemplateName | 'skip'> = {
   translit: 'skip',  transliteration: 'skip',
   senseno: 'skip',   contraction: 'skip',  initialism: 'skip', acronym: 'skip', 'pronunciation spelling of': 'skip',
   'zh-l':   'skip', 'ja-r': 'skip', 'zh-m': 'skip', seeMoreCites: 'skip',
+  abbr:    'skip' /* abbr is not abbrev; it's a markup template giving a tooltip on an abbreviation */,
   //
   suffix:    'suffix',    confix:    'confix',    prefix:   'prefix',   affix:     'affix',     surf:       'surf',       compound:     'compound',    clipping: 'clipping', derived: 'derived',
   borrowed:  'borrowed',  inherited: 'inherited', calque:   'calque',   cognate:   'cognate',   noncognate: 'noncognate', root:         'root',        doublet:  'doublet',  blend:   'blend',
   pieword:   'pieword',   taxlink:   'taxlink',   taxfmt:   'taxfmt',   mention:   'mention',   coinage:    'coinage',    namedfor:     'namedfor',    etymon:   'etymon',   etymid:  'etymid',
-  qualifier: 'qualifier', unknown:   'unknown',   glossary: 'glossary', uncertain: 'uncertain', other:      'other',      onomatopoeic: 'onomatopoeic',
+  qualifier: 'qualifier', unknown:   'unknown',   glossary: 'glossary', uncertain: 'uncertain', other:      'other',      onomatopoeic: 'onomato',
 } as const
 
 export const ClawsQuals = [

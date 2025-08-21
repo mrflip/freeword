@@ -29,14 +29,14 @@ function classifyObj(raw: Record<string, any>, shape: ObjShape = {}, counts: Obj
         _.merge(subshape, valshape)
         subshape._array = "array"
       })
-      counts[key] = UF.bagsort(subcounts, _.last, { sortdirs: ['desc'] }) as any
+      counts[key] = subcounts // counts[key] = UF.bagsort(subcounts, _.last, { sortdirs: ['desc'] }) as any
       return
     }
     if (_.isObject(val)) {
       const valshape = classifyObj(val, subshape, subcounts)
       if (_.isString(valshape)) { shape[key] = valshape as "string"; return }
       _.merge(subshape, valshape)
-      counts[key] = UF.bagsort(subcounts, _.last, { sortdirs: ['desc'] })
+      counts[key] = subcounts // counts[key] = UF.bagsort(subcounts, _.last, { sortdirs: ['desc'] })
       return
     }
     if (_.isUndefined(shape[key])) { return }
@@ -44,7 +44,7 @@ function classifyObj(raw: Record<string, any>, shape: ObjShape = {}, counts: Obj
     if (_.isString(shape[key])) { shape[key] = { oops: [] as any[], was: shape[key] }; return }
     ; (shape[key] as any).oops = [] as any[]
     ; (shape[key] as any).oops.push(val)
-    counts[key] = UF.bagsort(subcounts, _.last, { sortdirs: ['desc'] })
+    counts[key] = subcounts // counts[key] = UF.bagsort(subcounts, _.last, { sortdirs: ['desc'] })
   })
   return shape
 }
@@ -55,37 +55,26 @@ describe('mungers/wiktionary/ExtractRaw extractin raw Wiktionary data from Kaikk
   const keys = {} as Record<string, "string" | "number" | "boolean" | string[] | Record<string, any>>
   it('should process all records successfully', async () => {
     const mergedShape = {} as ObjShape; const mergedCounts = {} as ObjCounts
-    let count = 0
-    const startCount = 850_000; const maxRecords = 250_000;
+    //
+    const startCount = 0; const maxRecords = 50_000
     for await (const raw of WiktionaryMunger.loadRawWiktionary('full', startCount, maxRecords)) {
-      count += 1
-      // if (count > 10) { break }
       classifyObj(raw, mergedShape, mergedCounts)
     }
-    console.log('extraction stats', UF.bagsort(WiktionaryMunger.Bucket))
-    const { senses, descendants, etymology, ...shape } = mergedShape as any
-    // console.log(shape, descendants?.desctrees, ..._.entries(etymology?.templates || {}))
-    logFlatly('mergedTypings',         shape)
-    logFlatly('senses',                senses)
-    logFlatly('descendants.desctrees', descendants?.desctrees)
-    logFlatly('etymology.templates',   etymology?.templates)
+    console.log('extraction stats', UF.prettify(UF.bagsort(WiktionaryMunger.Bucket)))
     const { senses:sensesCounts, descendants:descendantsCounts, etymology:etymologyCounts, ...restCounts } = mergedCounts as any
-    logFlatly('restCounts',        restCounts)
-    logFlatly('sensesCounts',      sensesCounts)
-    logFlatly('descendantsCounts', descendantsCounts)
-    logFlatly('etymologyCounts',   etymologyCounts)
-  }, 400_000)
+    console.log(
+      UF.prettify(restCounts),   "\n\n",
+      UF.prettify(sensesCounts), "\n\n",
+      UF.prettify(descendantsCounts.desctrees?.parts), "\n\n",
+      UF.prettify(etymologyCounts.records))
+  }, 800_000)
 
   it('should be stable', async () => {
-    const mergedShape = {} as ObjShape; const mergedCounts = {} as ObjCounts
-    let count = 0
+    const mergedShape = {} as ObjShape; const mergedCounts = {} as ObjCounts ; // let count = 0
     const results = [] as WiktionaryMunger.WktLemma[]
-    for await (const raw of WiktionaryMunger.loadRawWiktionary('some')) {
-      count += 1
-      // if (count > 10) { break }
+    for await (const raw of WiktionaryMunger.loadRawWiktionary('some')) { // count += 1 ; if (count > 10) { break }
       classifyObj(raw, mergedShape, mergedCounts)
     }
-    console.log('extraction stats', UF.bagsort(WiktionaryMunger.Bucket))
     expect(TH.checkSnapshot(results)).to.be.true
     expect(TH.checkSnapshot(mergedShape)).to.be.true
     expect(TH.checkSnapshot(mergedCounts)).to.be.true

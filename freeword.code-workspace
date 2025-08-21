@@ -33,7 +33,10 @@
       "**/db/**/*.js": true
     },
     "search.exclude": {
-      "**/db/**/*.js": true
+      "**/db/*.json": true,
+      "**/db/**/*.{json,jsonl,csv,tsv,json.gz}": true,
+      "**/db/**/*.js": true,
+      "**/raw/**/*.{json,jsonl,tsv,csv,json*.gz}": true
     },
     "foldOnOpen.disableFiles": [
       "**/db/**/*.js"
