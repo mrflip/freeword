@@ -265,8 +265,8 @@ export const OKEY           = {          min: 2,  max: 15, re: OKEY_RE,   msg: '
 export const SUBJIDS        = { isa: 'array', min: 1, of: 'string' }
 //
 export const CODISH         = { min: 1, max: 90,  re:     /^[\w\-\.]*$/,                         msg: "should be letters, numbers, . dot - dash _ bar" } as const
-export const KEYISH         = { min: 1, max: 90,  re:     /^[\w\+\-\.\:\/]*$/,                     msg: "should be letters, numbers, .-_/:" } as const
-export const EXTKEYISH      = { min: 1, max: 90,  re:     /^[\w\-\.\/\:@\+]*$/,                  msg: "should be letters, numbers, .-_/:@+" } as const
+export const KEYISH         = { min: 1, max: 90,  re:     /^[\w\-\.\:\/\+]*$/,                   msg: "should be letters, numbers, .-_/:" } as const
+export const EXTKEYISH      = { min: 1, max: 90,  re:     /^[\w\-\.\/\:\+@#]*$/,                 msg: "should be letters, numbers, .-_/:@+#" } as const
 export const PCTENC_KEY     = { min: 1, max: 90,  re:    /^([\w\-\.\/\:]|%[A-F0-9][A-F0-9])*$/,  msg: "should be letters, numbers, .-_/: and percent-encoded leftovers" } as const
 export const PCTKEY         = { min: 1, max: 90,  re:    /^([\w\-\.\/\:]|%[A-F0-9][A-F0-9])*$/,  msg: "should be letters, numbers, .-_/: and percent-encoded leftovers" } as const
 export const PCTCODE        = PCTKEY

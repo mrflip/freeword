@@ -1,6 +1,7 @@
 import {
   arr, str, literal, bareint, safenum, num, jsdate, anything, bool, coerce, safeint, union,
 } from '../checks/BootChecks.ts'
+import type { ZodType } from '../validation/ZodInternal.ts'
 import * as CO                                    from './internal.ts'
 
 //
@@ -73,10 +74,10 @@ export const intstr         = sintstr
 export const numstr         = snumstr
 export const qtystr         = str.trim().regex(CO.UINTSTR.re, CO.UINTSTR.msg).max(CO.UINTSTR.max).describe('positive number (as text)')
 
-export const sstrnum        = union([str.trim().regex(CO.SNUMSTR.re, CO.SNUMSTR.msg), safenum]).pipe(coerce.number()).describe('number (as number/text)')                // gives a number
-export const ustrnum        = union([str.trim().regex(CO.UNUMSTR.re, CO.UNUMSTR.msg), safenum]).pipe(coerce.number()).describe('positive number (as number/text)')       // gives a number
-export const sstrint        = union([str.trim().regex(CO.SINTSTR.re, CO.SINTSTR.msg), safeint]).pipe(coerce.number()).describe('whole number (as number/text)')          // gives a number
-export const ustrint        = union([str.trim().regex(CO.UINTSTR.re, CO.UINTSTR.msg), safeint]).pipe(coerce.number()).describe('positive whole number (as number/text)') // gives a number
+export const sstrnum        = union([str.trim().regex(CO.SNUMSTR.re, CO.SNUMSTR.msg), safenum]).pipe(coerce.number()).describe('number (as number/text)')                as ZodType<string | number, any, number> // gives a number
+export const ustrnum        = union([str.trim().regex(CO.UNUMSTR.re, CO.UNUMSTR.msg), safenum]).pipe(coerce.number()).describe('positive number (as number/text)')       as ZodType<string | number, any, number> // gives a number
+export const sstrint        = union([str.trim().regex(CO.SINTSTR.re, CO.SINTSTR.msg), safeint]).pipe(coerce.number()).describe('whole number (as number/text)')          as ZodType<string | number, any, number> // gives a number
+export const ustrint        = union([str.trim().regex(CO.UINTSTR.re, CO.UINTSTR.msg), safeint]).pipe(coerce.number()).describe('positive whole number (as number/text)') as ZodType<string | number, any, number> // gives a number
 export const strint         = sstrint
 export const strnum         = sstrnum
 export const hexrange       = lower.regex(CO.HEXRANGE.re)

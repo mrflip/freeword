@@ -53,10 +53,11 @@ import      {
   yayOK,          years,          znever,
   // paste newly added checks here and in the right group below
 } from '../checks/internal.ts'
+import type { ZodType, ZodTypeDef } from 'zod/v3'
 
 type ZodStringish  = ZodString  | ZodNullable<ZodString>  | ZodOptional<ZodString>  | ZodPipeline<any, ZodString> | ZodBranded<ZodString, string> | ZodOptional<ZodPipeline<any, ZodString>> | ZodLiteral<string>
 type ZodNumberish  = ZodNumber  | ZodNullable<ZodNumber>  | ZodOptional<ZodNumber>  | ZodPipeline<any, ZodNumber> | ZodBranded<ZodNumber, number>
-type ZodBooleanish = ZodBoolean | ZodNullable<ZodBoolean> | ZodOptional<ZodBoolean> | ZodPipeline<any, ZodBoolean>
+type ZodBooleanish = ZodBoolean | ZodNullable<ZodBoolean> | ZodOptional<ZodBoolean> | ZodPipeline<any, ZodBoolean> | ZodType<string | number, any, number, ZodTypeDef>
 
 export const StrChecks = {
   addrpart,       alnum,          alnumbar,       asciish,        azalnum,        azalnumbar,
@@ -109,7 +110,7 @@ export const NumChecks = {
   safeint,        safenum,        seconds,        secutc,         sstrint,        sstrnum,
   strint,         strnum,         timestamp,      tkvTS,          ubux,           uint32,
   uint64,         upTS,           ustrint,        ustrnum,        weeks,          years,
-} as const satisfies PartialBag<keyof typeof Checks, ZodNumberish>
+} as const satisfies PartialBag<keyof typeof Checks, ZodNumberish | typeof sstrint>
 // export const ZodTypedNumChecks = {
 //   appnum,
 // } as const
@@ -126,7 +127,7 @@ export const OtherChecks = {
   isodur,         iterfunc,       jsdate,         liveurl,        loosetime,      luxontime,
   modern,         notOK,          notnil,         notund,         parsedUrlpath,  plainwords,
   refreshedDT,    regexp,         rqDT,           strToHostPort,  strset,         tkvDT,
-  unk,            unkbag,         upDT,           urlOrPathToLiveurl, urlobj,         urlpath,
+  unk,            unkbag,         upDT,           urlobj,         urlpath,        urlOrPathToLiveurl,
   yayOK,          znever,
   // appnick, boxname, agtname, reponame, appnum,
 } as const satisfies PartialBag<keyof typeof Checks, ZodTypeAny>

@@ -2,7 +2,7 @@ import      _                                /**/ from 'lodash'
 import      * as NodeUtil                         from 'node:util'
 import type * as TY                               from '../types.ts'
 // import      { nextTick }                       from 'node:process'
-import      { AtoZlos }                          from '../lexicon/LexiconConsts.ts'
+import      { AtoZlos }                           from '../lexicon/LexiconConsts.ts'
 import      * as JSPrintf                         from 'sprintf-js'
 //
 export      *                                     from './BaseUtils.ts'

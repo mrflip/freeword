@@ -3,6 +3,7 @@ import      _                                   /**/ from 'lodash'
 import type {
   Zcasted, Zsketch, ZodType, ZodArray, ZodTypeAny, ZodPipeline,
   ZodRawShape, ZodAny, ZodReadonly, ZodEnum, ZodEffects, ZodUnion, ZodTuple,
+  Zchecker,
 }                                                     from '../validation/ZodInternal.js'
 import      { checknameFor, Z }                       from '../validation/ZodInternal.js'
 import type { ArrNZ, NotNil, NotUnd }                 from '../types/TSTools.ts'
