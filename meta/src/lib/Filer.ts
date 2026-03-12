@@ -214,6 +214,12 @@ export function openLinestream(anypath: FT.Anypath): FT.FilerReadResult<readline
   return { ...contentsStream, val: readline.createInterface({ input: contentsStream.val }) }
 }
 
+export async function loadtext(anypath: FT.Anypath): Promise<FT.FilerReadResult<string, FT.CoreReadGist>> {
+  const contentsStream = openFilestream(anypath); if (! contentsStream.ok) { return contentsStream }
+  const contents = await UF.slurp(contentsStream.val)
+  return { ...contentsStream, val: contents.join('') }
+}
+
 /**
  * Async generator that reads a file and yields each line
  * Returns AsyncGenerator<string, FilerReadResult, unknown>
