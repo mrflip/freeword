@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "esm-seedrandom": "3.0.5-esm.2",
+    "fast-json-stable-stringify": "^2.1.0",
     "lodash": "^4.17.21",
     "luxon": "^3.6.1",
     "snowball-stemmers": "^0.6.0",
@@ -70,6 +71,10 @@
       "default": "./built/index.js"
     },
     "./checks": {
+      "types": "./built/src/checks.d.ts",
+      "import": "./built/src/checks.js"
+    },
+    "./checks.js": {
       "types": "./built/src/checks.d.ts",
       "import": "./built/src/checks.js"
     },

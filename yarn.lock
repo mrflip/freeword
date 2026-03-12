@@ -452,6 +452,7 @@ __metadata:
     "@types/sprintf-js": "npm:^1"
     chai: "npm:^5.2.0"
     esm-seedrandom: "npm:3.0.5-esm.2"
+    fast-json-stable-stringify: "npm:^2.1.0"
     jest: "npm:^30.0.2"
     jest-util: "npm:^30.0.2"
     lodash: "npm:^4.17.21"
