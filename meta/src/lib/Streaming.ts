@@ -223,7 +223,7 @@ export function * _sliceStarNegPos<VT>(items: Iterable<VT>, horizon: number, end
   return ['_sliceStarNegPos', seq, horizon, end, bucket.length]
 }
 
-/** @returns an array of all the values in the iterable; works if iterable is async or sync */
+/** @returns an array of all the values in the iterable; useable on async or sync iterables (but needs awaited either way) */
 export async function slurp<VT>(iter: AsyncIterable<VT> | Iterable<VT>): Promise<VT[]> {
   const vals: VT[] = []
   for await (const val of iter) { vals.push(val) }

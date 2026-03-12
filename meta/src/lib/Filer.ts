@@ -180,6 +180,13 @@ export async function* starlinesFiddly(anypath: FT.Anypath): AsyncGenerator<stri
 
 function _openRawFilestream(anypath: FT.Anypath, { encoding = 'utf8' }: { encoding?: 'utf8' | 'utf16le' | 'binary' | null } = {}): FT.FilerReadResult<Readable, FT.CoreReadGist> {
   const pathinfo = pathinfoFor(anypath); if (! pathinfo.ok) { return pathinfo }
+  try { NodeFS.accessSync(pathinfo.abspath, NodeFS.constants.R_OK) } catch (rawerr) {
+    const err = rawerr as NodeJS.ErrnoException
+    let linkExists = false
+    try { NodeFS.lstatSync(pathinfo.abspath); linkExists = true } catch { /* path does not exist */ }
+    if (linkExists) { return badOutcome(err, 'readErr', 'Issue opening file: filesystem link is incorrect', { args: anypath }, pathinfo) }
+    return badOutcome(err, 'fileNotFound', `Path ${pathinfo.abspath} is absent`, { args: anypath }, pathinfo)
+  }
   try {
     const contentsStream = NodeFS.createReadStream(pathinfo.abspath, { encoding: encoding ?? undefined })
     return { ...pathinfo, gist: 'ok', ok: true, val: contentsStream }
@@ -214,6 +221,9 @@ export function openLinestream(anypath: FT.Anypath): FT.FilerReadResult<readline
   return { ...contentsStream, val: readline.createInterface({ input: contentsStream.val }) }
 }
 
+/** Loads the contents of a file, returning either { ok: true, val: stringContentsOfThatFile, ...pathinfo }, or a BadFilerResult
+ * Like the other filer methods, it never throws: consult result.ok for a tagged union
+ */
 export async function loadtext(anypath: FT.Anypath): Promise<FT.FilerReadResult<string, FT.CoreReadGist>> {
   const contentsStream = openFilestream(anypath); if (! contentsStream.ok) { return contentsStream }
   const contents = await UF.slurp(contentsStream.val)

@@ -8,7 +8,7 @@ import      { Filer }                         from '@freeword/meta'
 
 const {
   _abspathForPathparts,  _abspathForPathname,  pathinfoFor, starlines,
-  dumptext, dumpjson, mkdirp, starjsonl,
+  dumptext, dumpjson, mkdirp, starjsonl, loadtext,
   dirpathFor, abspathFor, barenameFor, fextFor,
 } = Filer
 
@@ -340,19 +340,17 @@ describe('Filer', () => {
           expect.fail(`Should not yield any lines for non-existent file: ${line}`)
         }
       } catch (caught) { err = caught as TY.ExtError }
-      expect((err as Error).message).to.eql(`Path /nonexistent/file.txt is absent: ENOENT: no such file or directory, open '/nonexistent/file.txt'`)
-      expect(err).property('errno').to.eql(-2)
-      expect(err).property('path').to.eql('/nonexistent/file.txt')
+      expect((err as Error).message).to.eql(`Path /nonexistent/file.txt is absent: ENOENT: no such file or directory, access '/nonexistent/file.txt'`)
       expect(err).property('extensions').to.eql({
-        lineNumber: 0,
-        filepath:   '/nonexistent/file.txt',
-        args:       { anypath: '/nonexistent/file.txt' },
-        gist:       'fileNotFound',
-        errno:      -2,
-        code:       'ENOENT',
-        syscall:    'open',
-        path:       '/nonexistent/file.txt',
-        origmsg:    "ENOENT: no such file or directory, open '/nonexistent/file.txt'"
+        ok:       false,
+        barename: 'file',
+        basename: 'file.txt',
+        fext:     'txt',
+        dirpath:  '/nonexistent',
+        abspath:  '/nonexistent/file.txt',
+        args:     { ok: true, barename: 'file', basename: 'file.txt', fext: 'txt', dirpath: '/nonexistent', abspath: '/nonexistent/file.txt' },
+        gist:     'fileNotFound',
+        origmsg:  "ENOENT: no such file or directory, access '/nonexistent/file.txt'",
       })
     })
   })
@@ -636,6 +634,36 @@ describe('Filer', () => {
         expect(result.err!.message).to.include('Failed to stringify data to JSON')
         expect(result.origmsg).to.include('Converting circular structure to JSON')
         expect((result as any).args).to.equal(outputFile)
+      }
+    })
+  })
+
+  describe('loadtext', () => {
+    it('should load himom.txt and return its contents', async () => {
+      const filepath = filerFixturePath('himom.txt')
+      const result = await loadtext(filepath)
+      expect(result.ok).to.be.true
+      if (result.ok) {
+        expect(result.val).to.equal('Hi, Mom!\n')
+      }
+    })
+
+    it('should load empty file and return empty string', async () => {
+      const filepath = filerFixturePath('empty')
+      const result = await loadtext(filepath)
+      expect(result.ok).to.be.true
+      if (result.ok) {
+        expect(result.val).to.equal('')
+      }
+    })
+
+    it('should return readErr for a broken symlink', async () => {
+      const filepath = filerFixturePath('badlink')
+      const result = await loadtext(filepath)
+      expect(result.ok).to.be.false
+      if (!result.ok) {
+        expect(result.gist).to.equal('readErr')
+        expect(result.err!.message).to.include('Issue opening file: filesystem link is incorrect')
       }
     })
   })
