@@ -116,10 +116,10 @@ export function pathinfoFor(anypath: FT.Anypath, ...pathsegs: TY.StringMaybe[]):
   }
 }
 
-export function dirpathFor(anypath:  FT.Anypath): FT.Abspath  { return pathinfoFor(anypath).dirpath! }
-export function abspathFor(anypath:  FT.Anypath): FT.Abspath  { return pathinfoFor(anypath).abspath! }
-export function barenameFor(anypath: FT.Anypath): FT.Barename { return pathinfoFor(anypath).barename! }
-export function fextFor(anypath:     FT.Anypath): FT.Fext     { return pathinfoFor(anypath).fext! }
+export function dirpathFor(anypath:  FT.Anypath, ...pathsegs: TY.StringMaybe[]): FT.Abspath  { return pathinfoFor(anypath, ...pathsegs).dirpath!  }
+export function abspathFor(anypath:  FT.Anypath, ...pathsegs: TY.StringMaybe[]): FT.Abspath  { return pathinfoFor(anypath, ...pathsegs).abspath!  }
+export function barenameFor(anypath: FT.Anypath, ...pathsegs: TY.StringMaybe[]): FT.Barename { return pathinfoFor(anypath, ...pathsegs).barename! }
+export function fextFor(anypath:     FT.Anypath, ...pathsegs: TY.StringMaybe[]): FT.Fext     { return pathinfoFor(anypath, ...pathsegs).fext!     }
 
 export function __dirname(importMetaURL: TY.URLStr, ...relpaths: (TY.Relpath | undefined)[]): FT.Abspath {
   const callerpath = String(importMetaURL).replace(/^file:\/\//, '/')

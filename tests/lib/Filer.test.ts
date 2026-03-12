@@ -9,6 +9,7 @@ import      { Filer }                         from '@freeword/meta'
 const {
   _abspathForPathparts,  _abspathForPathname,  pathinfoFor, starlines,
   dumptext, dumpjson, mkdirp, starjsonl,
+  dirpathFor, abspathFor, barenameFor, fextFor,
 } = Filer
 
 describe('Filer', () => {
@@ -95,6 +96,65 @@ describe('Filer', () => {
 
     it('should throw for non-string input', () => {
       expect(() => _abspathForPathname(null as any)).to.throw('Blank path is not a reasonable input')
+    })
+  })
+
+  describe('dirpathFor with multiple path segments', () => {
+    it('should resolve dirpath when given base path and path segments', () => {
+      const base = tempDir
+      const result = dirpathFor(base, 'nested', 'deep')
+      expect(result).to.equal(path.join(tempDir, 'nested'))
+    })
+
+    it('should resolve dirpath when segments include filename with extension', () => {
+      const result = dirpathFor('/tmp', 'foo', 'bar', 'file.json')
+      expect(result).to.equal(path.resolve('/tmp/foo/bar'))
+    })
+  })
+
+  describe('abspathFor with multiple path segments', () => {
+    it('should resolve abspath when given base path and path segments', () => {
+      const result = abspathFor(tempDir, 'nested', 'file.txt')
+      expect(result).to.equal(path.join(tempDir, 'nested', 'file.txt'))
+    })
+
+    it('should resolve abspath with multiple nested segments', () => {
+      const result = abspathFor('/tmp', 'a', 'b', 'c', 'data.json')
+      expect(result).to.equal(path.resolve('/tmp/a/b/c/data.json'))
+    })
+  })
+
+  describe('barenameFor with multiple path segments', () => {
+    it('should return barename of final segment when given path segments', () => {
+      const result = barenameFor(tempDir, 'sub', 'myfile.txt')
+      expect(result).to.equal('myfile')
+    })
+
+    it('should return barename without extension for multi-segment path', () => {
+      const result = barenameFor('/tmp', 'foo', 'bar', 'config.json')
+      expect(result).to.equal('config')
+    })
+
+    it('should return full final segment when it has no extension', () => {
+      const result = barenameFor('/tmp', 'dir', 'noext')
+      expect(result).to.equal('noext')
+    })
+  })
+
+  describe('fextFor with multiple path segments', () => {
+    it('should return extension of final segment when given path segments', () => {
+      const result = fextFor(tempDir, 'nested', 'doc.txt')
+      expect(result).to.equal('txt')
+    })
+
+    it('should return extension for multi-segment path', () => {
+      const result = fextFor('/tmp', 'a', 'b', 'file.json')
+      expect(result).to.equal('json')
+    })
+
+    it('should return empty string when final segment has no extension', () => {
+      const result = fextFor('/tmp', 'dir', 'README')
+      expect(result).to.equal('')
     })
   })
 
