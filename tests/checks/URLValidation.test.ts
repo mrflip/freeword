@@ -48,7 +48,7 @@ const Fixtures = {
     pathTupHostQx:       [['/foo?',         ['localhost']],                   'http://localhost/foo?'],
     pathTupHostQ:        [['/foo/../bar/?', ['localhost']],                   'http://localhost/bar/?'],
   },
-} as const satisfies TY.Bag<TY.Bag<[TH.URLStr | URL | _HostPortSketchTuple, string]>>
+} as const satisfies TY.Bag<TY.Bag<[TY.URLStr | URL | _HostPortSketchTuple, string]>>
 
 const UrlOrPathToLiveurlFixtures = { ...Fixtures.urlstr, ...Fixtures.urlTuplePairToURL, ...Fixtures.pathStrHPPToURL, ...Fixtures.pathTupHPPToURL } as const
 const LiveurlFixtures            = { ...Fixtures.urlstr } as const

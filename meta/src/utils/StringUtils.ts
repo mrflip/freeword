@@ -169,3 +169,20 @@ export function qt(val: string)    { return `'${val.replaceAll('\'', '\\\'')}'` 
 export function dqt(val: string)   { return `"${val.replaceAll('"', '\\"')}"` }
 export function qtc(val: string)   { return comma(qt(val)) }
 export function comma(val: string) { return val + ',' }
+
+function indentStr(by: number | string = 2) {
+  return _.isNumber(by) ? _.repeat(' ', by) : by
+}
+
+export function indent(text: string, by: number | string = 2) {
+  const  indenting = indentStr(by)
+  return _.trim(text)
+    .split(/\n/g)
+    .map((line) => (indenting + line).replace(/^ +$/, "")) // replace lines of all spaces with empty string; tabs, \v, other whitespace are not touched
+    .join("\n")
+}
+/** remove the leading indent from each line of the text */
+export function dedent(text: string, by: number = 2) {
+  const  indenting = indentStr(by)
+  return text.replace(indenting, '').replaceAll('\n' + indenting, '\n')
+}

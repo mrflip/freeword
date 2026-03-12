@@ -4,7 +4,7 @@ import      { promises as fs }                    from 'fs'
 import      path                                  from 'path'
 import      os                                    from 'os'
 import type * as TY                               from '@freeword/meta'
-import      { Filer, UF }                         from '@freeword/meta'
+import      { Filer }                         from '@freeword/meta'
 
 const {
   _abspathForPathparts,  _abspathForPathname,  pathinfoFor, starlines,
@@ -26,7 +26,7 @@ describe('Filer', () => {
     it('should convert Pathinfo to absolute path with extension', () => {
       const pathinfo: TY.PathinfoDNA = {
         barename: 'test',
-        fext: '.txt',
+        fext: 'txt',
         dirpath: '/tmp'
       }
       const result = _abspathForPathparts(pathinfo)
@@ -46,7 +46,7 @@ describe('Filer', () => {
     it('should handle relative dirpath', () => {
       const pathinfo: TY.PathinfoDNA = {
         barename: 'test',
-        fext: '.json',
+        fext: 'json',
         dirpath: './relative'
       }
       const result = _abspathForPathparts(pathinfo)
@@ -56,7 +56,7 @@ describe('Filer', () => {
     it('should throw for blank dirpath', () => {
       const pathinfo: TY.PathinfoDNA = {
         barename: 'test',
-        fext: '.txt',
+        fext: 'txt',
         dirpath: ''
       }
       expect(() => _abspathForPathparts(pathinfo)).to.throw('Blank path is not a reasonable input')
@@ -65,7 +65,7 @@ describe('Filer', () => {
     it('should throw for blank barename', () => {
       const pathinfo: TY.PathinfoDNA = {
         barename: '',
-        fext: '.txt',
+        fext: 'txt',
         dirpath: '/tmp'
       }
       expect(() => _abspathForPathparts(pathinfo)).to.throw('Blank path is not a reasonable input')
@@ -104,7 +104,8 @@ describe('Filer', () => {
       const result = pathinfoFor(input)
       expect(result).to.eql({
         barename: 'test',
-        fext: '.txt',
+        basename: 'test.txt',
+        fext: 'txt',
         dirpath: '/tmp',
         ok: true,
         abspath: '/tmp/test.txt'
@@ -116,7 +117,8 @@ describe('Filer', () => {
       const result = pathinfoFor(input)
       expect(result).to.eql({
         barename: 'file',
-        fext: '.json',
+        basename: 'file.json',
+        fext: 'json',
         dirpath: path.dirname(path.resolve(input)),
         ok: true,
         abspath: path.resolve(input)
@@ -128,6 +130,7 @@ describe('Filer', () => {
       const result = pathinfoFor(input)
       expect(result).to.eql({
         barename: 'file',
+        basename: 'file',
         fext: '',
         dirpath: '/tmp',
         ok: true,
@@ -138,13 +141,14 @@ describe('Filer', () => {
     it('should parse Pathinfo object', () => {
       const pathinfo: TY.PathinfoDNA = {
         barename: 'test',
-        fext: '.txt',
+        fext: 'txt',
         dirpath: '/tmp'
       }
       const result = pathinfoFor(pathinfo)
       expect(result).to.eql({
         barename: 'test',
-        fext: '.txt',
+        basename: 'test.txt',
+        fext: 'txt',
         dirpath: '/tmp',
         ok: true,
         abspath: '/tmp/test.txt'
@@ -181,6 +185,7 @@ describe('Filer', () => {
       const result = await mkdirp(dirPath)
       expect(result).to.eql({
         barename: 'newdir',
+        basename: 'newdir',
         fext: '',
         dirpath: tempDir,
         ok: true,
@@ -195,6 +200,7 @@ describe('Filer', () => {
       const result = await mkdirp(nestedPath)
       expect(result).to.eql({
         barename: 'dir',
+        basename: 'dir',
         fext: '',
         dirpath: path.join(tempDir, 'nested', 'deep'),
         ok: true,
@@ -213,6 +219,7 @@ describe('Filer', () => {
       const result = await mkdirp(pathinfo)
       expect(result).to.eql({
         barename: 'testdir',
+        basename: 'testdir',
         fext: '',
         dirpath: tempDir,
         ok: true,
@@ -243,7 +250,7 @@ describe('Filer', () => {
     it('should work with Pathinfo', async () => {
       const pathinfo: TY.PathinfoDNA = {
         barename: 'test',
-        fext: '.txt',
+        fext: 'txt',
         dirpath: tempDir
       }
       const lines: string[] = []
@@ -378,7 +385,8 @@ describe('Filer', () => {
 
       expect(result).to.eql({
         barename: 'output',
-        fext: '.txt',
+        basename: 'output.txt',
+        fext: 'txt',
         dirpath: tempDir,
         ok: true,
         gist: 'ok',
@@ -401,7 +409,8 @@ describe('Filer', () => {
 
       expect(result).to.eql({
         barename: 'output',
-        fext: '.txt',
+        basename: 'output.txt',
+        fext: 'txt',
         dirpath: tempDir,
         ok: true,
         gist: 'ok',
@@ -421,7 +430,8 @@ describe('Filer', () => {
 
       expect(result).to.eql({
         barename: 'output',
-        fext: '.txt',
+        basename: 'output.txt',
+        fext: 'txt',
         dirpath: path.join(tempDir, 'nested', 'deep'),
         ok: true,
         gist: 'ok',
@@ -436,7 +446,7 @@ describe('Filer', () => {
     it('should work with Pathinfo', async () => {
       const pathinfo: TY.PathinfoDNA = {
         barename: 'output',
-        fext: '.txt',
+        fext: 'txt',
         dirpath: tempDir
       }
       const lines = ['test']
@@ -445,7 +455,8 @@ describe('Filer', () => {
 
       expect(result).to.eql({
         barename: 'output',
-        fext: '.txt',
+        basename: 'output.txt',
+        fext: 'txt',
         dirpath: tempDir,
         ok: true,
         gist: 'ok',
@@ -466,7 +477,8 @@ describe('Filer', () => {
 
       expect(result).to.eql({
         barename: 'empty',
-        fext: '.txt',
+        basename: 'empty.txt',
+        fext: 'txt',
         dirpath: tempDir,
         ok: true,
         gist: 'ok',
@@ -488,7 +500,8 @@ describe('Filer', () => {
 
       expect(result).to.eql({
         barename: 'data',
-        fext: '.json',
+        basename: 'data.json',
+        fext: 'json',
         dirpath: tempDir,
         ok: true,
         gist: 'ok',
@@ -509,7 +522,8 @@ describe('Filer', () => {
 
       expect(result).to.eql({
         barename: 'primitive',
-        fext: '.json',
+        basename: 'primitive.json',
+        fext: 'json',
         dirpath: tempDir,
         ok: true,
         gist: 'ok',
@@ -524,7 +538,7 @@ describe('Filer', () => {
     it('should work with Pathinfo', async () => {
       const pathinfo: TY.PathinfoDNA = {
         barename: 'data',
-        fext: '.json',
+        fext: 'json',
         dirpath: tempDir
       }
       const data = { test: true }
@@ -533,7 +547,8 @@ describe('Filer', () => {
 
       expect(result).to.eql({
         barename: 'data',
-        fext: '.json',
+        basename: 'data.json',
+        fext: 'json',
         dirpath: tempDir,
         ok: true,
         gist: 'ok',
@@ -570,7 +585,7 @@ describe('Filer', () => {
       const stringPath: TY.Anypath = '/tmp/test.txt'
       const pathinfo: TY.Anypath = {
         barename: 'test',
-        fext: '.txt',
+        fext: 'txt',
         dirpath: '/tmp'
       }
 

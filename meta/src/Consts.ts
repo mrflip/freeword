@@ -641,7 +641,8 @@ export const FextVals = [
   'jpg', 'png',
   'docx', 'md', 'pdf', 'txt', 'html',
 ] as const
-export type Fext = typeof FextVals[number]
+export type Fext    = typeof FextVals[number]
+export type AnyFext = string
 
 export const AltFextVals = [
   'jpeg', 'markdown', 'jsonl', 'cjs', 'mjs', 'jsx', 'tsx', 'test.js', 'test.ts',
@@ -746,6 +747,7 @@ export const FFMT_FOR_FEXT: Record<Fext | AltFext, Ffmt> = {
 export const SLASH_OR_PLAIN_RE         =          /^[ 0-9A-Za-z_\-!%^~\.\/]*$/  // omits: "&:;[]\`*?$#'<>{|}()=@,
 export const SLASH_OR_GLOB_RE          =          /^[ 0-9A-Za-z_\-!%^~\.\/\{\}\?,\[\]\*]*$/  // omits: "&:;[]\`*?$#'<>{|}()=@,
 export const NONSLASH_PLAIN_RE         =          /^[ 0-9A-Za-z_\-!%^~\.]*$/
+export const ANYFEXT_RE                =         /(^$|^(\w+\.)*(\w*)$)/
 export const JUST_PATHSEGS_PATH_RE     =                        /^(([ 0-9A-Za-z_\-!%^~\.]*\/)*([ 0-9A-Za-z_\-!%^~\.]*))$/
 export const JUST_PATHSEGS_GLOB_RE     =          /^(([ 0-9A-Za-z_\-!%^~\.\/\{\}\?,\[\]\*]\/)*([ 0-9A-Za-z_\-!%^~\.\/\{\}\?,\[\]\*]*))$/
 export const NONSLASH_GLOB_RE          =          /^[ 0-9A-Za-z_\-!%^~\.\{\}\?,\[\]\*]*$/
@@ -793,6 +795,7 @@ export const EXTGLOB        = { re: NONSLASH_GLOB_RE,          msg: 'should be p
 export const GLOBSEGS       = { re: JUST_PATHSEGS_GLOB_RE,     msg: 'should have plain characters and no start or end slash' } as const
 //
 export const RELPATH        = { re: DOTS_SLASH_PLAIN_RE,       msg: 'should be a relative path' } as const
+export const ANYFEXT        = { re: ANYFEXT_RE,                msg: 'should be a file extension with only plain characters and maybe a dot' } as const
 export const ANYPATH        = { re: ANYPATH_RE,                msg: 'should be a relative path' } as const
 export const ABSPATH        = { re: ABSPATH_RE,                msg: 'should be a pathname from the root folder' } as const
 export const BARENAME       = { re: ROOT_OR_NONSLASH_PLAIN_RE, msg: 'should have plain characters with no slashes' } as const

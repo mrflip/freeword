@@ -1,5 +1,7 @@
 import      _                                /**/ from 'lodash'
 import type * as TY                               from '../types.ts'
+import { inspect } from 'util'
+import { inspectify } from './stringify.ts'
 
 /**
  * Helper function to create bad outcomes with consistent structure
@@ -32,4 +34,8 @@ export function throwable<GT extends string = string>(preambleMsg: string, gist:
   }
   Error.captureStackTrace?.(extError, throwable)
   return extError
+}
+
+export function Missing(missings: TY.AnyBag, obj: TY.AnyBag, tmi?: TY.AnyBag | undefined, err?: Error | undefined): TY.ExtError {
+  return throwable(`Missing values: ${inspectify(missings)}`, 'missing', { obj, ...tmi, missings }, err)
 }

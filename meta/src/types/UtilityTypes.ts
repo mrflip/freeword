@@ -52,6 +52,15 @@ export interface ExtError extends Error {
   code?: string
 }
 
+/** Logger interface compatible with Winston logger and console */
+export type LoggerT = {
+  trace(msg:  string, obj?: AnyBag): void
+  debug(msg:  string, obj?: AnyBag): void
+  info(msg:   string, obj?: AnyBag): void
+  warn(msg:   string, obj?: AnyBag): void
+  error(msg:  string, obj?: AnyBag): void
+}
+
 /** A type that can be an Iterable, Iterator, or Generator */
 export type AnySyncIterable<VT, RT = any>  = Iterable<VT> | Iterator<VT> | Generator<VT, RT, VT | undefined>
 /** A type that can be an AsyncIterable, AsyncIterator, or AsyncGenerator */

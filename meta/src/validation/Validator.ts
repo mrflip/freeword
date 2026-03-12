@@ -52,6 +52,10 @@ import      {
   urlstr,         ustrint,        ustrnum,        varname,        weeks,          whim,
   yayOK,          years,          znever,
   // paste newly added checks here and in the right group below
+  absglob, abspath, anyfext, anyglob, anypath, awsregion, bareglob, barename, baseglob, basename, comprfext,
+  dirent, extglob, extname, fext, globseg, ino, knownfext, logger, loglevel, pathseg, pathseglist,
+  pathsegs, relglob, relpath, s3Bucket, stream,
+
 } from '../checks/internal.ts'
 import type { ZodType, ZodTypeDef } from 'zod/v3'
 
@@ -83,11 +87,16 @@ export const StrChecks = {
   unumstr,        upISO,          upTC,           upalnumbar,     upazalnum,      upazalnumbar,
   upper,          urlstr,         varname,        whim,
   //
+  absglob, abspath, anyglob, anypath, bareglob, barename, baseglob, basename,
+  extglob, extname, globseg, pathseg, pathsegs, relglob, relpath, s3Bucket,
+  anyfext,
 } as const satisfies PartialBag<keyof typeof Checks, ZodStringish>
 
 export const OneofChecks = {
   became,         before,         country,        countryCode,    currency,       ffmt,
   futurism,       httpMETHOD,     httpMethod,     roundingstrat,  sortdir,        strcase,
+  awsregion,      loglevel,
+  comprfext, fext, knownfext,
 } as const satisfies PartialBag<keyof typeof Checks, ZodEnum<StrArrNZ>>
 // const ZodtypedOneofChecks = {
 //   agtname,        boxname,        reponame,       agtnick,        appnick,        appname,        boxkind,        reponick,
@@ -110,6 +119,7 @@ export const NumChecks = {
   safeint,        safenum,        seconds,        secutc,         sstrint,        sstrnum,
   strint,         strnum,         timestamp,      tkvTS,          ubux,           uint32,
   uint64,         upTS,           ustrint,        ustrnum,        weeks,          years,
+  ino,
 } as const satisfies PartialBag<keyof typeof Checks, ZodNumberish | typeof sstrint>
 // export const ZodTypedNumChecks = {
 //   appnum,
@@ -129,6 +139,8 @@ export const OtherChecks = {
   refreshedDT,    regexp,         rqDT,           strToHostPort,  strset,         tkvDT,
   unk,            unkbag,         upDT,           urlobj,         urlpath,        urlOrPathToLiveurl,
   yayOK,          znever,
+  dirent, logger, pathseglist,
+  stream,
   // appnick, boxname, agtname, reponame, appnum,
 } as const satisfies PartialBag<keyof typeof Checks, ZodTypeAny>
 

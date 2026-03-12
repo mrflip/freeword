@@ -5,6 +5,8 @@ export      *                                     from './BasicChecks.ts'
 export      *                                     from '../Consts.ts'
 export      *                                     from '../consts/index.ts'
 //
+export      *                                     from './FilerChecks.ts'
+export      *                                     from './LoggerChecks.ts'
 export      *                                     from './UrlChecks.ts'
 export      *                                     from './WorldlyChecks.ts'
 //

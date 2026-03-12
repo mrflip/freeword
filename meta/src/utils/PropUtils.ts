@@ -153,6 +153,17 @@ export function isVoid(obj: any): boolean {
   return false
 }
 
+/** Returns `true` for null, undefined, empty string.
+ *  Returns **`false`** for everything else --
+ *    meaning zero 0, false, NaN, +0, -0, {}, [],
+ *    and other empty values are non-blank
+ *  @param obj - The object to check
+ *  @returns true if the object is blank, false otherwise
+ */
+export function isBlank(obj: any): boolean {
+  return (obj !== undefined && obj !== '' && obj !== null)
+}
+
 // returns true if you're likely to have success spreading arr into an array: [...arr]
 export function arrayish(arr: any): boolean {
   if (_.isArray(arr)) { return true }

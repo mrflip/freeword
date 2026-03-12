@@ -5,12 +5,13 @@
   "scripts": {
     "shipme": "         npm publish --access public",
     "build": "          yarn tsc   --build --verbose",
+    "ts:watch": "       yarn build --watch",
     "_1": " echo .",
-    "test": "           ( cd .. ; yarn test )",
-    "test:plain": "     ( cd .. ; yarn test )",
-    "test:coverage": "  ( cd .. ; yarn test ) --coverage ",
-    "test:watch": "     ( cd .. ; yarn test ) --watch    ",
-    "twitch": "         ( cd .. ; yarn test ) --watch    ",
+    "test": "           cd .. ; yarn test ",
+    "test:plain": "     cd .. ; yarn test ",
+    "test:coverage": "  cd .. ; yarn test --coverage ",
+    "test:watch": "     cd .. ; yarn test --watch    ",
+    "twitch": "         cd .. ; yarn node --experimental-vm-modules --enable-source-maps $(yarn bin jest) --watch",
     "_2": " echo .",
     "_z": "echo ."
   },

@@ -92,7 +92,7 @@ export function _abspathForPathname(pathname: FT.Pathname, ...pathsegs: TY.Strin
  * @param pathsegs - Additional path segments to append to the pathname
  * @returns A complete pathinfo object, with abspath and dirpath resolved
  */
-export function pathinfoFor(anypath: FT.Anypath, ...pathsegs: TY.StringMaybe[]): FT.PathinfoT | FT.BadFilerResult<'badPath' | 'badInput' | 'blankPath'> {
+export function pathinfoFor(anypath: FT.Anypath, ...pathsegs: TY.StringMaybe[]): FT.PathinfoT & { ok: true, basename: TY.Basename } | FT.BadFilerResult<'badPath' | 'badInput' | 'blankPath'> {
   const pathnameStr = (typeof anypath === 'string') ? anypath.trim() : anypath
   if (! pathnameStr) {
     return badOutcome(new Error('Blank path provided'), 'blankPath', 'Blank path is not a reasonable input', { args: { anypath } })
@@ -106,6 +106,7 @@ export function pathinfoFor(anypath: FT.Anypath, ...pathsegs: TY.StringMaybe[]):
     return {
       ok:        true,
       barename,
+      basename,
       fext,
       dirpath,
       abspath,

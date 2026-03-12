@@ -13,6 +13,8 @@ export      *                                     from '../UtilityConsts.ts'
 export      *                                     from '../lib/Rot13.ts'
 export      { badOutcome, throwable }             from './OutcomeUtils.ts'
 export      *                                     from './CollectionUtils.ts'
+export      *                                     from './Logging.ts'
+export      *                                     from './PromiseUtils.ts'
 
 export const { sprintf, vsprintf } = JSPrintf
 
