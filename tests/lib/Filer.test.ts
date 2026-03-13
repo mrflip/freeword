@@ -8,7 +8,7 @@ import      { Filer }                         from '@freeword/meta'
 
 const {
   _abspathForPathparts,  _abspathForPathname,  pathinfoFor, starlines,
-  dumptext, dumpjson, mkdirp, starjsonl, loadtext,
+  dumptext, dumpjson, mkdirp, starjsonl, starjsonkeys, loadtext,
   dirpathFor, abspathFor, barenameFor, fextFor,
 } = Filer
 
@@ -332,6 +332,18 @@ describe('Filer', () => {
       expect(lines).to.deep.equal([])
     })
 
+    it('should throw blankPath for empty string path', async () => {
+      let err: TY.ExtError = undefined!
+      try {
+        const generator = starlines('')
+        for await (const line of generator) {
+          expect.fail(`Should not yield any lines for blank path: ${line}`)
+        }
+      } catch (caught) { err = caught as TY.ExtError }
+      expect(err).to.be.instanceOf(Error)
+      expect(err.extensions?.gist).to.equal('blankPath')
+    })
+
     it('should handle file not found', async () => {
       let err: TY.ExtError = undefined!
       try {
@@ -431,6 +443,26 @@ describe('Filer', () => {
         gist:        'parseErr',
         origmsg:     'Unterminated string in JSON at position 56 (line 1 column 57)',
       })
+    })
+  })
+
+  describe('starjsonkeys', () => {
+    it('should yield numeric keys from a jsonl file', async () => {
+      const keys: number[] = []
+      for await (const key of starjsonkeys(filerFixturePath('goodjsonl.jsonl')) as AsyncIterable<number>) { keys.push(key) }
+      expect(keys).to.deep.equal([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+    })
+
+    it('should yield string keys from a kv.json file', async () => {
+      const keys: string[] = []
+      for await (const key of starjsonkeys<string>(filerFixturePath('goodjsonkv.kv.json')) as AsyncIterable<string>) { keys.push(key) }
+      expect(keys).to.deep.equal(['RZA', 'GZA', 'ODB', 'Method Man', 'Ghostface Killah', 'Raekwon', 'Inspectah Deck', 'U-God', 'Masta Killa', 'Cappadonna'])
+    })
+
+    it('should yield nothing from an empty file', async () => {
+      const keys: unknown[] = []
+      for await (const key of starjsonkeys(filerFixturePath('empty')) as AsyncIterable<number>) { keys.push(key) }
+      expect(keys).to.deep.equal([])
     })
   })
 
@@ -664,6 +696,28 @@ describe('Filer', () => {
       if (!result.ok) {
         expect(result.gist).to.equal('readErr')
         expect(result.err!.message).to.include('Issue opening file: filesystem link is incorrect')
+      }
+    })
+
+    it('should return fileNotFound for a nonexistent path', async () => {
+      const result = await loadtext('/nonexistent/file.txt')
+      expect(result.ok).to.be.false
+      if (!result.ok) {
+        expect(result.gist).to.equal('fileNotFound')
+        expect(result.err!.message).to.include('is absent')
+      }
+    })
+
+    it('should accept Pathinfo input', async () => {
+      const pathinfo: TY.PathinfoDNA = {
+        barename: 'himom',
+        fext:     'txt',
+        dirpath:  filerFixturePath('himom.txt').replace(/\/himom\.txt$/, ''),
+      }
+      const result = await loadtext(pathinfo)
+      expect(result.ok).to.be.true
+      if (result.ok) {
+        expect(result.val).to.equal('Hi, Mom!\n')
       }
     })
   })

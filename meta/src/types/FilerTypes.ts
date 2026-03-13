@@ -36,8 +36,10 @@ export interface FilerResult<VT = any> extends Omit<Partial<PathinfoT>, 'ok'> {
   tmi?: Record<string, any>
 }
 
-/** An absolute pathstring (must reference the root directory, with symlinks resolved) */
+/** Absolute pathstring (starts at the root directory, all symlinks resolved) */
 export type Abspath   = string
+/** Absolute directory pathstring (starts at the root directory, all symlinks resolved, is a directory) */
+export type Dirpath   = string
 /** A relative pathstring (may or may not be absolute) */
 export type Relpath   = string
 /** The bare basename of a path, without the extension or directory; this should be the filename with the elements following the last dot removed (after first removing any compression extension eg. `.gz`) */
