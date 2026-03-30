@@ -236,16 +236,25 @@ describe('UF', () => {
   })
 
   describe('isNode', () => {
-    it('should return boolean indicating if running in Node.js', () => {
-      const result = UF.isNode()
-      expect(result).to.be.a('boolean')
+    it('should return true when running in Node.js', () => {
+      expect(UF.isNode()).to.be.true
     })
   })
 
   describe('isBrowser', () => {
-    it('should return boolean indicating if running in browser', () => {
-      const result = UF.isBrowser()
-      expect(result).to.be.a('boolean')
+    it('should return false when running in Node.js', () => {
+      expect(UF.isBrowser()).to.be.false
+    })
+
+    it('should return true when window is defined', () => {
+      const orig = (globalThis as any).window
+      try {
+        ;(globalThis as any).window = {}
+        expect(UF.isBrowser()).to.be.true
+      } finally {
+        if (orig === undefined) { delete (globalThis as any).window }
+        else { (globalThis as any).window = orig }
+      }
     })
   })
 
