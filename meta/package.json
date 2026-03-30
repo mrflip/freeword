@@ -1,6 +1,6 @@
 {
   "name": "@freeword/meta",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "description": "Meta package for Freeword: exports all core types, constants, and utilities from the src/ directory.",
   "scripts": {
     "shipme": "         npm publish --access public",

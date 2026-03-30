@@ -1,9 +1,9 @@
 #!/bin/bash
 
 SCRIPTDIR=$(realpath "$(dirname "$0")")
-ROOTDIR=$(realpath "$SCRIPTDIR/..")
+MAINDIR=$(realpath "$SCRIPTDIR/..")
 
-cd "$ROOTDIR"
+cd "$MAINDIR"
 
 shopt -s nullglob
 rm -rf .tsbuildinfo* built meta/built mungers/*/built repos/*/built

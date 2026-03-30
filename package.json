@@ -1,6 +1,6 @@
 {
   "name": "internals",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "description": "Host metarepo for Freeword. You don't want this package unless you're working on the Freeword project: see @freeword/freeword, probably, or the variants in the README.",
   "private": true,
   "workspaces": [
