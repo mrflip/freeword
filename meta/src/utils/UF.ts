@@ -238,6 +238,5 @@ export function isNode(): boolean {
 }
 
 export function isBrowser(): boolean {
-  // if (isNode()) { return false }
-  return (!! (import.meta as any).client)
+  return typeof globalThis.window !== 'undefined'
 }

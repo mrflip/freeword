@@ -4,8 +4,9 @@
   "description": "Meta package for Freeword: exports all core types, constants, and utilities from the src/ directory.",
   "scripts": {
     "shipme": "         npm publish --access public",
-    "build": "          yarn tsc   --build --verbose",
-    "ts:watch": "       yarn build --watch",
+    "build": "          yarn tsc   --build --verbose && yarn build:cjs",
+    "build:cjs": "      yarn tsup",
+    "ts:watch": "       yarn tsc   --build --verbose --watch",
     "_1": " echo .",
     "test": "           cd .. ; yarn test ",
     "test:plain": "     cd .. ; yarn test ",
@@ -45,6 +46,7 @@
     "sinon-chai": "^4.0.0",
     "ts-jest": "^29.4.0",
     "ts-jest-resolver": "^2.0.1",
+    "tsup": "^8.5.0",
     "typescript": "^5.8.3"
   },
   "keywords": [
@@ -67,55 +69,82 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "types": "./built/index.d.ts",
-      "import": "./built/index.js",
-      "default": "./built/index.js"
+      "import": {
+        "types": "./built/index.d.ts",
+        "default": "./built/index.js"
+      },
+      "require": {
+        "types": "./built-cjs/index.d.cts",
+        "default": "./built-cjs/index.cjs"
+      }
     },
     "./checks": {
-      "types": "./built/src/checks.d.ts",
-      "import": "./built/src/checks.js"
+      "import": {
+        "types": "./built/src/checks.d.ts",
+        "default": "./built/src/checks.js"
+      }
     },
     "./checks.js": {
-      "types": "./built/src/checks.d.ts",
-      "import": "./built/src/checks.js"
+      "import": {
+        "types": "./built/src/checks.d.ts",
+        "default": "./built/src/checks.js"
+      }
     },
     "./UF.js": {
-      "types": "./built/src/lib/UF.d.ts",
-      "import": "./built/src/lib/UF.js"
+      "import": {
+        "types": "./built/src/utils/UF.d.ts",
+        "default": "./built/src/utils/UF.js"
+      }
     },
     "./Wordbits.js": {
-      "types": "./built/src/lib/Wordbits.d.ts",
-      "import": "./built/src/lib/Wordbits.js"
+      "import": {
+        "types": "./built/src/lib/Wordbits.d.ts",
+        "default": "./built/src/lib/Wordbits.js"
+      }
     },
     "./Wordform.js": {
-      "types": "./built/src/lexicon/index.d.ts",
-      "import": "./built/src/lexicon/index.js"
+      "import": {
+        "types": "./built/src/lexicon/index.d.ts",
+        "default": "./built/src/lexicon/index.js"
+      }
     },
     "./Filer.js": {
-      "types": "./built/src/lib/Filer.d.ts",
-      "import": "./built/src/lib/Filer.js"
+      "import": {
+        "types": "./built/src/lib/Filer.d.ts",
+        "default": "./built/src/lib/Filer.js"
+      }
     },
     "./UF": {
-      "types": "./built/src/lib/UF.d.ts",
-      "import": "./built/src/lib/UF.js"
+      "import": {
+        "types": "./built/src/utils/UF.d.ts",
+        "default": "./built/src/utils/UF.js"
+      }
     },
     "./Wordbits": {
-      "types": "./built/src/lib/Wordbits.d.ts",
-      "import": "./built/src/lib/Wordbits.js"
+      "import": {
+        "types": "./built/src/lib/Wordbits.d.ts",
+        "default": "./built/src/lib/Wordbits.js"
+      }
     },
     "./Wordform": {
-      "types": "./built/src/lexicon/index.d.ts",
-      "import": "./built/src/lexicon/index.js"
+      "import": {
+        "types": "./built/src/lexicon/index.d.ts",
+        "default": "./built/src/lexicon/index.js"
+      }
     },
     "./Filer": {
-      "types": "./built/src/lib/Filer.d.ts",
-      "import": "./built/src/lib/Filer.js"
+      "import": {
+        "types": "./built/src/lib/Filer.d.ts",
+        "default": "./built/src/lib/Filer.js"
+      }
     }
   },
   "files": [
     "built",
+    "built-cjs",
     "src",
     "tsconfig*.json",
+    "tsup.config.ts",
     "VERSION.txt",
     "README.md",
     "package.json",
